@@ -1,0 +1,73 @@
+{
+  "name": "@learning-platform/ui",
+  "version": "0.1.0",
+  "description": "React learner presentation components for Learning Platform hubs. Uses Core 0.2.0 contracts and --lp-* tokens.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm test && npm run build"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@learning-platform/core": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@learning-platform/core": "file:../learning-platform-core",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.3.0",
+    "@testing-library/user-event": "14.6.1",
+    "@types/node": "^22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "4.5.2",
+    "axe-core": "^4.10.3",
+    "jsdom": "^26.1.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "typescript": "5.9.3",
+    "vite": "6.3.5",
+    "vitest": "3.2.4"
+  },
+  "keywords": [
+    "learning-platform",
+    "react",
+    "accessibility",
+    "github-pages"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Acerosa/learning-platform-ui.git"
+  },
+  "homepage": "https://github.com/Acerosa/learning-platform-ui#readme",
+  "bugs": {
+    "url": "https://github.com/Acerosa/learning-platform-ui/issues"
+  }
+}
