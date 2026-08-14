@@ -24,7 +24,7 @@ workspace/
 └── learning-platform-ui
 ```
 
-The UI git repository is currently `Acerosa/-learning-platform-ui` (leading hyphen). Checkout it to the local folder `learning-platform-ui` so `file:../learning-platform-ui` resolves.
+The UI git repository is `Acerosa/Acerosa-learning-platform-ui`. Check it out to the local folder `learning-platform-ui` so `file:../learning-platform-ui` resolves.
 
 Pin Core, Content and UI to reviewed tags. Do not follow dependency `main`.
 

@@ -24,7 +24,7 @@ describe("package exports", () => {
     expect(pkg.version).toBe("0.1.0");
     expect(pkg.exports["."].import).toBe("./dist/index.js");
     expect(pkg.exports["."].types).toBe("./dist/index.d.ts");
-    expect(pkg.repository.url).toContain("Acerosa/-learning-platform-ui");
+    expect(pkg.repository.url).toContain("Acerosa/Acerosa-learning-platform-ui");
     expect(pkg.peerDependencies.react).toMatch(/\^19/);
     expect(readFileSync(join(root, "../dist/index.js"), "utf8")).toMatch(/HubShell/);
   });

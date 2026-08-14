@@ -2,7 +2,7 @@
 
 React + TypeScript learner presentation for Learning Platform hubs.
 
-Canonical git remote: [Acerosa/-learning-platform-ui](https://github.com/Acerosa/-learning-platform-ui) (the GitHub repository name currently has a leading hyphen; the package name does not).
+Canonical git remote: [Acerosa/Acerosa-learning-platform-ui](https://github.com/Acerosa/Acerosa-learning-platform-ui). The npm package name remains `@learning-platform/ui`. Check the repository out locally as `learning-platform-ui` so sibling `file:` installs resolve.
 
 This package reimplements the **Core 0.2.0 presentation contracts** as React components. It does not wrap Core DOM factories, and it does not replace them.
 

@@ -1,9 +1,9 @@
 # Versioning
 
 Package: `@learning-platform/ui`  
-Canonical git remote: `https://github.com/Acerosa/-learning-platform-ui.git`
+Canonical git remote: `https://github.com/Acerosa/Acerosa-learning-platform-ui.git`
 
-The GitHub repository name currently has a leading hyphen. The npm package name does **not**.
+The npm package name is `@learning-platform/ui`. Check the repository out locally as `learning-platform-ui`.
 
 ## Semver
 
@@ -24,7 +24,7 @@ Record for this release after the tag exists:
 | Field | Value |
 | --- | --- |
 | Package | `@learning-platform/ui@0.1.0` |
-| Repository | `Acerosa/-learning-platform-ui` |
+| Repository | `Acerosa/Acerosa-learning-platform-ui` |
 | Tag | `v0.1.0` |
 | Source commit | recorded at tag time |
 
