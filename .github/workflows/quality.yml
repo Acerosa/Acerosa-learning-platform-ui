@@ -1,0 +1,37 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out UI package
+        uses: actions/checkout@v4
+        with:
+          path: learning-platform-ui
+      - name: Check out reviewed Core
+        uses: actions/checkout@v4
+        with:
+          repository: Acerosa/learning-platform-core
+          ref: v0.2.0
+          path: learning-platform-core
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: learning-platform-ui/package-lock.json
+      - name: Install, test and build
+        working-directory: learning-platform-ui
+        run: |
+          npm ci
+          npm run check
