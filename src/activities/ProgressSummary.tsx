@@ -14,6 +14,11 @@ export type ProgressSummaryProps = {
   message?: string;
   showStatus?: boolean;
   showDisclaimer?: boolean;
+  /**
+   * When true, show only title, status, score headline and score detail.
+   * Badge, bar, %, message and disclaimer stay for the expanded view.
+   */
+  collapsed?: boolean;
 };
 
 export function resolveProgressFraction(score?: ActivityScore, progress?: number): number {
@@ -36,7 +41,8 @@ export function ProgressSummary({
   attempts,
   message,
   showStatus = true,
-  showDisclaimer = true
+  showDisclaimer = true,
+  collapsed = false
 }: ProgressSummaryProps): ReactNode {
   const badgeText = badge || subtitle;
   const fraction = resolveProgressFraction(score, progress);
@@ -49,7 +55,11 @@ export function ProgressSummary({
     : null;
 
   return (
-    <div className="lp-progress-summary" data-lp-progress-summary="">
+    <div
+      className="lp-progress-summary"
+      data-lp-progress-summary=""
+      data-lp-progress-collapsed={collapsed ? "true" : "false"}
+    >
       {title ? <p className="lp-progress-summary__title"><strong>{title}</strong></p> : null}
       {showStatus ? (
         <StatusBadge status={completed ? "completed" : "progress"} label={statusLabel} />
@@ -64,22 +74,26 @@ export function ProgressSummary({
         </p>
       ) : null}
       {scoreDetail ? <p className="lp-card__meta">{scoreDetail}</p> : null}
-      {badgeText ? (
+      {!collapsed && badgeText ? (
         <p className="lp-progress-summary__badge" data-lp-progress-badge="">
           <strong>{badgeText}</strong>
         </p>
       ) : null}
-      <progress
-        className="lp-progress"
-        max={100}
-        value={percentage}
-        aria-label={`${percentage}% complete`}
-      />
-      <p className="lp-card__meta">{percentage}% complete</p>
-      {attemptText ? <p>{attemptText}</p> : null}
-      {message ? <p>{message}</p> : null}
-      {showDisclaimer ? (
-        <p className="lp-card__meta">This summary is practice feedback, not an official mark.</p>
+      {!collapsed ? (
+        <>
+          <progress
+            className="lp-progress"
+            max={100}
+            value={percentage}
+            aria-label={`${percentage}% complete`}
+          />
+          <p className="lp-card__meta">{percentage}% complete</p>
+          {attemptText ? <p>{attemptText}</p> : null}
+          {message ? <p>{message}</p> : null}
+          {showDisclaimer ? (
+            <p className="lp-card__meta">This summary is practice feedback, not an official mark.</p>
+          ) : null}
+        </>
       ) : null}
     </div>
   );

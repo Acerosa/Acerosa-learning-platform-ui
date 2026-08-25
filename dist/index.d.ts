@@ -41,6 +41,8 @@ export { CompletionModal } from "./activities/CompletionModal";
 export type { CompletionModalProps } from "./activities/CompletionModal";
 export { ProgressSummary, resolveProgressFraction } from "./activities/ProgressSummary";
 export type { ProgressSummaryProps } from "./activities/ProgressSummary";
+export { PracticeProgressPanel } from "./activities/PracticeProgressPanel";
+export type { PracticeProgressPanelProps } from "./activities/PracticeProgressPanel";
 export { demoCatalogueActivities, demoClassification, demoDragDrop, demoOptionCards, demoPhraseCompletion, demoSequence, demoTrueFalse } from "./activities/demo-content";
 export { Classification } from "./activities/Classification";
 export type { ClassificationProps } from "./activities/Classification";

@@ -12,6 +12,11 @@ export type ProgressSummaryProps = {
     message?: string;
     showStatus?: boolean;
     showDisclaimer?: boolean;
+    /**
+     * When true, show only title, status, score headline and score detail.
+     * Badge, bar, %, message and disclaimer stay for the expanded view.
+     */
+    collapsed?: boolean;
 };
 export declare function resolveProgressFraction(score?: ActivityScore, progress?: number): number;
-export declare function ProgressSummary({ title, badge, subtitle, score, progress, completed, attempts, message, showStatus, showDisclaimer }: ProgressSummaryProps): ReactNode;
+export declare function ProgressSummary({ title, badge, subtitle, score, progress, completed, attempts, message, showStatus, showDisclaimer, collapsed }: ProgressSummaryProps): ReactNode;

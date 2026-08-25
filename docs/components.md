@@ -19,7 +19,8 @@ All components consume Core `--lp-*` classes. Hubs must load `@learning-platform
 | `Sequence` | Reorder items with move buttons and arrow keys |
 | `FeedbackPanel` | Shared activity feedback (`neutral` / `correct` / `incorrect` / `informative` / `hint`) |
 | `CompletionModal` | Optional completion dialog using Core `.lp-dialog`; composes `ProgressSummary` |
-| `ProgressSummary` | Practice score / badge / progress bar (inline or in completion dialog) |
+| `ProgressSummary` | Practice score / badge / progress bar (inline or in completion dialog); supports `collapsed` |
+| `PracticeProgressPanel` | Left-docked expandable practice progress (composes `ProgressSummary`) |
 | `InteractiveActivity` / `ActivityBlock` | Content-driven renderer for catalogue blocks |
 | `ContextPanel` | Exam / assignment / project context from data |
 | `LearningOutcomeBadge` | Compact outcome chip |

@@ -11,6 +11,7 @@ import {
   InteractiveActivity,
   OptionCards,
   PhraseCompletion,
+  PracticeProgressPanel,
   ProgressSummary,
   Sequence,
   demoClassification,
@@ -275,6 +276,60 @@ describe("ProgressSummary", () => {
     );
     expect(screen.getByRole("progressbar", { name: "50% complete" })).toHaveAttribute("value", "50");
     expect(screen.getByText("1 / 4")).toBeInTheDocument();
+  });
+
+  it("hides badge, bar and disclaimer when collapsed", () => {
+    render(
+      <ProgressSummary
+        title="Practice progress"
+        score={{ correct: 0, total: 57 }}
+        badge="Week 1: Introduction"
+        message="Check scored activities to update."
+        completed={false}
+        collapsed
+      />
+    );
+    expect(screen.getByText("Practice progress")).toBeInTheDocument();
+    expect(screen.getByText("In progress")).toBeInTheDocument();
+    expect(screen.getByText("0 / 57")).toBeInTheDocument();
+    expect(screen.getByText("0 of 57 correct")).toBeInTheDocument();
+    expect(screen.queryByText("Week 1: Introduction")).not.toBeInTheDocument();
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+    expect(screen.queryByText(/not an official mark/)).not.toBeInTheDocument();
+  });
+});
+
+describe("PracticeProgressPanel", () => {
+  it("docks on the left and toggles collapsed details", async () => {
+    const user = userEvent.setup();
+    render(
+      <PracticeProgressPanel
+        title="Practice progress"
+        score={{ correct: 0, total: 57 }}
+        badge="Week 1: Introduction to New and Emerging Digital Technologies"
+        message="Check scored activities to update. Formative practice only."
+        completed={false}
+        defaultCollapsed
+      />
+    );
+
+    const panel = screen.getByRole("complementary", { name: "Practice progress" });
+    expect(panel).toHaveAttribute("data-lp-docked", "left");
+    expect(panel).toHaveAttribute("data-lp-collapsed", "true");
+    expect(screen.getByText("0 / 57")).toBeInTheDocument();
+    expect(screen.getByText("0 of 57 correct")).toBeInTheDocument();
+    expect(screen.queryByText(/Week 1:/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+
+    const toggle = screen.getByRole("button", { name: "Show progress details" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await user.click(toggle);
+
+    expect(panel).toHaveAttribute("data-lp-collapsed", "false");
+    expect(screen.getByRole("button", { name: "Hide progress details" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText(/Week 1:/)).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "0% complete" })).toBeInTheDocument();
+    expect(screen.getByText(/not an official mark/)).toBeInTheDocument();
   });
 });
 

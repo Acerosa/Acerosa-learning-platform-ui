@@ -7,7 +7,7 @@ Do not treat every listed type as a shipped schema.
 
 **Activity type** is the interaction (for example `ordering`).
 **Mechanics** are optional (`formative`, retry, shuffle, attempts).
-**Experience** is composition (`FeedbackPanel`, `CompletionModal`, `ProgressSummary`).
+**Experience** is composition (`FeedbackPanel`, `CompletionModal`, `ProgressSummary`, `PracticeProgressPanel`).
 
 Do not create a component per combination (`TimedDragDrop`, `ScoredSequence`).
 
@@ -247,15 +247,43 @@ Keyboard operation, visible focus (`:focus-visible`), semantic controls, screen-
 
 **Type:** UI chrome, not a Content block.
 
-**Purpose:** Reusable practice progress card (inline or inside `CompletionModal`).
+**Purpose:** Reusable practice progress card (inline, in `CompletionModal`, or inside `PracticeProgressPanel`).
 
 **Good for:** “Mission complete” style summaries, topic badges, local score bars.
 
 **Interaction:** Read-only summary; actions stay on the modal/session layer.
 
-**Content:** `title`, `score`, `badge`/`subtitle`, optional `progress` (0–1; derived from score when omitted), `attempts`, `message`.
+**Content:** `title`, `score`, `badge`/`subtitle`, optional `progress` (0–1; derived from score when omitted), `attempts`, `message`, optional `collapsed`.
+
+**Collapsed:** title, status, `correct / total`, `correct of total correct` only.
 
 **Status:** Tier 1. Implemented as `ProgressSummary`.
+
+### practice_progress_panel
+
+**Type:** UI chrome, not a Content block.
+
+**Purpose:** Persistent docked practice progress that does not cover the exercise column.
+
+**Good for:** week pages where learners check formative score while working.
+
+**Interaction:** Fixed to the **left** (bottom-left). Expand/collapse toggle with `aria-expanded`. Defaults collapsed.
+
+**Collapsed:** same compact fields as `ProgressSummary` collapsed.
+
+**Expanded:** badge, progress bar, %, message, practice-feedback disclaimer.
+
+**Content:** Same props as `ProgressSummary`, plus `collapsed` / `defaultCollapsed` / `onCollapsedChange`.
+
+**Mechanics:** Hub mounts once and feeds aggregated local Activity Results. Does not submit marks.
+
+**Accessibility:** `aside` landmark, labelled toggle, text score not colour alone.
+
+**Mobile:** compact left dock; expand in place without a centred overlay.
+
+**Status:** Tier 1. Implemented as `PracticeProgressPanel`.
+
+`CompletionModal` remains the dialog for explicit completion moments.
 
 ### feedback_panel
 

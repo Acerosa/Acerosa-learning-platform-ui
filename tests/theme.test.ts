@@ -24,8 +24,10 @@ describe("theme tokens", () => {
     const activitySource = readFileSync(join(root, "../src/activities/OptionCards.tsx"), "utf8")
       + readFileSync(join(root, "../src/activities/FeedbackPanel.tsx"), "utf8")
       + readFileSync(join(root, "../src/activities/CompletionModal.tsx"), "utf8")
-      + readFileSync(join(root, "../src/activities/ProgressSummary.tsx"), "utf8");
+      + readFileSync(join(root, "../src/activities/ProgressSummary.tsx"), "utf8")
+      + readFileSync(join(root, "../src/activities/PracticeProgressPanel.tsx"), "utf8");
     expect(activitySource).toMatch(/lp-card|lp-dialog|lp-callout|lp-button|lp-progress/);
+    expect(activitySource).toMatch(/data-lp-docked/);
     expect(activitySource).not.toMatch(/--ui-primary/);
   });
 });
