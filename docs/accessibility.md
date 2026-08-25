@@ -14,4 +14,6 @@ Shared learner UI must preserve:
 
 Tests run axe on `HubShell` + `WeekView` (colour-contrast disabled in jsdom) and keyboard-operate the menu toggle.
 
-Hubs remain responsible for activity-interior labels from Content `renderActivity`.
+Hubs remain responsible for activity-interior labels from Content `renderActivity` or from React `ActivityBlock`. Catalogue components must keep a keyboard/tap path; drag-only interaction is not allowed.
+
+See `docs/interactive-activity-catalogue.md`.

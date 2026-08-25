@@ -4,6 +4,10 @@
 
 - Canonical git remote is `Acerosa/Acerosa-learning-platform-ui`. The local checkout folder remains `learning-platform-ui`.
 
+## 0.1.1
+
+- Interactive activity catalogue: `OptionCards`, `Classification`, `DragDrop`, `PhraseCompletion`, `Sequence`, `FeedbackPanel`, `CompletionModal`, and Content-driven `ActivityBlock` / `InteractiveActivity`. See `docs/interactive-activity-catalogue.md`.
+
 ## 0.1.0
 
 - Initial React + TypeScript learner UI package.

@@ -48,6 +48,16 @@ React receives canonical week/session/activity data. Activity interiors may be C
 
 Then call Content `bindInteractive` on the mount node. Stable block/question IDs, drafts and evidence-only submit stay in Content/Core.
 
+React catalogue interiors use the same block documents without HTML injection:
+
+```tsx
+<InteractiveActivity activity={activity} onResult={handleResult} />
+```
+
+`onResult` is local UI state. Map responses with Core evidence helpers before `submit_attempt`. Do not treat `correct` or `score` as an official mark.
+
+Interactive catalogue specification: `docs/interactive-activity-catalogue.md`.
+
 ## Routing
 
 Learner hubs should use Vite multi-page static HTML at existing directory URLs (`base: './'`). Do not copy Admin hash routing.

@@ -30,6 +30,8 @@ React learner presentation:
 - `HubShell`, `Navigation`, `LearnerHeader`, `Breadcrumbs`
 - `WeekView`, `WeekHeader`, `WeekNavigation`, `SessionSection`
 - `ActivityCard`, `ContextPanel`, `LearningOutcomeBadge`
+- `OptionCards`, `DragDrop`, `PhraseCompletion`, `Sequence`
+- `FeedbackPanel`, `CompletionModal`, `ActivityBlock`
 - `ProgressCard`, `StatusBadge`, `Callout`
 - `EmptyState`, `LoadingState`, `ErrorState`
 

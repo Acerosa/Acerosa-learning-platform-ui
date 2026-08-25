@@ -1,12 +1,18 @@
 # Architecture
 
+The platform pattern is **Contract-First Modular Hub Architecture**, documented
+in `learning-platform-backend` `docs/architecture.md`. This package is React
+learner presentation only.
+
 ## Decision
 
 Adopt **React + TypeScript + Vite** as the standard learner-hub frontend stack for GitHub Pages.
 
 Keep **`@learning-platform/core` framework-neutral**. Create **`@learning-platform/ui`** for React learner presentation.
 
-Do not migrate existing vanilla hubs until a reference implementation is proven. Unit 14 is that reference. Unit 3 and T Level stay on their current stacks in this task.
+Unit 14 is the **current reference hub**. Unit 3 and T Level are **current
+generation** hubs that retain classic activity engines. Do not migrate them
+further solely for visual consistency.
 
 ## Why React + TypeScript + Vite is accepted
 
@@ -47,7 +53,7 @@ Core factories remain the non-React implementation of the same grammar. React co
 | --- | --- |
 | `@learning-platform/core` | Auth, learner context, API, platform state, theme application, `--lp-*` tokens, framework-neutral DOM factories |
 | `@learning-platform/content` | Curriculum schemas, validation, importers, block/question IDs, `renderActivity` / `bindInteractive` semantics, publication comparison |
-| `@learning-platform/ui` | React `HubShell`, header/navigation, week/session/activity presentation, status/progress/empty/loading/error, shared a11y patterns |
+| `@learning-platform/ui` | React `HubShell`, header/navigation, week/session/activity presentation, interactive catalogue components, status/progress/empty/loading/error, shared a11y patterns |
 | Hub | Branding colours, navigation labels/order, curriculum package, P/M/D copy, project journey, exam/OCR/NCSC workflows, GitHub Pages route list |
 
 Not extracted into UI: Resource lists, assignment milestone/P/M/D judgement, OCR exam drills, T Level task/sidebar, programming-environment chrome.
