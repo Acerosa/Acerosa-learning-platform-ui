@@ -64,6 +64,8 @@ export { ActivityBlock, InteractiveActivity } from "./activities/ActivityBlock";
 export type { ActivityBlockProps, InteractiveActivityProps } from "./activities/ActivityBlock";
 export { CompletionModal } from "./activities/CompletionModal";
 export type { CompletionModalProps } from "./activities/CompletionModal";
+export { ProgressSummary, resolveProgressFraction } from "./activities/ProgressSummary";
+export type { ProgressSummaryProps } from "./activities/ProgressSummary";
 export {
   demoCatalogueActivities,
   demoClassification,

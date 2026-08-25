@@ -11,6 +11,7 @@ import {
   InteractiveActivity,
   OptionCards,
   PhraseCompletion,
+  ProgressSummary,
   Sequence,
   demoClassification,
   demoDragDrop,
@@ -218,24 +219,62 @@ describe("CompletionModal", () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
     const onNext = vi.fn();
+    const onReview = vi.fn();
     render(
       <CompletionModal
         open
         completed
-        score={{ correct: 3, total: 4 }}
+        title="Mission complete"
+        score={{ correct: 92, total: 100 }}
+        badge="RFID Specialist"
         attempts={2}
         onClose={onClose}
         onNext={onNext}
+        onReview={onReview}
       />
     );
-    expect(screen.getByRole("heading", { name: "Activity complete" })).toBeInTheDocument();
-    expect(screen.getByText("3 of 4 correct")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Mission complete" })).toBeInTheDocument();
+    expect(screen.getByText("92 / 100")).toBeInTheDocument();
+    expect(screen.getByText("92 of 100 correct")).toBeInTheDocument();
+    expect(screen.getByText("RFID Specialist")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "92% complete" })).toBeInTheDocument();
     expect(screen.getByText("2 attempts")).toBeInTheDocument();
     expect(screen.getByText(/not an official mark/)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Review" }));
+    expect(onReview).toHaveBeenCalled();
     await user.click(screen.getByRole("button", { name: "Continue" }));
     expect(onNext).toHaveBeenCalled();
-    await user.click(screen.getByRole("button", { name: "Close Activity complete" }));
+    await user.click(screen.getByRole("button", { name: "Close Mission complete" }));
     expect(onClose).toHaveBeenCalled();
+  });
+});
+
+describe("ProgressSummary", () => {
+  it("renders score, badge and progress bar, deriving progress from score", () => {
+    render(
+      <ProgressSummary
+        title="Mission complete"
+        score={{ correct: 92, total: 100 }}
+        badge="RFID Specialist"
+      />
+    );
+    expect(screen.getByText("Mission complete")).toBeInTheDocument();
+    expect(screen.getByText("92 / 100")).toBeInTheDocument();
+    expect(screen.getByText("RFID Specialist")).toBeInTheDocument();
+    const bar = screen.getByRole("progressbar", { name: "92% complete" });
+    expect(bar).toHaveAttribute("value", "92");
+    expect(bar).toHaveAttribute("max", "100");
+  });
+
+  it("uses an explicit progress fraction when provided", () => {
+    render(
+      <ProgressSummary
+        score={{ correct: 1, total: 4 }}
+        progress={0.5}
+      />
+    );
+    expect(screen.getByRole("progressbar", { name: "50% complete" })).toHaveAttribute("value", "50");
+    expect(screen.getByText("1 / 4")).toBeInTheDocument();
   });
 });
 
@@ -266,6 +305,7 @@ describe("content-driven catalogue demo", () => {
     await user.click(screen.getByRole("radio", { name: /Infrastructure as a Service/ }));
     await user.click(screen.getByRole("button", { name: "Check answer" }));
     expect(screen.getByRole("heading", { name: "Activity complete" })).toBeInTheDocument();
+    expect(screen.getByText("1 / 1")).toBeInTheDocument();
     expect(screen.getByText("1 of 1 correct")).toBeInTheDocument();
   });
 

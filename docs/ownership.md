@@ -31,7 +31,7 @@ React learner presentation:
 - `WeekView`, `WeekHeader`, `WeekNavigation`, `SessionSection`
 - `ActivityCard`, `ContextPanel`, `LearningOutcomeBadge`
 - `OptionCards`, `DragDrop`, `PhraseCompletion`, `Sequence`
-- `FeedbackPanel`, `CompletionModal`, `ActivityBlock`
+- `FeedbackPanel`, `CompletionModal`, `ProgressSummary`, `ActivityBlock`
 - `ProgressCard`, `StatusBadge`, `Callout`
 - `EmptyState`, `LoadingState`, `ErrorState`
 

@@ -7,7 +7,7 @@ Do not treat every listed type as a shipped schema.
 
 **Activity type** is the interaction (for example `ordering`).
 **Mechanics** are optional (`formative`, retry, shuffle, attempts).
-**Experience** is composition (`FeedbackPanel`, `CompletionModal`).
+**Experience** is composition (`FeedbackPanel`, `CompletionModal`, `ProgressSummary`).
 
 Do not create a component per combination (`TimedDragDrop`, `ScoredSequence`).
 
@@ -223,23 +223,39 @@ Keyboard operation, visible focus (`:focus-visible`), semantic controls, screen-
 
 **Type:** UI chrome, not a Content block.
 
-**Purpose:** Optional end-of-activity summary.
+**Purpose:** Optional end-of-activity or end-of-set summary, including a mission-complete style presentation.
 
-**Good for:** session wrap-up, next-step navigation.
+**Good for:** session wrap-up, practice progress check, next-step navigation.
 
 **Interaction:** Dialog with close, optional review, optional next.
 
-**Content:** Driven by Activity Result (`completed`, local score, attempts), not curriculum copy.
+**Content:** Driven by Activity Result (`completed`, local score, attempts) plus optional hub props (`badge` / `subtitle`, `progress`). Teaching/badge copy is supplied by the hub — not hard-coded in UI.
 
-**Mechanics:** Shown by the session/activity layer, never mandatory inside every component.
+**Presentation:** Composes `ProgressSummary` — score as `correct / total`, optional badge, accessible progress bar (text percentage + bar).
+
+**Mechanics:** Shown by the session/activity layer, never mandatory inside every component. Does not submit or award official marks.
 
 **Feedback:** Completion text plus optional local score. Not an official grade.
 
-**Accessibility:** Native `dialog`, labelled title, Escape/close, focus return. Uses Core `.lp-dialog`.
+**Accessibility:** Native `dialog`, labelled title, Escape/close, focus return. Progress is text and bar, not colour alone. Uses Core `.lp-dialog` / `.lp-progress`.
 
 **Mobile:** `min(94vw, 38rem)` from Core dialog rules.
 
-**Status:** Tier 1. Implemented as `CompletionModal`.
+**Status:** Tier 1. Implemented as `CompletionModal` + `ProgressSummary`.
+
+### progress_summary
+
+**Type:** UI chrome, not a Content block.
+
+**Purpose:** Reusable practice progress card (inline or inside `CompletionModal`).
+
+**Good for:** “Mission complete” style summaries, topic badges, local score bars.
+
+**Interaction:** Read-only summary; actions stay on the modal/session layer.
+
+**Content:** `title`, `score`, `badge`/`subtitle`, optional `progress` (0–1; derived from score when omitted), `attempts`, `message`.
+
+**Status:** Tier 1. Implemented as `ProgressSummary`.
 
 ### feedback_panel
 
@@ -457,7 +473,7 @@ Keep as names and intent only. No schemas in this pass.
 
 ### mission
 
-Longer goal with several activities. Session/week composition, not a new engine.
+Longer goal with several activities. Session/week composition, not a new engine. Present progress with `ProgressSummary` / `CompletionModal` when the hub aggregates local Activity Results.
 
 ### escape_challenge
 

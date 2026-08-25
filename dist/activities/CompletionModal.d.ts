@@ -5,6 +5,11 @@ export type CompletionModalProps = {
     title?: string;
     completed?: boolean;
     score?: ActivityScore;
+    /** Hub-supplied label such as a topic badge. Not curriculum hard-coding. */
+    badge?: string;
+    subtitle?: string;
+    /** Fraction from 0 to 1. Derived from score when omitted. */
+    progress?: number;
     attempts?: number;
     message?: string;
     onClose?: () => void;
@@ -13,4 +18,4 @@ export type CompletionModalProps = {
     nextLabel?: string;
     reviewLabel?: string;
 };
-export declare function CompletionModal({ open, title, completed, score, attempts, message, onClose, onReview, onNext, nextLabel, reviewLabel }: CompletionModalProps): ReactNode;
+export declare function CompletionModal({ open, title, completed, score, badge, subtitle, progress, attempts, message, onClose, onReview, onNext, nextLabel, reviewLabel }: CompletionModalProps): ReactNode;

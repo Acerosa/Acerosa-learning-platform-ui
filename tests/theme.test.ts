@@ -23,8 +23,9 @@ describe("theme tokens", () => {
     expect(container.firstChild).toHaveClass("lp-status-badge", "lp-status-badge--available");
     const activitySource = readFileSync(join(root, "../src/activities/OptionCards.tsx"), "utf8")
       + readFileSync(join(root, "../src/activities/FeedbackPanel.tsx"), "utf8")
-      + readFileSync(join(root, "../src/activities/CompletionModal.tsx"), "utf8");
-    expect(activitySource).toMatch(/lp-card|lp-dialog|lp-callout|lp-button/);
+      + readFileSync(join(root, "../src/activities/CompletionModal.tsx"), "utf8")
+      + readFileSync(join(root, "../src/activities/ProgressSummary.tsx"), "utf8");
+    expect(activitySource).toMatch(/lp-card|lp-dialog|lp-callout|lp-button|lp-progress/);
     expect(activitySource).not.toMatch(/--ui-primary/);
   });
 });

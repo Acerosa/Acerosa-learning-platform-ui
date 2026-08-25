@@ -18,7 +18,8 @@ All components consume Core `--lp-*` classes. Hubs must load `@learning-platform
 | `PhraseCompletion` | Fill-gap phrase using the same placement model |
 | `Sequence` | Reorder items with move buttons and arrow keys |
 | `FeedbackPanel` | Shared activity feedback (`neutral` / `correct` / `incorrect` / `informative` / `hint`) |
-| `CompletionModal` | Optional completion dialog using Core `.lp-dialog` |
+| `CompletionModal` | Optional completion dialog using Core `.lp-dialog`; composes `ProgressSummary` |
+| `ProgressSummary` | Practice score / badge / progress bar (inline or in completion dialog) |
 | `InteractiveActivity` / `ActivityBlock` | Content-driven renderer for catalogue blocks |
 | `ContextPanel` | Exam / assignment / project context from data |
 | `LearningOutcomeBadge` | Compact outcome chip |

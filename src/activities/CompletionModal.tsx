@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
-import { StatusBadge } from "../components/StatusBadge";
+import { ProgressSummary } from "./ProgressSummary";
 import type { ActivityScore } from "./types";
 
 export type CompletionModalProps = {
@@ -7,6 +7,11 @@ export type CompletionModalProps = {
   title?: string;
   completed?: boolean;
   score?: ActivityScore;
+  /** Hub-supplied label such as a topic badge. Not curriculum hard-coding. */
+  badge?: string;
+  subtitle?: string;
+  /** Fraction from 0 to 1. Derived from score when omitted. */
+  progress?: number;
   attempts?: number;
   message?: string;
   onClose?: () => void;
@@ -38,6 +43,9 @@ export function CompletionModal({
   title = "Activity complete",
   completed = true,
   score,
+  badge,
+  subtitle,
+  progress,
   attempts,
   message,
   onClose,
@@ -54,10 +62,6 @@ export function CompletionModal({
   }, [open]);
 
   if (!open) return null;
-
-  const statusLabel = completed ? "Completed" : "In progress";
-  const scoreText = score ? `${score.correct} of ${score.total} correct` : null;
-  const attemptText = typeof attempts === "number" ? `${attempts} ${attempts === 1 ? "attempt" : "attempts"}` : null;
 
   return (
     <dialog
@@ -81,11 +85,15 @@ export function CompletionModal({
         </button>
       </header>
       <div className="lp-dialog__body">
-        <StatusBadge status={completed ? "completed" : "progress"} label={statusLabel} />
-        {scoreText ? <p>{scoreText}</p> : null}
-        {attemptText ? <p>{attemptText}</p> : null}
-        {message ? <p>{message}</p> : null}
-        <p className="lp-card__meta">This summary is practice feedback, not an official mark.</p>
+        <ProgressSummary
+          completed={completed}
+          score={score}
+          badge={badge}
+          subtitle={subtitle}
+          progress={progress}
+          attempts={attempts}
+          message={message}
+        />
         <div className="lp-form__actions">
           {onReview ? (
             <button type="button" className="lp-button lp-button--secondary" onClick={onReview}>
