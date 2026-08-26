@@ -17,6 +17,7 @@ All components consume Core `--lp-*` classes. Hubs must load `@learning-platform
 | `DragDrop` | Place items on targets with a select-to-place keyboard/tap path |
 | `PhraseCompletion` | Fill-gap phrase using the same placement model |
 | `Sequence` | Reorder items with move buttons and arrow keys |
+| `ShortResponse` / `Reflection` | Unscored written responses (`short-response` / `reflection`) with minChars, paste/drop block, live counter |
 | `FeedbackPanel` | Shared activity feedback (`neutral` / `correct` / `incorrect` / `informative` / `hint`) |
 | `CompletionModal` | Optional completion dialog using Core `.lp-dialog`; composes `ProgressSummary` |
 | `ProgressSummary` | Practice score / badge / progress bar (inline or in completion dialog); supports `collapsed` |

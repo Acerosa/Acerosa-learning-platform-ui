@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -13,12 +13,16 @@ import {
   PhraseCompletion,
   PracticeProgressPanel,
   ProgressSummary,
+  Reflection,
   Sequence,
+  ShortResponse,
   demoClassification,
   demoDragDrop,
   demoOptionCards,
   demoPhraseCompletion,
-  demoSequence
+  demoReflection,
+  demoSequence,
+  demoShortResponse
 } from "../src/index";
 
 describe("FeedbackPanel", () => {
@@ -177,6 +181,135 @@ describe("PhraseCompletion", () => {
       correct: true,
       responses: { blank: "sensor" }
     }));
+  });
+});
+
+describe("ShortResponse and Reflection", () => {
+  it("renders prompt, textarea and default minChars counters", () => {
+    const { rerender } = render(
+      <ShortResponse prompt="Explain RFID briefly." />
+    );
+    expect(screen.getByLabelText("Explain RFID briefly.")).toBeInTheDocument();
+    expect(screen.getByText("0 / 200 characters minimum")).toBeInTheDocument();
+    expect(document.querySelector("textarea.lp-textarea")).toHaveAttribute("minlength", "200");
+
+    rerender(<Reflection prompt="Reflect on IoT." />);
+    expect(screen.getByLabelText("Reflect on IoT.")).toBeInTheDocument();
+    expect(screen.getByText("0 / 500 characters minimum")).toBeInTheDocument();
+    expect(document.querySelector("textarea.lp-textarea")).toHaveAttribute("minlength", "500");
+  });
+
+  it("updates the live counter while typing and honours content overrides", async () => {
+    const user = userEvent.setup();
+    render(
+      <ShortResponse
+        prompt="Cloud benefit"
+        minChars={40}
+      />
+    );
+    const field = screen.getByLabelText("Cloud benefit");
+    await user.type(field, "Cloud scales storage.");
+    expect(screen.getByText("21 / 40 characters minimum")).toBeInTheDocument();
+    expect(document.querySelector("[data-lp-char-count]")).toHaveAttribute("data-lp-met", "false");
+  });
+
+  it("blocks paste and drop with a status notice", () => {
+    render(<ShortResponse prompt="Write in your own words" minChars={10} />);
+    const field = screen.getByLabelText("Write in your own words");
+
+    fireEvent.paste(field, { clipboardData: { getData: () => "pasted" } });
+    expect(screen.getByRole("status")).toHaveTextContent("Paste is disabled. Type your answer in your own words.");
+
+    fireEvent.drop(field, { dataTransfer: { getData: () => "dropped" } });
+    expect(screen.getByRole("status")).toHaveTextContent("Dropping text is disabled. Type your answer in your own words.");
+    expect(field).toHaveValue("");
+  });
+
+  it("does not complete under minChars and completes unscored at or above minChars", async () => {
+    const user = userEvent.setup();
+    const onResult = vi.fn();
+    render(
+      <ShortResponse
+        prompt="Explain one cloud benefit."
+        minChars={40}
+        guidance="Saved for revision."
+        onResult={onResult}
+      />
+    );
+
+    await user.type(screen.getByLabelText("Explain one cloud benefit."), "Too short.");
+    await user.click(screen.getByRole("button", { name: "Save response" }));
+    expect(screen.getByText("Write at least 40 characters. You currently have 10.")).toBeInTheDocument();
+    expect(onResult).not.toHaveBeenCalled();
+
+    await user.clear(screen.getByLabelText("Explain one cloud benefit."));
+    await user.type(
+      screen.getByLabelText("Explain one cloud benefit."),
+      "Cloud computing lets a small business rent storage without buying servers."
+    );
+    await user.click(screen.getByRole("button", { name: "Save response" }));
+    expect(onResult).toHaveBeenLastCalledWith(expect.objectContaining({
+      completed: true,
+      correct: null,
+      responses: "Cloud computing lets a small business rent storage without buying servers.",
+      attempts: 1
+    }));
+    expect(onResult.mock.calls.at(-1)?.[0].score).toBeUndefined();
+    expect(screen.getByText("Saved for revision.")).toBeInTheDocument();
+  });
+
+  it("maps ActivityBlock content for both text types and composes unscored progress", async () => {
+    const user = userEvent.setup();
+    const results: Array<{ completed: boolean; correct: boolean | null }> = [];
+    render(
+      <InteractiveActivity
+        activity={{
+          id: "text-set",
+          blocks: [
+            {
+              id: "short",
+              type: "short-response",
+              content: { prompt: "Short note", minChars: 20, guidance: "Saved." }
+            },
+            {
+              id: "reflect",
+              type: "reflection",
+              content: { prompt: "Longer note", minimumCharacters: 25, guidance: "Saved." }
+            }
+          ]
+        }}
+        onResult={(result) => {
+          results.push({ completed: result.completed, correct: result.correct });
+        }}
+      />
+    );
+
+    const shortField = screen.getByLabelText("Short note");
+    const reflectionField = screen.getByLabelText("Longer note");
+    fireEvent.change(shortField, {
+      target: { value: "A short response that clears twenty." }
+    });
+    await user.click(document.querySelector("[data-lp-block='short-response'] .lp-button") as HTMLElement);
+    fireEvent.change(reflectionField, {
+      target: { value: "A longer reflection that clears twenty-five chars." }
+    });
+    await user.click(document.querySelector("[data-lp-block='reflection'] .lp-button") as HTMLElement);
+
+    expect(results).toEqual([
+      { completed: true, correct: null },
+      { completed: true, correct: null }
+    ]);
+    expect(results.filter((item) => item.completed).length).toBe(2);
+  });
+
+  it("renders demo short-response and reflection fixtures", () => {
+    const { rerender } = render(<InteractiveActivity activity={demoShortResponse} />);
+    expect(screen.getByText("Cloud benefit")).toBeInTheDocument();
+    expect(screen.getByLabelText(/Explain one benefit of cloud computing/)).toBeInTheDocument();
+
+    rerender(<InteractiveActivity activity={demoReflection} />);
+    expect(screen.getByText("IoT reflection")).toBeInTheDocument();
+    expect(screen.getByText("0 / 500 characters minimum")).toBeInTheDocument();
   });
 });
 
@@ -524,13 +657,41 @@ describe("ActivityBlock", () => {
               type: "single-choice",
               content: { prompt: "Choose", options: [{ id: "a", label: "Alpha" }] }
             },
-            { id: "note", type: "short-response", content: { prompt: "Explain" } }
+            { id: "note", type: "matching", content: { prompt: "Match pairs" } }
           ]
         }}
         renderFallback={(block) => <p data-testid="html-fallback">{block.type}</p>}
       />
     );
     expect(screen.getByRole("radio", { name: /Alpha/ })).toBeInTheDocument();
-    expect(screen.getByTestId("html-fallback")).toHaveTextContent("short-response");
+    expect(screen.getByTestId("html-fallback")).toHaveTextContent("matching");
+  });
+
+  it("renders short-response and reflection as React catalogue blocks", () => {
+    const { rerender } = render(
+      <InteractiveActivity
+        activity={{
+          id: "short",
+          blocks: [{ id: "note", type: "short-response", content: { prompt: "Explain RFID" } }]
+        }}
+        renderFallback={() => <p data-testid="html-fallback">fallback</p>}
+      />
+    );
+    expect(screen.getByLabelText("Explain RFID")).toBeInTheDocument();
+    expect(screen.queryByTestId("html-fallback")).not.toBeInTheDocument();
+    expect(document.querySelector("[data-lp-block='short-response']")).toBeTruthy();
+
+    rerender(
+      <InteractiveActivity
+        activity={{
+          id: "reflect",
+          blocks: [{ id: "journal", type: "reflection", content: { prompt: "Reflect on IoT" } }]
+        }}
+        renderFallback={() => <p data-testid="html-fallback">fallback</p>}
+      />
+    );
+    expect(screen.getByLabelText("Reflect on IoT")).toBeInTheDocument();
+    expect(screen.queryByTestId("html-fallback")).not.toBeInTheDocument();
+    expect(document.querySelector("[data-lp-block='reflection']")).toBeTruthy();
   });
 });

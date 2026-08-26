@@ -5,4 +5,6 @@ export declare const demoDragDrop: ActivityDocument;
 export declare const demoPhraseCompletion: ActivityDocument;
 export declare const demoSequence: ActivityDocument;
 export declare const demoClassification: ActivityDocument;
+export declare const demoShortResponse: ActivityDocument;
+export declare const demoReflection: ActivityDocument;
 export declare const demoCatalogueActivities: ActivityDocument[];

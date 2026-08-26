@@ -170,11 +170,53 @@ export const demoClassification: ActivityDocument = {
   ]
 };
 
+export const demoShortResponse: ActivityDocument = {
+  id: "demo-short-response",
+  metadata: {
+    title: "Cloud benefit",
+    summary: "A short written response with a minimum length."
+  },
+  blocks: [
+    {
+      id: "cloud-benefit",
+      type: "short-response",
+      content: {
+        prompt: "Explain one benefit of cloud computing for a small business.",
+        instructions: "Type your answer in your own words. Paste and drop are disabled.",
+        guidance: "Saved. Keep this explanation for revision.",
+        minChars: 40,
+        placeholder: "Start with the benefit, then say why it matters."
+      }
+    }
+  ]
+};
+
+export const demoReflection: ActivityDocument = {
+  id: "demo-reflection",
+  metadata: {
+    title: "IoT reflection",
+    summary: "A longer reflection with the default minimum length."
+  },
+  blocks: [
+    {
+      id: "iot-reflection",
+      type: "reflection",
+      content: {
+        prompt: "Reflect on how sensors, networks and cloud services work together in an IoT system.",
+        guidance: "Saved. Use this reflection when you review the topic.",
+        placeholder: "Describe the journey from sensor reading to stored data."
+      }
+    }
+  ]
+};
+
 export const demoCatalogueActivities = [
   demoOptionCards,
   demoTrueFalse,
   demoDragDrop,
   demoPhraseCompletion,
   demoSequence,
-  demoClassification
+  demoClassification,
+  demoShortResponse,
+  demoReflection
 ];

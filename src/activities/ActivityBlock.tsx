@@ -4,6 +4,7 @@ import { DragDrop } from "./DragDrop";
 import { OptionCards } from "./OptionCards";
 import { PhraseCompletion } from "./PhraseCompletion";
 import { Sequence } from "./Sequence";
+import { Reflection, ShortResponse } from "./TextResponse";
 import {
   allowsRetry,
   isCatalogueReactType,
@@ -40,6 +41,10 @@ function sharedMechanics(block: ActivityBlockDocument) {
     shuffle: shouldShuffle(content),
     maxAttempts: content.maxAttempts
   };
+}
+
+function initialText(value: unknown): string | undefined {
+  return typeof value === "string" ? value : undefined;
 }
 
 export function ActivityBlock({ block, initialResponse, onResult }: ActivityBlockProps): ReactNode {
@@ -117,6 +122,44 @@ export function ActivityBlock({ block, initialResponse, onResult }: ActivityBloc
         prompt={content.prompt || "Put the items in order"}
         items={content.items || []}
         correctOrder={content.correctOrder}
+        onResult={emit}
+      />
+    );
+  }
+
+  if (type === "short-response") {
+    return (
+      <ShortResponse
+        id={mechanics.id}
+        prompt={content.prompt || "Write your response"}
+        instructions={mechanics.instructions}
+        guidance={content.guidance}
+        placeholder={content.placeholder}
+        minChars={content.minChars}
+        minimumCharacters={content.minimumCharacters}
+        feedback={mechanics.feedback}
+        retry={mechanics.retry}
+        maxAttempts={mechanics.maxAttempts}
+        initialResponse={initialText(initialResponse)}
+        onResult={emit}
+      />
+    );
+  }
+
+  if (type === "reflection") {
+    return (
+      <Reflection
+        id={mechanics.id}
+        prompt={content.prompt || "Write your reflection"}
+        instructions={mechanics.instructions}
+        guidance={content.guidance}
+        placeholder={content.placeholder}
+        minChars={content.minChars}
+        minimumCharacters={content.minimumCharacters}
+        feedback={mechanics.feedback}
+        retry={mechanics.retry}
+        maxAttempts={mechanics.maxAttempts}
+        initialResponse={initialText(initialResponse)}
         onResult={emit}
       />
     );
