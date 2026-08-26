@@ -24,6 +24,7 @@ describe("package exports", () => {
     expect(ui.InteractiveActivity).toBeTypeOf("function");
     expect(ui.ShortResponse).toBeTypeOf("function");
     expect(ui.Reflection).toBeTypeOf("function");
+    expect(ui.LearningTextField).toBeTypeOf("function");
     expect(ui.ErrorState).toBeTypeOf("function");
     expect("createPlatform" in ui).toBe(false);
     expect("createClient" in ui).toBe(false);
@@ -33,7 +34,7 @@ describe("package exports", () => {
   it("points the published package at the ESM build and types", () => {
     const pkg = JSON.parse(readFileSync(join(root, "../package.json"), "utf8"));
     expect(pkg.name).toBe("@learning-platform/ui");
-    expect(pkg.version).toBe("0.1.4");
+    expect(pkg.version).toBe("0.1.5");
     expect(pkg.exports["."].import).toBe("./dist/index.js");
     expect(pkg.exports["."].types).toBe("./dist/index.d.ts");
     expect(pkg.repository.url).toContain("Acerosa/Acerosa-learning-platform-ui");

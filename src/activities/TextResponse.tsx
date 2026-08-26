@@ -1,5 +1,6 @@
-import { useId, useState, type ClipboardEvent, type DragEvent, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { FeedbackPanel, type FeedbackState } from "./FeedbackPanel";
+import { LearningTextField } from "./LearningTextField";
 import {
   REFLECTION_DEFAULT_MIN_CHARS,
   SHORT_RESPONSE_DEFAULT_MIN_CHARS,
@@ -54,14 +55,12 @@ export function TextResponse({
   saveLabel = "Save response",
   onResult
 }: TextResponseProps): ReactNode {
-  const fieldId = useId();
   const min = resolveMinChars({ minChars, minimumCharacters }, defaultMinChars);
   const [value, setValue] = useState(String(initialResponse || ""));
   const [attempts, setAttempts] = useState(0);
   const [checked, setChecked] = useState(false);
   const [status, setStatus] = useState<FeedbackState>("neutral");
   const [message, setMessage] = useState("");
-  const [notice, setNotice] = useState("");
   const trimmed = value.trim();
   const length = trimmed.length;
   const met = length >= min;
@@ -70,16 +69,6 @@ export function TextResponse({
 
   function emit(result: ActivityResult) {
     onResult?.(result);
-  }
-
-  function blockPaste(event: ClipboardEvent<HTMLTextAreaElement>) {
-    event.preventDefault();
-    setNotice("Paste is disabled. Type your answer in your own words.");
-  }
-
-  function blockDrop(event: DragEvent<HTMLTextAreaElement>) {
-    event.preventDefault();
-    setNotice("Dropping text is disabled. Type your answer in your own words.");
   }
 
   function save() {
@@ -107,7 +96,6 @@ export function TextResponse({
     setChecked(false);
     setStatus("neutral");
     setMessage("");
-    setNotice("");
     emit({
       completed: false,
       correct: null,
@@ -124,42 +112,18 @@ export function TextResponse({
     >
       {title ? <h3>{title}</h3> : null}
       {instructions ? <p className="lp-instructions">{instructions}</p> : null}
-      <label className="lp-field" htmlFor={fieldId}>
-        <span className="lp-field__label">{prompt}</span>
-        <textarea
-          id={fieldId}
-          className="lp-textarea"
-          data-lp-response=""
-          data-lp-min-chars={String(min)}
-          rows={rows}
-          value={value}
-          placeholder={placeholder}
-          minLength={min}
-          autoComplete="off"
-          disabled={locked}
-          aria-describedby={`${fieldId}-count ${fieldId}-notice`}
-          onChange={(event) => setValue(event.target.value)}
-          onPaste={blockPaste}
-          onDrop={blockDrop}
-        />
-      </label>
-      <p
-        id={`${fieldId}-count`}
-        className="lp-char-count"
-        data-lp-char-count=""
-        data-lp-met={met ? "true" : "false"}
-        aria-live="polite"
-      >
-        {`${length} / ${min} characters minimum`}
-      </p>
-      <p
-        id={`${fieldId}-notice`}
-        className="lp-paste-notice"
-        data-lp-paste-notice=""
-        role="status"
-      >
-        {notice}
-      </p>
+      <LearningTextField
+        id={`${id}-field`}
+        prompt={prompt}
+        placeholder={placeholder}
+        value={value}
+        minChars={minChars}
+        minimumCharacters={minimumCharacters}
+        defaultMinChars={defaultMinChars}
+        rows={rows}
+        disabled={locked}
+        onChange={setValue}
+      />
       <div className="lp-card__actions">
         <button type="button" className="lp-button" onClick={save} disabled={locked}>
           {saveLabel}
@@ -210,3 +174,6 @@ export function Reflection({
     />
   );
 }
+
+export { LearningTextField } from "./LearningTextField";
+export type { LearningTextFieldProps } from "./LearningTextField";

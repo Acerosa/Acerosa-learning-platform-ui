@@ -28,3 +28,5 @@ export type ReflectionProps = Omit<TextResponseProps, "blockType" | "defaultMinC
     rows?: number;
 };
 export declare function Reflection({ rows, ...props }: ReflectionProps): ReactNode;
+export { LearningTextField } from "./LearningTextField";
+export type { LearningTextFieldProps } from "./LearningTextField";
