@@ -51,6 +51,10 @@ export type ActivityBlockContent = {
     }>;
     gapId?: string;
     questionId?: string;
+    minChars?: number;
+    minimumCharacters?: number;
+    guidance?: string;
+    placeholder?: string;
 };
 export type ActivityBlockDocument = {
     id: string;
@@ -71,6 +75,9 @@ export declare function normaliseActivityType(value: string | undefined): string
 export declare function isFormativeContent(content?: ActivityBlockContent): boolean;
 export declare function allowsRetry(content?: ActivityBlockContent): boolean;
 export declare function shouldShuffle(content?: ActivityBlockContent): boolean;
-export declare const CATALOGUE_REACT_TYPES: readonly ["single-choice", "option-cards", "classification", "drag-drop", "fill-gap", "phrase-completion", "ordering", "sequence"];
+export declare const CATALOGUE_REACT_TYPES: readonly ["single-choice", "option-cards", "classification", "drag-drop", "fill-gap", "phrase-completion", "ordering", "sequence", "short-response", "reflection"];
+export declare const SHORT_RESPONSE_DEFAULT_MIN_CHARS = 200;
+export declare const REFLECTION_DEFAULT_MIN_CHARS = 500;
+export declare function resolveMinChars(content: Pick<ActivityBlockContent, "minChars" | "minimumCharacters"> | undefined, fallback: number): number;
 export declare function isCatalogueReactType(value: string | undefined): boolean;
 export declare function questionIdFor(block: ActivityBlockDocument): string;

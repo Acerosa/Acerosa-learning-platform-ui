@@ -219,6 +219,50 @@ Keyboard operation, visible focus (`:focus-visible`), semantic controls, screen-
 
 **Status:** Tier 1. Supported by `OptionCards` image fields. No separate component.
 
+### short_response
+
+**Block:** Content `short-response`.
+
+**Purpose:** Collect a short written answer in the learner’s own words.
+
+**Good for:** definitions, brief explanations, knowledge checks without a local mark.
+
+**Interaction:** Type into a textarea. Paste and drop are blocked. Save when the minimum length is met.
+
+**Content:** `prompt`, optional `instructions`, `guidance`, `placeholder`, `minChars` / `minimumCharacters` (default **200**).
+
+**Mechanics:** minChars gate, retry, guidance feedback. No local score (`correct: null`).
+
+**Feedback:** Counter `N / M characters minimum`; under-min informative message; on save `guidance` or “Saved.”
+
+**Accessibility:** Labelled textarea, `minlength`, `autocomplete="off"`, `aria-live` counter, paste notice `role="status"`.
+
+**Mobile:** full-width textarea, large tap targets on save/retry.
+
+**Status:** Tier 1. Implemented as `ShortResponse` (shared `TextResponse`).
+
+### reflection
+
+**Block:** Content `reflection`.
+
+**Purpose:** Collect a longer reflective written response.
+
+**Good for:** lesson wrap-ups, evaluation prompts, extended explanation.
+
+**Interaction:** Same as short response, with a higher default minimum.
+
+**Content:** same fields as short response; default **500** characters when `minChars` / `minimumCharacters` are unset.
+
+**Mechanics:** same as short response. Unscored (`correct: null`).
+
+**Feedback:** same counter / paste-notice / guidance pattern.
+
+**Accessibility:** same as short response; default `rows` is taller.
+
+**Mobile:** full-width textarea.
+
+**Status:** Tier 1. Implemented as `Reflection` (shared `TextResponse`).
+
 ### completion_modal
 
 **Type:** UI chrome, not a Content block.

@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-- Canonical git remote is `Acerosa/Acerosa-learning-platform-ui`. The local checkout folder remains `learning-platform-ui`.
+## 0.1.4
+
+- Catalogue React text responses: `ShortResponse` / `Reflection` (shared `TextResponse`) for Content `short-response` and `reflection`, with L2E paste/drop block, minChars counter, and unscored `correct: null` results.
 
 ## 0.1.3
 

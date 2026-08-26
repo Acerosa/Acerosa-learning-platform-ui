@@ -52,6 +52,10 @@ export type ActivityBlockContent = {
   gaps?: Array<ActivityItem & { correctOptionId?: string }>;
   gapId?: string;
   questionId?: string;
+  minChars?: number;
+  minimumCharacters?: number;
+  guidance?: string;
+  placeholder?: string;
 };
 
 export type ActivityBlockDocument = {
@@ -95,8 +99,21 @@ export const CATALOGUE_REACT_TYPES = [
   "fill-gap",
   "phrase-completion",
   "ordering",
-  "sequence"
+  "sequence",
+  "short-response",
+  "reflection"
 ] as const;
+
+export const SHORT_RESPONSE_DEFAULT_MIN_CHARS = 200;
+export const REFLECTION_DEFAULT_MIN_CHARS = 500;
+
+export function resolveMinChars(
+  content: Pick<ActivityBlockContent, "minChars" | "minimumCharacters"> | undefined,
+  fallback: number
+): number {
+  const configured = Number(content?.minChars || content?.minimumCharacters || 0);
+  return configured > 0 ? configured : fallback;
+}
 
 export function isCatalogueReactType(value: string | undefined): boolean {
   return (CATALOGUE_REACT_TYPES as readonly string[]).includes(normaliseActivityType(value));

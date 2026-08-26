@@ -74,7 +74,9 @@ export {
   demoDragDrop,
   demoOptionCards,
   demoPhraseCompletion,
+  demoReflection,
   demoSequence,
+  demoShortResponse,
   demoTrueFalse
 } from "./activities/demo-content";
 export { Classification } from "./activities/Classification";
@@ -89,6 +91,12 @@ export { PhraseCompletion } from "./activities/PhraseCompletion";
 export type { PhraseCompletionProps, PhraseGap } from "./activities/PhraseCompletion";
 export { Sequence } from "./activities/Sequence";
 export type { SequenceProps } from "./activities/Sequence";
+export { Reflection, ShortResponse, TextResponse } from "./activities/TextResponse";
+export type {
+  ReflectionProps,
+  ShortResponseProps,
+  TextResponseProps
+} from "./activities/TextResponse";
 export type {
   ActivityBlockContent,
   ActivityBlockDocument,
@@ -99,4 +107,11 @@ export type {
   ActivityResult,
   ActivityScore
 } from "./activities/types";
-export { isCatalogueReactType, normaliseActivityType, questionIdFor } from "./activities/types";
+export {
+  isCatalogueReactType,
+  normaliseActivityType,
+  questionIdFor,
+  resolveMinChars,
+  REFLECTION_DEFAULT_MIN_CHARS,
+  SHORT_RESPONSE_DEFAULT_MIN_CHARS
+} from "./activities/types";

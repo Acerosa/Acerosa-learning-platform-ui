@@ -43,7 +43,7 @@ export { ProgressSummary, resolveProgressFraction } from "./activities/ProgressS
 export type { ProgressSummaryProps } from "./activities/ProgressSummary";
 export { PracticeProgressPanel } from "./activities/PracticeProgressPanel";
 export type { PracticeProgressPanelProps } from "./activities/PracticeProgressPanel";
-export { demoCatalogueActivities, demoClassification, demoDragDrop, demoOptionCards, demoPhraseCompletion, demoSequence, demoTrueFalse } from "./activities/demo-content";
+export { demoCatalogueActivities, demoClassification, demoDragDrop, demoOptionCards, demoPhraseCompletion, demoReflection, demoSequence, demoShortResponse, demoTrueFalse } from "./activities/demo-content";
 export { Classification } from "./activities/Classification";
 export type { ClassificationProps } from "./activities/Classification";
 export { DragDrop } from "./activities/DragDrop";
@@ -56,5 +56,7 @@ export { PhraseCompletion } from "./activities/PhraseCompletion";
 export type { PhraseCompletionProps, PhraseGap } from "./activities/PhraseCompletion";
 export { Sequence } from "./activities/Sequence";
 export type { SequenceProps } from "./activities/Sequence";
+export { Reflection, ShortResponse, TextResponse } from "./activities/TextResponse";
+export type { ReflectionProps, ShortResponseProps, TextResponseProps } from "./activities/TextResponse";
 export type { ActivityBlockContent, ActivityBlockDocument, ActivityDocument, ActivityFeedbackCopy, ActivityItem, ActivityOption, ActivityResult, ActivityScore } from "./activities/types";
-export { isCatalogueReactType, normaliseActivityType, questionIdFor } from "./activities/types";
+export { isCatalogueReactType, normaliseActivityType, questionIdFor, resolveMinChars, REFLECTION_DEFAULT_MIN_CHARS, SHORT_RESPONSE_DEFAULT_MIN_CHARS } from "./activities/types";
