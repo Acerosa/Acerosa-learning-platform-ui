@@ -91,8 +91,14 @@ export { PhraseCompletion } from "./activities/PhraseCompletion";
 export type { PhraseCompletionProps, PhraseGap } from "./activities/PhraseCompletion";
 export { Sequence } from "./activities/Sequence";
 export type { SequenceProps } from "./activities/Sequence";
-export { Reflection, ShortResponse, TextResponse } from "./activities/TextResponse";
+export {
+  LearningTextField,
+  Reflection,
+  ShortResponse,
+  TextResponse
+} from "./activities/TextResponse";
 export type {
+  LearningTextFieldProps,
   ReflectionProps,
   ShortResponseProps,
   TextResponseProps

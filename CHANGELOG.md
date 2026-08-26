@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.1.5
+
+- `LearningTextField`: controlled learning textarea (paste/drop blocked, minChars counter, no Save) for host worksheets; `TextResponse` now uses it internally.
+
 ## 0.1.4
 
 - Catalogue React text responses: `ShortResponse` / `Reflection` (shared `TextResponse`) for Content `short-response` and `reflection`, with L2E paste/drop block, minChars counter, and unscored `correct: null` results.

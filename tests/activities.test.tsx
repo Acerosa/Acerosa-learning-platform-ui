@@ -9,6 +9,7 @@ import {
   DragDrop,
   FeedbackPanel,
   InteractiveActivity,
+  LearningTextField,
   OptionCards,
   PhraseCompletion,
   PracticeProgressPanel,
@@ -181,6 +182,35 @@ describe("PhraseCompletion", () => {
       correct: true,
       responses: { blank: "sensor" }
     }));
+  });
+});
+
+describe("LearningTextField", () => {
+  it("renders without a Save button and reports controlled changes", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <LearningTextField
+        prompt="Host field"
+        minChars={20}
+        value=""
+        onChange={onChange}
+      />
+    );
+    expect(screen.queryByRole("button", { name: /save/i })).not.toBeInTheDocument();
+    expect(screen.getByText("0 / 20 characters minimum")).toBeInTheDocument();
+    await user.type(screen.getByLabelText("Host field"), "Typed note");
+    expect(onChange).toHaveBeenCalled();
+    expect(document.querySelector("[data-lp-learning-text-field]")).toBeTruthy();
+  });
+
+  it("blocks paste and drop", () => {
+    render(<LearningTextField prompt="Own words" minChars={10} />);
+    const field = screen.getByLabelText("Own words");
+    fireEvent.paste(field, { clipboardData: { getData: () => "pasted" } });
+    expect(screen.getByRole("status")).toHaveTextContent("Paste is disabled");
+    fireEvent.drop(field, { dataTransfer: { getData: () => "dropped" } });
+    expect(screen.getByRole("status")).toHaveTextContent("Dropping text is disabled");
   });
 });
 
