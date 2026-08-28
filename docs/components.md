@@ -29,6 +29,8 @@ All components consume Core `--lp-*` classes. Hubs must load `@learning-platform
 | `StatusBadge` | Status with text, not colour alone |
 | `Callout` | Info/success/warning/error aside |
 | `EmptyState` | Planned/empty region |
+| `WeekAccessLink` | Learner week navigation link that respects Core week visibility |
+| `WeekAccessGuard` | Direct-route guard for week pages |
 | `LoadingState` | Pending region (`role="status"`) |
 | `ErrorState` | Error banner (`role="alert"`). Maps to Core `createErrorBanner` |
 

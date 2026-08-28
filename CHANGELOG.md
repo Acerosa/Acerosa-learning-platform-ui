@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.1.6
+
+- `WeekAccessLink` and `WeekAccessGuard` for reusable learner week visibility UI.
+  Components delegate access checks to Core `isWeekAvailable()` from
+  `@learning-platform/core/curriculum-runtime`. See `docs/week-access.md`.
+
 ## 0.1.5
 
 - `LearningTextField`: controlled learning textarea (paste/drop blocked, minChars counter, no Save) for host worksheets; `TextResponse` now uses it internally.

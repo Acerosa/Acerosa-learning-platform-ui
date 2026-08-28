@@ -58,6 +58,8 @@ React catalogue interiors use the same block documents without HTML injection:
 
 Interactive catalogue specification: `docs/interactive-activity-catalogue.md`.
 
+Week visibility components: see `docs/week-access.md`.
+
 ## Routing
 
 Learner hubs should use Vite multi-page static HTML at existing directory URLs (`base: './'`). Do not copy Admin hash routing.
