@@ -6,7 +6,8 @@
 
 - `WeekAccessLink` and `WeekAccessGuard` for reusable learner week visibility UI.
   Components delegate access checks to Core `isWeekAvailable()` from
-  `@learning-platform/core/curriculum-runtime`. See `docs/week-access.md`.
+  `@learning-platform/core/curriculum-runtime`. Requires Core `0.2.1` or later.
+  See `docs/week-access.md`.
 
 ## 0.1.5
 

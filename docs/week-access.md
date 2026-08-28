@@ -22,7 +22,7 @@ Planned, archived, missing and unknown values are inaccessible.
 
 `WeekAccessLink` and `WeekAccessGuard` import `isWeekAvailable` from
 `@learning-platform/core/curriculum-runtime`. Pin Core to a release that
-includes the shared week visibility runtime (Core PR #4 or later).
+includes the shared week visibility runtime (`@learning-platform/core@0.2.1` or later).
 
 ## WeekAccessLink
 

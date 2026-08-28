@@ -39,7 +39,7 @@ describe("package exports", () => {
     expect(pkg.version).toBe("0.1.6");
     expect(pkg.exports["."].import).toBe("./dist/index.js");
     expect(pkg.exports["."].types).toBe("./dist/index.d.ts");
-    expect(pkg.peerDependencies["@learning-platform/core"]).toBe("^0.2.0");
+    expect(pkg.peerDependencies["@learning-platform/core"]).toBe("^0.2.1");
     expect(pkg.repository.url).toContain("Acerosa/Acerosa-learning-platform-ui");
     expect(pkg.peerDependencies.react).toMatch(/\^19/);
     expect(readFileSync(join(root, "../dist/index.js"), "utf8")).toMatch(/HubShell/);

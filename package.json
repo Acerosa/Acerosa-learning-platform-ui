@@ -28,7 +28,7 @@
     "check": "npm run typecheck && npm test && npm run build"
   },
   "peerDependencies": {
-    "@learning-platform/core": "^0.2.0",
+    "@learning-platform/core": "^0.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
