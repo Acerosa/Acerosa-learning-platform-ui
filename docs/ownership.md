@@ -33,6 +33,7 @@ React learner presentation:
 - `OptionCards`, `DragDrop`, `PhraseCompletion`, `Sequence`, `ShortResponse`, `Reflection`
 - `FeedbackPanel`, `CompletionModal`, `ProgressSummary`, `PracticeProgressPanel`, `ActivityBlock`
 - `ProgressCard`, `StatusBadge`, `Callout`
+- `WeekAccessLink`, `WeekAccessGuard`
 - `EmptyState`, `LoadingState`, `ErrorState`
 
 UI consumes Core contracts and CSS classes. It does not talk to Supabase. It does not validate curriculum.
