@@ -2,9 +2,10 @@
 
 ## Unreleased
 
-- `WeekView` refuses activity HTML that contains script tags, event-handler
-  attributes, or `javascript:` URLs instead of rendering it through
-  `dangerouslySetInnerHTML`.
+- `WeekView` refuses activity HTML that contains script tags, iframes, object/embed
+  hosts, `srcdoc`, event-handler attributes, `javascript:` URLs, or `data:text/html`
+  instead of rendering it through `dangerouslySetInnerHTML`. This is a refuse-list,
+  not a general HTML sanitiser.
 
 ## 0.1.6
 

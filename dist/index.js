@@ -409,7 +409,7 @@ function Ke(e) {
   return e.kind && e.kind !== "session" ? `${r} · ${a}` : a;
 }
 function Ye(e) {
-  return /<\s*script/i.test(e) || /\son[a-z]+\s*=/i.test(e) || /javascript\s*:/i.test(e);
+  return /<\s*script\b/i.test(e) || /<\s*iframe\b/i.test(e) || /<\s*object\b/i.test(e) || /<\s*embed\b/i.test(e) || /\bsrcdoc\s*=/i.test(e) || /javascript\s*:/i.test(e) || /data\s*:\s*text\s*\/\s*html/i.test(e) || /\son[a-z]+\s*=/i.test(e);
 }
 function qe(e, n) {
   return "html" in e && e.html ? Ye(e.html) ? /* @__PURE__ */ t(
