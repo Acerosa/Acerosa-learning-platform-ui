@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- `WeekView` refuses activity HTML that contains script tags, event-handler
+  attributes, or `javascript:` URLs instead of rendering it through
+  `dangerouslySetInnerHTML`.
+
 ## 0.1.6
 
 - `WeekAccessLink` and `WeekAccessGuard` for reusable learner week visibility UI.

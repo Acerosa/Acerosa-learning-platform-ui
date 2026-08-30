@@ -157,6 +157,26 @@ describe("WeekView", () => {
     expect(screen.getByRole("link", { name: "Week 2" })).toHaveAttribute("rel", "next");
   });
 
+  it("refuses scripted activity HTML instead of rendering it", () => {
+    render(
+      <WeekView
+        week={{ id: "week-1", teachingWeek: 1, title: "Variables", status: "available" }}
+        sessions={[
+          {
+            id: "session-1",
+            title: "Session 1",
+            defaultOpen: true,
+            activities: [{ html: '<article>Safe</article><script>window.__lpXss=1</script>' }]
+          }
+        ]}
+        features={{ showTitle: false, showProgress: false }}
+      />
+    );
+    expect(document.querySelector("script")).toBeNull();
+    expect(document.querySelector("[data-lp-html-rejected='true']")).toBeInTheDocument();
+    expect(document.body).not.toHaveTextContent("Safe");
+  });
+
   it("hides independent study when the feature flag is off", () => {
     render(
       <WeekView
