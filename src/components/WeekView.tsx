@@ -60,7 +60,16 @@ function sessionMeta(session: WeekSession): string {
 }
 
 function isUnsafeActivityHtml(html: string): boolean {
-  return /<\s*script/i.test(html) || /\son[a-z]+\s*=/i.test(html) || /javascript\s*:/i.test(html);
+  return (
+    /<\s*script\b/i.test(html) ||
+    /<\s*iframe\b/i.test(html) ||
+    /<\s*object\b/i.test(html) ||
+    /<\s*embed\b/i.test(html) ||
+    /\bsrcdoc\s*=/i.test(html) ||
+    /javascript\s*:/i.test(html) ||
+    /data\s*:\s*text\s*\/\s*html/i.test(html) ||
+    /\son[a-z]+\s*=/i.test(html)
+  );
 }
 
 function defaultActivity(activity: WeekActivity, index: number): ReactNode {
