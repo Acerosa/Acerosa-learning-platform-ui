@@ -59,8 +59,21 @@ function sessionMeta(session: WeekSession): string {
   return session.kind && session.kind !== "session" ? `${kindLabel} · ${countLabel}` : countLabel;
 }
 
+function isUnsafeActivityHtml(html: string): boolean {
+  return /<\s*script/i.test(html) || /\son[a-z]+\s*=/i.test(html) || /javascript\s*:/i.test(html);
+}
+
 function defaultActivity(activity: WeekActivity, index: number): ReactNode {
   if ("html" in activity && activity.html) {
+    if (isUnsafeActivityHtml(activity.html)) {
+      return (
+        <div
+          key={index}
+          className="lp-activity-html"
+          data-lp-html-rejected="true"
+        />
+      );
+    }
     return (
       <div
         key={index}
