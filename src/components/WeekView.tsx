@@ -12,6 +12,7 @@ import { ContextPanel, type ContextPanelProps } from "./ContextPanel";
 import { EmptyState } from "./EmptyState";
 import { ProgressCard, type ProgressCardProps } from "./ProgressCard";
 import { SessionSection } from "./SessionSection";
+import { AuthoredHtml } from "./AuthoredHtml";
 import { WeekHeader } from "./WeekHeader";
 import { WeekNavigation, type WeekNavLink } from "./WeekNavigation";
 
@@ -59,35 +60,13 @@ function sessionMeta(session: WeekSession): string {
   return session.kind && session.kind !== "session" ? `${kindLabel} · ${countLabel}` : countLabel;
 }
 
-function isUnsafeActivityHtml(html: string): boolean {
-  return (
-    /<\s*script\b/i.test(html) ||
-    /<\s*iframe\b/i.test(html) ||
-    /<\s*object\b/i.test(html) ||
-    /<\s*embed\b/i.test(html) ||
-    /\bsrcdoc\s*=/i.test(html) ||
-    /javascript\s*:/i.test(html) ||
-    /data\s*:\s*text\s*\/\s*html/i.test(html) ||
-    /\son[a-z]+\s*=/i.test(html)
-  );
-}
-
 function defaultActivity(activity: WeekActivity, index: number): ReactNode {
   if ("html" in activity && activity.html) {
-    if (isUnsafeActivityHtml(activity.html)) {
-      return (
-        <div
-          key={index}
-          className="lp-activity-html"
-          data-lp-html-rejected="true"
-        />
-      );
-    }
     return (
-      <div
+      <AuthoredHtml
         key={index}
         className="lp-activity-html"
-        dangerouslySetInnerHTML={{ __html: activity.html }}
+        html={activity.html}
       />
     );
   }

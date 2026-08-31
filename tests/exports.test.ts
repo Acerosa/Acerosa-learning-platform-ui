@@ -8,6 +8,7 @@ const root = dirname(fileURLToPath(import.meta.url));
 
 describe("package exports", () => {
   it("exposes the documented public API and not platform internals", () => {
+    expect(ui.AuthoredHtml).toBeTypeOf("function");
     expect(ui.HubShell).toBeTypeOf("function");
     expect(ui.WeekView).toBeTypeOf("function");
     expect(ui.WeekAccessLink).toBeTypeOf("function");
@@ -36,10 +37,10 @@ describe("package exports", () => {
   it("points the published package at the ESM build and types", () => {
     const pkg = JSON.parse(readFileSync(join(root, "../package.json"), "utf8"));
     expect(pkg.name).toBe("@learning-platform/ui");
-    expect(pkg.version).toBe("0.1.6");
+    expect(pkg.version).toBe("0.1.7");
     expect(pkg.exports["."].import).toBe("./dist/index.js");
     expect(pkg.exports["."].types).toBe("./dist/index.d.ts");
-    expect(pkg.peerDependencies["@learning-platform/core"]).toBe("^0.2.1");
+    expect(pkg.peerDependencies["@learning-platform/core"]).toBe("^0.2.3");
     expect(pkg.repository.url).toContain("Acerosa/Acerosa-learning-platform-ui");
     expect(pkg.peerDependencies.react).toMatch(/\^19/);
     expect(readFileSync(join(root, "../dist/index.js"), "utf8")).toMatch(/HubShell/);

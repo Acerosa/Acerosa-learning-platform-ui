@@ -2,10 +2,11 @@
 
 ## Unreleased
 
-- `WeekView` refuses activity HTML that contains script tags, iframes, object/embed
-  hosts, `srcdoc`, event-handler attributes, `javascript:` URLs, or `data:text/html`
-  instead of rendering it through `dangerouslySetInnerHTML`. This is a refuse-list,
-  not a general HTML sanitiser.
+## 0.1.7
+
+- `AuthoredHtml` is the shared React boundary for trusted authored HTML. `WeekView`
+  uses it instead of a local refuse-list. `InteractiveActivity` no longer invents
+  a `0.1.0` activity version when catalogue metadata omits one. Requires Core `0.2.3`.
 
 ## 0.1.6
 

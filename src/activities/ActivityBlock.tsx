@@ -1,3 +1,4 @@
+import { resolveActivityVersion } from "@learning-platform/core";
 import { useState, type ReactNode } from "react";
 import { Classification } from "./Classification";
 import { DragDrop } from "./DragDrop";
@@ -179,12 +180,13 @@ export function InteractiveActivity({
   onResult
 }: InteractiveActivityProps): ReactNode {
   const [resetKey, setResetKey] = useState(0);
+  const activityVersion = resolveActivityVersion(activity) || undefined;
 
   return (
     <article
       className="lp-activity panel"
       data-lp-activity={activity.id}
-      data-lp-activity-version={activity.version || "0.1.0"}
+      data-lp-activity-version={activityVersion}
     >
       {activity.metadata?.title ? <h3>{activity.metadata.title}</h3> : null}
       {activity.metadata?.summary ? <p>{activity.metadata.summary}</p> : null}
