@@ -59,6 +59,8 @@ export { WeekNavigation } from "./components/WeekNavigation";
 export type { WeekNavigationProps, WeekNavLink } from "./components/WeekNavigation";
 export { WeekView } from "./components/WeekView";
 export type { WeekActivity, WeekSession, WeekViewProps } from "./components/WeekView";
+export { AuthoredHtml } from "./components/AuthoredHtml";
+export type { AuthoredHtmlProps } from "./components/AuthoredHtml";
 export { WeekAccessLink } from "./components/WeekAccessLink";
 export type { WeekAccessLinkProps, WeekAccessLinkRenderProps } from "./components/WeekAccessLink";
 export { WeekAccessGuard } from "./components/WeekAccessGuard";

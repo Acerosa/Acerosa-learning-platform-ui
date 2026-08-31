@@ -18,6 +18,7 @@ export default defineConfig({
         "react",
         "react-dom",
         "react/jsx-runtime",
+        "@learning-platform/core",
         "@learning-platform/core/curriculum-runtime"
       ]
     },

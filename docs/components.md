@@ -8,6 +8,7 @@ All components consume Core `--lp-*` classes. Hubs must load `@learning-platform
 | `Navigation` | Primary nav, mobile menu, optional theme control |
 | `LearnerHeader` | Signed-in learner summary. Receives learner data; does not call Auth |
 | `Breadcrumbs` | Ordered trail. Empty `path` resolves through `resolveHref` |
+| `AuthoredHtml` | Shared refuse-list renderer for trusted authored HTML |
 | `WeekView` | Composed week presentation from a presentation object, not a Content envelope |
 | `WeekHeader` | Teaching week title, status, outcome badges |
 | `WeekNavigation` | Previous/next week links |
