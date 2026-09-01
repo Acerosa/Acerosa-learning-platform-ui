@@ -1,5 +1,13 @@
 import { useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
 import { FeedbackPanel, type FeedbackState } from "./FeedbackPanel";
+import {
+  activityResultFromMark,
+  localScoreEnabled,
+  resolveCanRetry,
+  runMarkedCheck,
+  usesServerMark,
+  type OnMarkBlockResponse
+} from "./server-mark";
 import { shuffled } from "./shuffle";
 import type { ActivityFeedbackCopy, ActivityItem, ActivityResult } from "./types";
 
@@ -15,6 +23,7 @@ export type SequenceProps = {
   retry?: boolean;
   shuffle?: boolean;
   maxAttempts?: number;
+  onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
 };
 
@@ -30,17 +39,27 @@ export function Sequence({
   retry = true,
   shuffle = false,
   maxAttempts,
+  onMarkResponse,
   onResult
 }: SequenceProps): ReactNode {
   const initial = useMemo(() => shuffled(items, shuffle), [items, shuffle]);
   const [order, setOrder] = useState<ActivityItem[]>(initial);
   const [attempts, setAttempts] = useState(0);
   const [checked, setChecked] = useState(false);
+  const [checking, setChecking] = useState(false);
   const [status, setStatus] = useState<FeedbackState>("neutral");
   const [message, setMessage] = useState("");
-  const scored = Boolean(formative && correctOrder.length);
-  const locked = checked;
-  const canRetry = checked && retry && (typeof maxAttempts !== "number" || attempts < maxAttempts);
+  const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
+  const serverMode = usesServerMark(onMarkResponse);
+  const scored = localScoreEnabled(formative, correctOrder.length > 0, onMarkResponse);
+  const locked = checked || checking;
+  const canRetry = resolveCanRetry({
+    checked,
+    localRetry: retry,
+    localMaxAttempts: maxAttempts,
+    attempts,
+    serverCanRetry
+  });
 
   function emit(result: ActivityResult) {
     onResult?.(result);
@@ -67,9 +86,38 @@ export function Sequence({
     }
   }
 
-  function check() {
+  async function check() {
+    if (checking) return;
     const nextAttempts = attempts + 1;
     const ids = order.map((item) => item.id);
+    const responses = { itemIds: ids };
+    if (serverMode && onMarkResponse) {
+      setChecking(true);
+      setStatus("informative");
+      setMessage("Checking your answer…");
+      const outcome = await runMarkedCheck(
+        onMarkResponse,
+        responses,
+        feedback,
+        "Your sequence has been recorded."
+      );
+      setChecking(false);
+      if (!outcome.ok) {
+        setChecked(false);
+        setServerCanRetry(false);
+        setStatus("informative");
+        setMessage(outcome.message);
+        emit({ completed: false, correct: null, attempts: nextAttempts, responses, status: "error" });
+        return;
+      }
+      setAttempts(nextAttempts);
+      setChecked(true);
+      setServerCanRetry(outcome.marked.canRetry);
+      setStatus(outcome.marked.status);
+      setMessage(outcome.marked.message);
+      emit(activityResultFromMark(outcome.marked, nextAttempts, responses));
+      return;
+    }
     const correctCount = scored ? ids.filter((itemId, index) => itemId === correctOrder[index]).length : 0;
     const isCorrect = scored ? correctCount === correctOrder.length && ids.length === correctOrder.length : null;
     setAttempts(nextAttempts);
@@ -85,13 +133,15 @@ export function Sequence({
       correct: isCorrect,
       score: scored ? { correct: correctCount, total: correctOrder.length } : undefined,
       attempts: nextAttempts,
-      responses: { itemIds: ids }
+      responses
     });
   }
 
   function reset() {
     setOrder(initial);
     setChecked(false);
+    setChecking(false);
+    setServerCanRetry(undefined);
     setStatus("neutral");
     setMessage("");
     emit({
@@ -103,7 +153,12 @@ export function Sequence({
   }
 
   return (
-    <section className="lp-block lp-block--interactive" data-lp-block="ordering" data-lp-block-id={id}>
+    <section
+      className="lp-block lp-block--interactive"
+      data-lp-block="ordering"
+      data-lp-block-id={id}
+      aria-busy={checking || undefined}
+    >
       {title ? <h3>{title}</h3> : null}
       {instructions ? <p className="lp-instructions">{instructions}</p> : null}
       <p>{prompt}</p>
@@ -139,7 +194,9 @@ export function Sequence({
         ))}
       </ol>
       <div className="lp-card__actions">
-        <button type="button" className="lp-button" onClick={check} disabled={locked}>Check order</button>
+        <button type="button" className="lp-button" onClick={() => void check()} disabled={locked}>
+          {checking ? "Checking…" : "Check order"}
+        </button>
         {canRetry ? (
           <button type="button" className="lp-button lp-button--secondary" onClick={reset}>Try again</button>
         ) : null}

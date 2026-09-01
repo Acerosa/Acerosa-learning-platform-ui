@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.1.8
+
+- Catalogue activities use server-marked formative feedback when `platform.marking.markBlock` is present.
+  Missing server marking fails closed. Local scoring remains explicit `markingMode="local"` only.
+  Retry follows the server `canRetry` result. Completion is independent of score.
+  Requires Core `0.2.4`.
+
 ## 0.1.7
 
 - `AuthoredHtml` is the shared React boundary for trusted authored HTML. `WeekView`

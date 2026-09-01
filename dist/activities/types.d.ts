@@ -8,6 +8,18 @@ export type ActivityResult = {
     score?: ActivityScore;
     attempts: number;
     responses: unknown;
+    requiresReview?: boolean;
+    status?: "correct" | "incorrect" | "review" | "recorded" | "error";
+    itemResults?: ActivityItemResult[];
+    checkNumber?: number;
+    canRetry?: boolean;
+    remainingAttempts?: number | null;
+};
+export type ActivityItemResult = {
+    questionId: string;
+    itemId?: string;
+    correct: boolean | null;
+    requiresReview?: boolean;
 };
 export type ActivityFeedbackCopy = {
     correct?: string;

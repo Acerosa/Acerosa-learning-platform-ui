@@ -6,6 +6,7 @@ import { OptionCards } from "./OptionCards";
 import { PhraseCompletion } from "./PhraseCompletion";
 import { Sequence } from "./Sequence";
 import { Reflection, ShortResponse } from "./TextResponse";
+import { createFailClosedMarkHandler, createMarkResponseHandler, type OnMarkResponse } from "./server-mark";
 import {
   allowsRetry,
   isCatalogueReactType,
@@ -21,6 +22,7 @@ import {
 export type ActivityBlockProps = {
   block: ActivityBlockDocument;
   initialResponse?: unknown;
+  onMarkResponse?: (responses: unknown) => Promise<import("./server-mark").MarkResponseResult>;
   onResult?: (result: ActivityResult, block: ActivityBlockDocument) => void;
 };
 
@@ -28,6 +30,9 @@ export type InteractiveActivityProps = {
   activity: ActivityDocument;
   initialResponses?: Record<string, unknown>;
   renderFallback?: (block: ActivityBlockDocument) => ReactNode;
+  platform?: unknown;
+  markingMode?: "server" | "local";
+  onMarkResponse?: OnMarkResponse;
   onResult?: (result: ActivityResult, block: ActivityBlockDocument) => void;
 };
 
@@ -48,7 +53,7 @@ function initialText(value: unknown): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
-export function ActivityBlock({ block, initialResponse, onResult }: ActivityBlockProps): ReactNode {
+export function ActivityBlock({ block, initialResponse, onMarkResponse, onResult }: ActivityBlockProps): ReactNode {
   const type = normaliseActivityType(block.type);
   const content = block.content || {};
   const presentation = normaliseActivityType(content.presentation);
@@ -69,6 +74,7 @@ export function ActivityBlock({ block, initialResponse, onResult }: ActivityBloc
         options={content.options || []}
         correctOptionId={content.correctOptionId}
         initialSelectedId={typeof initialResponse === "string" ? initialResponse : undefined}
+        onMarkResponse={onMarkResponse}
         onResult={emit}
       />
     );
@@ -85,6 +91,7 @@ export function ActivityBlock({ block, initialResponse, onResult }: ActivityBloc
         items={content.items || []}
         categories={content.categories || []}
         initialAssignments={initialAssignments}
+        onMarkResponse={onMarkResponse}
         onResult={emit}
       />
     );
@@ -98,6 +105,7 @@ export function ActivityBlock({ block, initialResponse, onResult }: ActivityBloc
         items={content.items || []}
         targets={content.targets || []}
         correct={content.correct}
+        onMarkResponse={onMarkResponse}
         onResult={emit}
       />
     );
@@ -111,6 +119,7 @@ export function ActivityBlock({ block, initialResponse, onResult }: ActivityBloc
         gaps={content.gaps}
         options={content.options || []}
         correctOptionId={content.correctOptionId}
+        onMarkResponse={onMarkResponse}
         onResult={emit}
       />
     );
@@ -123,6 +132,7 @@ export function ActivityBlock({ block, initialResponse, onResult }: ActivityBloc
         prompt={content.prompt || "Put the items in order"}
         items={content.items || []}
         correctOrder={content.correctOrder}
+        onMarkResponse={onMarkResponse}
         onResult={emit}
       />
     );
@@ -142,6 +152,7 @@ export function ActivityBlock({ block, initialResponse, onResult }: ActivityBloc
         retry={mechanics.retry}
         maxAttempts={mechanics.maxAttempts}
         initialResponse={initialText(initialResponse)}
+        onMarkResponse={onMarkResponse}
         onResult={emit}
       />
     );
@@ -161,6 +172,7 @@ export function ActivityBlock({ block, initialResponse, onResult }: ActivityBloc
         retry={mechanics.retry}
         maxAttempts={mechanics.maxAttempts}
         initialResponse={initialText(initialResponse)}
+        onMarkResponse={onMarkResponse}
         onResult={emit}
       />
     );
@@ -173,14 +185,30 @@ export function ActivityBlock({ block, initialResponse, onResult }: ActivityBloc
   );
 }
 
+function resolveActivityMarkHandler(
+  platform: unknown,
+  activity: ActivityDocument,
+  onMarkResponse?: OnMarkResponse,
+  markingMode?: "server" | "local"
+): OnMarkResponse | undefined {
+  if (markingMode === "local") return onMarkResponse;
+  const handler = onMarkResponse || createMarkResponseHandler(platform, activity);
+  if (markingMode === "server" && !handler) return createFailClosedMarkHandler();
+  return handler;
+}
+
 export function InteractiveActivity({
   activity,
   initialResponses = {},
   renderFallback,
+  platform,
+  markingMode,
+  onMarkResponse,
   onResult
 }: InteractiveActivityProps): ReactNode {
   const [resetKey, setResetKey] = useState(0);
   const activityVersion = resolveActivityVersion(activity) || undefined;
+  const markActivity = resolveActivityMarkHandler(platform, activity, onMarkResponse, markingMode);
 
   return (
     <article
@@ -198,6 +226,14 @@ export function InteractiveActivity({
                 key={block.id}
                 block={block}
                 initialResponse={initialResponses[questionIdFor(block)]}
+                onMarkResponse={markActivity
+                  ? (responses) => markActivity({
+                    activityId: activity.id,
+                    activityVersion: activityVersion || "",
+                    block,
+                    responses
+                  })
+                  : undefined}
                 onResult={onResult}
               />
             );

@@ -1,5 +1,13 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { FeedbackPanel, type FeedbackState } from "./FeedbackPanel";
+import {
+  activityResultFromMark,
+  localScoreEnabled,
+  resolveCanRetry,
+  runMarkedCheck,
+  usesServerMark,
+  type OnMarkBlockResponse
+} from "./server-mark";
 import { shuffled } from "./shuffle";
 import type { ActivityFeedbackCopy, ActivityItem, ActivityOption, ActivityResult } from "./types";
 import { usePlacement } from "./usePlacement";
@@ -19,6 +27,7 @@ export type PhraseCompletionProps = {
   retry?: boolean;
   shuffle?: boolean;
   maxAttempts?: number;
+  onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
 };
 
@@ -56,6 +65,7 @@ export function PhraseCompletion({
   retry = true,
   shuffle = false,
   maxAttempts,
+  onMarkResponse,
   onResult
 }: PhraseCompletionProps): ReactNode {
   const resolvedGaps = useMemo<PhraseGap[]>(() => {
@@ -67,14 +77,22 @@ export function PhraseCompletion({
   const { placements, selectedItemId, selectItem, selectTarget, occupantOf, reset: resetPlacement } = usePlacement();
   const [attempts, setAttempts] = useState(0);
   const [checked, setChecked] = useState(false);
+  const [checking, setChecking] = useState(false);
   const [status, setStatus] = useState<FeedbackState>("neutral");
   const [message, setMessage] = useState("");
+  const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
   const expected = Object.fromEntries(
     resolvedGaps.map((gap) => [gap.id, gap.correctOptionId]).filter((entry) => entry[1])
   ) as Record<string, string>;
-  const scored = Boolean(formative && Object.keys(expected).length);
-  const locked = checked;
-  const canRetry = checked && retry && (typeof maxAttempts !== "number" || attempts < maxAttempts);
+  const scored = localScoreEnabled(formative, Object.keys(expected).length > 0, onMarkResponse);
+  const locked = checked || checking;
+  const canRetry = resolveCanRetry({
+    checked,
+    localRetry: retry,
+    localMaxAttempts: maxAttempts,
+    attempts,
+    serverCanRetry
+  });
   const bank = orderedOptions.filter((option) => !placements[option.id]);
   const selectedLabel = options.find((option) => option.id === selectedItemId)?.label;
 
@@ -82,7 +100,8 @@ export function PhraseCompletion({
     onResult?.(result);
   }
 
-  function check() {
+  async function check() {
+    if (checking) return;
     const complete = resolvedGaps.every((gap) => occupantOf(gap.id));
     if (!complete) {
       setStatus("informative");
@@ -95,6 +114,33 @@ export function PhraseCompletion({
       const optionId = occupantOf(gap.id);
       if (optionId) responses[gap.id] = optionId;
     });
+    if (usesServerMark(onMarkResponse) && onMarkResponse) {
+      setChecking(true);
+      setStatus("informative");
+      setMessage("Checking your answer…");
+      const outcome = await runMarkedCheck(
+        onMarkResponse,
+        responses,
+        feedback,
+        "Your phrase has been recorded."
+      );
+      setChecking(false);
+      if (!outcome.ok) {
+        setChecked(false);
+        setServerCanRetry(false);
+        setStatus("informative");
+        setMessage(outcome.message);
+        emit({ completed: false, correct: null, attempts: nextAttempts, responses, status: "error" });
+        return;
+      }
+      setAttempts(nextAttempts);
+      setChecked(true);
+      setServerCanRetry(outcome.marked.canRetry);
+      setStatus(outcome.marked.status);
+      setMessage(outcome.marked.message);
+      emit(activityResultFromMark(outcome.marked, nextAttempts, responses));
+      return;
+    }
     const correctCount = scored
       ? resolvedGaps.filter((gap) => responses[gap.id] === expected[gap.id]).length
       : 0;
@@ -119,13 +165,20 @@ export function PhraseCompletion({
   function reset() {
     resetPlacement();
     setChecked(false);
+    setChecking(false);
+    setServerCanRetry(undefined);
     setStatus("neutral");
     setMessage("");
     emit({ completed: false, correct: null, attempts, responses: {} });
   }
 
   return (
-    <section className="lp-block lp-block--interactive" data-lp-block="fill-gap" data-lp-block-id={id}>
+    <section
+      className="lp-block lp-block--interactive"
+      data-lp-block="fill-gap"
+      data-lp-block-id={id}
+      aria-busy={checking || undefined}
+    >
       {title ? <h3>{title}</h3> : null}
       {instructions ? <p className="lp-instructions">{instructions}</p> : null}
       <p role="status" aria-live="polite" className="lp-card__meta">
@@ -172,7 +225,9 @@ export function PhraseCompletion({
         </div>
       </fieldset>
       <div className="lp-card__actions">
-        <button type="button" className="lp-button" onClick={check} disabled={locked}>Check phrase</button>
+        <button type="button" className="lp-button" onClick={() => void check()} disabled={locked}>
+          {checking ? "Checking…" : "Check phrase"}
+        </button>
         {canRetry ? (
           <button type="button" className="lp-button lp-button--secondary" onClick={reset}>Try again</button>
         ) : null}
