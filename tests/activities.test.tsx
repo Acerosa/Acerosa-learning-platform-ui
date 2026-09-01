@@ -103,6 +103,242 @@ describe("OptionCards", () => {
     }));
     expect(screen.getByText("Information")).toBeInTheDocument();
   });
+
+  it("uses a server mark without a local correctOptionId", async () => {
+    const user = userEvent.setup();
+    const onResult = vi.fn();
+    const onMarkResponse = vi.fn(async () => ({
+      completed: true,
+      correct: true,
+      score: { correct: 1, total: 1 },
+      status: "correct" as const
+    }));
+    render(
+      <OptionCards
+        prompt="Which cloud model?"
+        options={[{ id: "saas", label: "SaaS" }, { id: "iaas", label: "IaaS" }]}
+        onMarkResponse={onMarkResponse}
+        feedback={{ correct: "IaaS is infrastructure.", incorrect: "Try again." }}
+        onResult={onResult}
+      />
+    );
+    await user.click(screen.getByRole("radio", { name: /IaaS/ }));
+    await user.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(onMarkResponse).toHaveBeenCalledWith({ optionId: "iaas" });
+    expect(await screen.findByText("IaaS is infrastructure.")).toBeInTheDocument();
+    expect(onResult).toHaveBeenLastCalledWith(expect.objectContaining({
+      completed: true,
+      correct: true,
+      score: { correct: 1, total: 1 },
+      responses: { optionId: "iaas" }
+    }));
+    expect(JSON.stringify(onResult.mock.calls.at(-1)?.[0])).not.toMatch(/correctOptionId/);
+  });
+
+  it("shows incorrect, retries, and does not fall back to a local key", async () => {
+    const user = userEvent.setup();
+    const onResult = vi.fn();
+    const onMarkResponse = vi.fn()
+      .mockResolvedValueOnce({
+        completed: true,
+        correct: false,
+        score: { correct: 0, total: 1 },
+        status: "incorrect"
+      })
+      .mockResolvedValueOnce({
+        completed: true,
+        correct: true,
+        score: { correct: 1, total: 1 },
+        status: "correct"
+      });
+    render(
+      <OptionCards
+        prompt="Which cloud model?"
+        options={[{ id: "saas", label: "SaaS" }, { id: "iaas", label: "IaaS" }]}
+        correctOptionId="saas"
+        onMarkResponse={onMarkResponse}
+        feedback={{ correct: "IaaS is infrastructure.", incorrect: "Not that model." }}
+        onResult={onResult}
+      />
+    );
+    await user.click(screen.getByRole("radio", { name: /SaaS/ }));
+    await user.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Incorrect");
+    expect(onResult).toHaveBeenLastCalledWith(expect.objectContaining({ correct: false }));
+    await user.click(screen.getByRole("button", { name: "Try again" }));
+    await user.click(screen.getByRole("radio", { name: /IaaS/ }));
+    await user.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(await screen.findByText("IaaS is infrastructure.")).toBeInTheDocument();
+    expect(onMarkResponse).toHaveBeenCalledTimes(2);
+  });
+
+  it("shows a review state from the server", async () => {
+    const user = userEvent.setup();
+    const onResult = vi.fn();
+    render(
+      <OptionCards
+        prompt="Which cloud model?"
+        options={[{ id: "saas", label: "SaaS" }]}
+        onMarkResponse={async () => ({
+          completed: true,
+          correct: null,
+          requiresReview: true,
+          status: "review"
+        })}
+        onResult={onResult}
+      />
+    );
+    await user.click(screen.getByRole("radio", { name: /SaaS/ }));
+    await user.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(await screen.findByText("Your response has been recorded for review.")).toBeInTheDocument();
+    expect(onResult).toHaveBeenLastCalledWith(expect.objectContaining({
+      completed: true,
+      correct: null,
+      requiresReview: true,
+      score: undefined
+    }));
+  });
+
+  it("keeps the response incomplete when server marking fails", async () => {
+    const user = userEvent.setup();
+    const onResult = vi.fn();
+    render(
+      <OptionCards
+        prompt="Which cloud model?"
+        options={[{ id: "saas", label: "SaaS" }]}
+        onMarkResponse={async () => {
+          throw new Error("network");
+        }}
+        onResult={onResult}
+      />
+    );
+    await user.click(screen.getByRole("radio", { name: /SaaS/ }));
+    await user.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(await screen.findByText("Your answer could not be checked. Please try again.")).toBeInTheDocument();
+    expect(onResult).toHaveBeenLastCalledWith(expect.objectContaining({
+      completed: false,
+      correct: null,
+      status: "error"
+    }));
+    expect(screen.getByRole("button", { name: "Check answer" })).toBeEnabled();
+  });
+
+  it("hides Try again when the server says canRetry is false", async () => {
+    const user = userEvent.setup();
+    render(
+      <OptionCards
+        prompt="Which cloud model?"
+        options={[{ id: "saas", label: "SaaS" }, { id: "iaas", label: "IaaS" }]}
+        retry
+        maxAttempts={5}
+        onMarkResponse={async () => ({
+          completed: true,
+          correct: false,
+          score: { correct: 0, total: 1 },
+          status: "incorrect",
+          canRetry: false,
+          remainingAttempts: 0,
+          checkNumber: 1
+        })}
+      />
+    );
+    await user.click(screen.getByRole("radio", { name: /SaaS/ }));
+    await user.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Incorrect");
+    expect(screen.queryByRole("button", { name: "Try again" })).not.toBeInTheDocument();
+  });
+
+  it("allows another check when the server says canRetry is true", async () => {
+    const user = userEvent.setup();
+    render(
+      <OptionCards
+        prompt="Which cloud model?"
+        options={[{ id: "saas", label: "SaaS" }]}
+        retry={false}
+        onMarkResponse={async () => ({
+          completed: true,
+          correct: false,
+          score: { correct: 0, total: 1 },
+          status: "incorrect",
+          canRetry: true,
+          remainingAttempts: 1,
+          checkNumber: 1
+        })}
+      />
+    );
+    await user.click(screen.getByRole("radio", { name: /SaaS/ }));
+    await user.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(await screen.findByRole("button", { name: "Try again" })).toBeInTheDocument();
+  });
+
+  it("does not send a second check while the first check is in flight", async () => {
+    const user = userEvent.setup();
+    let release: ((value: {
+      completed: boolean;
+      correct: boolean;
+      score: { correct: number; total: number };
+      status: "correct";
+    }) => void) | undefined;
+    const onMarkResponse = vi.fn(() => new Promise<{
+      completed: boolean;
+      correct: boolean;
+      score: { correct: number; total: number };
+      status: "correct";
+    }>((resolve) => {
+      release = resolve;
+    }));
+    render(
+      <OptionCards
+        prompt="Which cloud model?"
+        options={[{ id: "saas", label: "SaaS" }]}
+        onMarkResponse={onMarkResponse}
+      />
+    );
+    await user.click(screen.getByRole("radio", { name: /SaaS/ }));
+    await user.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(screen.getByRole("button", { name: "Checking…" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Checking…" }));
+    expect(onMarkResponse).toHaveBeenCalledTimes(1);
+    release?.({
+      completed: true,
+      correct: true,
+      score: { correct: 1, total: 1 },
+      status: "correct"
+    });
+    expect(await screen.findByText("That matches the expected option.")).toBeInTheDocument();
+  });
+
+  it("treats an identical replayed server result as the same check", async () => {
+    const user = userEvent.setup();
+    const onResult = vi.fn();
+    const replay = {
+      completed: true,
+      correct: true,
+      score: { correct: 1, total: 1 },
+      status: "correct" as const,
+      checkNumber: 1,
+      canRetry: true
+    };
+    const onMarkResponse = vi.fn()
+      .mockResolvedValueOnce(replay)
+      .mockResolvedValueOnce(replay);
+    render(
+      <OptionCards
+        prompt="Which cloud model?"
+        options={[{ id: "saas", label: "SaaS" }]}
+        onMarkResponse={onMarkResponse}
+        onResult={onResult}
+      />
+    );
+    await user.click(screen.getByRole("radio", { name: /SaaS/ }));
+    await user.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(await screen.findByText("That matches the expected option.")).toBeInTheDocument();
+    expect(onResult).toHaveBeenLastCalledWith(expect.objectContaining({
+      checkNumber: 1,
+      canRetry: true,
+      correct: true
+    }));
+  });
 });
 
 describe("DragDrop", () => {
@@ -286,6 +522,38 @@ describe("ShortResponse and Reflection", () => {
     }));
     expect(onResult.mock.calls.at(-1)?.[0].score).toBeUndefined();
     expect(screen.getByText("Saved for revision.")).toBeInTheDocument();
+  });
+
+  it("records a server review response as complete without a fake score", async () => {
+    const user = userEvent.setup();
+    const onResult = vi.fn();
+    render(
+      <Reflection
+        prompt="Reflect on IoT."
+        minChars={10}
+        onMarkResponse={async () => ({
+          completed: true,
+          correct: null,
+          requiresReview: true,
+          status: "review",
+          checkNumber: 1,
+          canRetry: true
+        })}
+        onResult={onResult}
+      />
+    );
+    fireEvent.change(screen.getByLabelText("Reflect on IoT."), {
+      target: { value: "A valid reflection that should be reviewed." }
+    });
+    await user.click(screen.getByRole("button", { name: "Save response" }));
+    expect(await screen.findByText("Your response has been recorded for review.")).toBeInTheDocument();
+    expect(onResult).toHaveBeenLastCalledWith(expect.objectContaining({
+      completed: true,
+      correct: null,
+      requiresReview: true,
+      checkNumber: 1
+    }));
+    expect(onResult.mock.calls.at(-1)?.[0].score).toBeUndefined();
   });
 
   it("maps ActivityBlock content for both text types and composes unscored progress", async () => {
@@ -639,6 +907,126 @@ describe("Classification", () => {
     await user.keyboard("{Enter}");
     expect(screen.getByRole("button", { name: /Warehouse tracking · Placed/ })).toBeInTheDocument();
   });
+
+  it("uses a server result without expected category mappings", async () => {
+    const user = userEvent.setup();
+    const onResult = vi.fn();
+    const onMarkResponse = vi.fn(async () => ({
+      completed: true,
+      correct: false,
+      score: { correct: 1, total: 2 },
+      status: "incorrect" as const,
+      itemResults: [
+        { questionId: "class:warehouse", itemId: "warehouse", correct: false },
+        { questionId: "class:payments", itemId: "payments", correct: true }
+      ]
+    }));
+    render(
+      <Classification
+        prompt="Classify"
+        items={[
+          { id: "warehouse", label: "Warehouse tracking" },
+          { id: "payments", label: "Contactless payments" }
+        ]}
+        categories={[
+          { id: "rfid", label: "RFID" },
+          { id: "nfc", label: "NFC" }
+        ]}
+        onMarkResponse={onMarkResponse}
+        onResult={onResult}
+      />
+    );
+    await user.click(screen.getByRole("button", { name: "Warehouse tracking" }));
+    await user.click(screen.getByRole("button", { name: "Place in RFID" }));
+    await user.click(screen.getByRole("button", { name: "Contactless payments" }));
+    await user.click(screen.getByRole("button", { name: "Place in NFC" }));
+    await user.click(screen.getByRole("button", { name: "Check types" }));
+    expect(onMarkResponse).toHaveBeenCalledWith({ warehouse: "rfid", payments: "nfc" });
+    expect(await screen.findByRole("alert")).toHaveTextContent("Incorrect");
+    expect(onResult).toHaveBeenLastCalledWith(expect.objectContaining({
+      completed: true,
+      correct: false,
+      score: { correct: 1, total: 2 }
+    }));
+    expect(JSON.stringify(onResult.mock.calls.at(-1)?.[0])).not.toMatch(/correctCategoryId/);
+  });
+
+  it("shows a review state from the server without expected categories", async () => {
+    const user = userEvent.setup();
+    const onResult = vi.fn();
+    render(
+      <Classification
+        prompt="Classify"
+        items={[{ id: "warehouse", label: "Warehouse tracking" }]}
+        categories={[{ id: "rfid", label: "RFID" }]}
+        onMarkResponse={async () => ({
+          completed: true,
+          correct: null,
+          requiresReview: true,
+          status: "review"
+        })}
+        onResult={onResult}
+      />
+    );
+    await user.click(screen.getByRole("button", { name: "Warehouse tracking" }));
+    await user.click(screen.getByRole("button", { name: "Place in RFID" }));
+    await user.click(screen.getByRole("button", { name: "Check types" }));
+    expect(await screen.findByText("Your response has been recorded for review.")).toBeInTheDocument();
+    expect(onResult).toHaveBeenLastCalledWith(expect.objectContaining({
+      completed: true,
+      correct: null,
+      requiresReview: true
+    }));
+  });
+
+  it("keeps classification incomplete when server marking fails", async () => {
+    const user = userEvent.setup();
+    const onResult = vi.fn();
+    render(
+      <Classification
+        prompt="Classify"
+        items={[{ id: "warehouse", label: "Warehouse tracking" }]}
+        categories={[{ id: "rfid", label: "RFID" }]}
+        onMarkResponse={async () => {
+          throw new Error("offline");
+        }}
+        onResult={onResult}
+      />
+    );
+    await user.click(screen.getByRole("button", { name: "Warehouse tracking" }));
+    await user.click(screen.getByRole("button", { name: "Place in RFID" }));
+    await user.click(screen.getByRole("button", { name: "Check types" }));
+    expect(await screen.findByText("Your answer could not be checked. Please try again.")).toBeInTheDocument();
+    expect(onResult).toHaveBeenLastCalledWith(expect.objectContaining({
+      completed: false,
+      status: "error"
+    }));
+  });
+
+  it("hides Try again when the server says canRetry is false", async () => {
+    const user = userEvent.setup();
+    render(
+      <Classification
+        prompt="Classify"
+        items={[{ id: "warehouse", label: "Warehouse tracking" }]}
+        categories={[{ id: "rfid", label: "RFID" }]}
+        retry
+        onMarkResponse={async () => ({
+          completed: true,
+          correct: false,
+          score: { correct: 0, total: 1 },
+          status: "incorrect",
+          canRetry: false,
+          remainingAttempts: 0
+        })}
+      />
+    );
+    await user.click(screen.getByRole("button", { name: "Warehouse tracking" }));
+    await user.click(screen.getByRole("button", { name: "Place in RFID" }));
+    await user.click(screen.getByRole("button", { name: "Check types" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Incorrect");
+    expect(screen.queryByRole("button", { name: "Try again" })).not.toBeInTheDocument();
+  });
 });
 
 describe("ActivityBlock", () => {
@@ -674,6 +1062,67 @@ describe("ActivityBlock", () => {
     expect(screen.getByRole("button", { name: "One" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Place in Group A" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Check types" })).toBeInTheDocument();
+  });
+
+  it("sends a learner-safe block to platform marking without answer keys", async () => {
+    const user = userEvent.setup();
+    const markBlock = vi.fn(async () => ({
+      completed: true,
+      correct: true,
+      score: { correct: 1, total: 1 },
+      status: "correct" as const
+    }));
+    render(
+      <InteractiveActivity
+        activity={{
+          id: "demo",
+          version: "1.0.0",
+          blocks: [{
+            id: "q1",
+            type: "single-choice",
+            content: {
+              prompt: "Choose",
+              options: [{ id: "a", label: "Alpha" }, { id: "b", label: "Beta" }],
+              correctOptionId: "a"
+            }
+          }]
+        }}
+        platform={{ marking: { markBlock } }}
+      />
+    );
+    await user.click(screen.getByRole("radio", { name: /Alpha/ }));
+    await user.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(markBlock).toHaveBeenCalled();
+    const payload = markBlock.mock.calls.at(0)?.at(0) as { responses?: unknown } | undefined;
+    expect(JSON.stringify(payload)).not.toMatch(/correctOptionId/);
+    expect(payload?.responses).toEqual({ optionId: "a" });
+  });
+
+  it("fails closed when catalogue platform marking is unavailable", async () => {
+    const user = userEvent.setup();
+    render(
+      <InteractiveActivity
+        markingMode="server"
+        activity={{
+          id: "demo",
+          version: "1.0.0",
+          blocks: [{
+            id: "q1",
+            type: "single-choice",
+            content: {
+              prompt: "Choose",
+              options: [{ id: "a", label: "Alpha" }, { id: "b", label: "Beta" }],
+              correctOptionId: "a"
+            }
+          }]
+        }}
+      />
+    );
+    await user.click(screen.getByRole("radio", { name: /Alpha/ }));
+    await user.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(await screen.findByText("Your answer could not be checked. Please try again.")).toBeInTheDocument();
+    expect(screen.queryByText("Correct")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Check answer" })).toBeEnabled();
   });
 
   it("leaves unknown blocks to the HTML fallback when provided", () => {

@@ -122,6 +122,7 @@ export type {
   ActivityDocument,
   ActivityFeedbackCopy,
   ActivityItem,
+  ActivityItemResult,
   ActivityOption,
   ActivityResult,
   ActivityScore
@@ -134,3 +135,28 @@ export {
   REFLECTION_DEFAULT_MIN_CHARS,
   SHORT_RESPONSE_DEFAULT_MIN_CHARS
 } from "./activities/types";
+export {
+  aggregatePracticeProgress,
+  applyPracticeResult,
+  blockScorableTotal as catalogueBlockScorableTotal,
+  emptyPracticeProgress,
+  isCompletableReactBlock,
+  isPracticeCompletionCue,
+  isScorableReactBlock,
+  scorableBlocksComplete
+} from "./activities/practice-progress";
+export type {
+  PracticeProgressAggregate,
+  PracticeProgressState
+} from "./activities/practice-progress";
+export {
+  SERVER_CHECK_FAILED_MESSAGE,
+  SERVER_REVIEW_MESSAGE,
+  createMarkResponseHandler,
+  learnerSafeBlock
+} from "./activities/server-mark";
+export type {
+  MarkResponseRequest,
+  MarkResponseResult,
+  OnMarkResponse
+} from "./activities/server-mark";

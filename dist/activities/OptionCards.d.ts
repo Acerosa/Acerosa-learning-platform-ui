@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import { type OnMarkBlockResponse } from "./server-mark";
 import type { ActivityFeedbackCopy, ActivityOption, ActivityResult } from "./types";
 export type OptionCardsProps = {
     id?: string;
@@ -13,6 +14,7 @@ export type OptionCardsProps = {
     shuffle?: boolean;
     maxAttempts?: number;
     initialSelectedId?: string;
+    onMarkResponse?: OnMarkBlockResponse;
     onResult?: (result: ActivityResult) => void;
 };
-export declare function OptionCards({ id, title, prompt, instructions, options, correctOptionId, feedback, formative, retry, shuffle, maxAttempts, initialSelectedId, onResult }: OptionCardsProps): ReactNode;
+export declare function OptionCards({ id, title, prompt, instructions, options, correctOptionId, feedback, formative, retry, shuffle, maxAttempts, initialSelectedId, onMarkResponse, onResult }: OptionCardsProps): ReactNode;

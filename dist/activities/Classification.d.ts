@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import { type OnMarkBlockResponse } from "./server-mark";
 import type { ActivityFeedbackCopy, ActivityItem, ActivityResult } from "./types";
 export type ClassificationProps = {
     id?: string;
@@ -13,6 +14,7 @@ export type ClassificationProps = {
     shuffle?: boolean;
     maxAttempts?: number;
     initialAssignments?: Record<string, string>;
+    onMarkResponse?: OnMarkBlockResponse;
     onResult?: (result: ActivityResult) => void;
 };
-export declare function Classification({ id, title, prompt, instructions, items, categories, feedback, formative, retry, shuffle, maxAttempts, initialAssignments, onResult }: ClassificationProps): ReactNode;
+export declare function Classification({ id, title, prompt, instructions, items, categories, feedback, formative, retry, shuffle, maxAttempts, initialAssignments, onMarkResponse, onResult }: ClassificationProps): ReactNode;

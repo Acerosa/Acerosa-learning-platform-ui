@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import { type OnMarkBlockResponse } from "./server-mark";
 import type { ActivityFeedbackCopy, ActivityItem, ActivityResult } from "./types";
 export type DragDropProps = {
     id?: string;
@@ -13,6 +14,7 @@ export type DragDropProps = {
     retry?: boolean;
     shuffle?: boolean;
     maxAttempts?: number;
+    onMarkResponse?: OnMarkBlockResponse;
     onResult?: (result: ActivityResult) => void;
 };
-export declare function DragDrop({ id, title, prompt, instructions, items, targets, correct, feedback, formative, retry, shuffle, maxAttempts, onResult }: DragDropProps): ReactNode;
+export declare function DragDrop({ id, title, prompt, instructions, items, targets, correct, feedback, formative, retry, shuffle, maxAttempts, onMarkResponse, onResult }: DragDropProps): ReactNode;

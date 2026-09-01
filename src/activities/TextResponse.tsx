@@ -2,6 +2,14 @@ import { useState, type ReactNode } from "react";
 import { FeedbackPanel, type FeedbackState } from "./FeedbackPanel";
 import { LearningTextField } from "./LearningTextField";
 import {
+  activityResultFromMark,
+  displayForMark,
+  learnerCheckMessage,
+  resolveCanRetry,
+  usesServerMark,
+  type OnMarkBlockResponse
+} from "./server-mark";
+import {
   REFLECTION_DEFAULT_MIN_CHARS,
   SHORT_RESPONSE_DEFAULT_MIN_CHARS,
   resolveMinChars,
@@ -26,6 +34,7 @@ export type TextResponseProps = {
   maxAttempts?: number;
   initialResponse?: string;
   saveLabel?: string;
+  onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
 };
 
@@ -53,31 +62,75 @@ export function TextResponse({
   maxAttempts,
   initialResponse = "",
   saveLabel = "Save response",
+  onMarkResponse,
   onResult
 }: TextResponseProps): ReactNode {
   const min = resolveMinChars({ minChars, minimumCharacters }, defaultMinChars);
   const [value, setValue] = useState(String(initialResponse || ""));
   const [attempts, setAttempts] = useState(0);
   const [checked, setChecked] = useState(false);
+  const [checking, setChecking] = useState(false);
   const [status, setStatus] = useState<FeedbackState>("neutral");
   const [message, setMessage] = useState("");
+  const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
   const trimmed = value.trim();
   const length = trimmed.length;
   const met = length >= min;
-  const locked = checked;
-  const canRetry = checked && retry && (typeof maxAttempts !== "number" || attempts < maxAttempts);
+  const serverMode = usesServerMark(onMarkResponse);
+  const locked = checked || checking;
+  const canRetry = resolveCanRetry({
+    checked,
+    localRetry: retry,
+    localMaxAttempts: maxAttempts,
+    attempts,
+    serverCanRetry
+  });
 
   function emit(result: ActivityResult) {
     onResult?.(result);
   }
 
-  function save() {
+  async function save() {
+    if (checking) return;
     if (!met) {
       setStatus("informative");
       setMessage(underMinMessage(min, length));
       return;
     }
     const nextAttempts = attempts + 1;
+    if (serverMode && onMarkResponse) {
+      setChecking(true);
+      setStatus("informative");
+      setMessage("Saving your response…");
+      try {
+        const marked = displayForMark(
+          await onMarkResponse(trimmed),
+          feedback,
+          guidance || "Your response has been recorded."
+        );
+        setAttempts(nextAttempts);
+        setChecked(true);
+        setServerCanRetry(marked.canRetry);
+        setStatus(marked.status);
+        setMessage(marked.requiresReview || marked.correct !== null ? marked.message : (guidance || marked.message));
+        emit(activityResultFromMark(marked, nextAttempts, trimmed));
+      } catch (error) {
+        setChecked(false);
+        setServerCanRetry(false);
+        setStatus("informative");
+        setMessage(learnerCheckMessage(error));
+        emit({
+          completed: false,
+          correct: null,
+          attempts: nextAttempts,
+          responses: trimmed,
+          status: "error"
+        });
+      } finally {
+        setChecking(false);
+      }
+      return;
+    }
     const nextMessage = guidance || feedback?.correct || "Saved.";
     setAttempts(nextAttempts);
     setChecked(true);
@@ -94,6 +147,8 @@ export function TextResponse({
   function reset() {
     setValue("");
     setChecked(false);
+    setChecking(false);
+    setServerCanRetry(undefined);
     setStatus("neutral");
     setMessage("");
     emit({
@@ -109,6 +164,7 @@ export function TextResponse({
       className="lp-block lp-block--interactive lp-form"
       data-lp-block={blockType}
       data-lp-block-id={id}
+      aria-busy={checking || undefined}
     >
       {title ? <h3>{title}</h3> : null}
       {instructions ? <p className="lp-instructions">{instructions}</p> : null}
@@ -125,8 +181,8 @@ export function TextResponse({
         onChange={setValue}
       />
       <div className="lp-card__actions">
-        <button type="button" className="lp-button" onClick={save} disabled={locked}>
-          {saveLabel}
+        <button type="button" className="lp-button" onClick={() => void save()} disabled={locked}>
+          {checking ? "Saving…" : saveLabel}
         </button>
         {canRetry ? (
           <button type="button" className="lp-button lp-button--secondary" onClick={reset}>

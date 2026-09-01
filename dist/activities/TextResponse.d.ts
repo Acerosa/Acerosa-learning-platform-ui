@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import { type OnMarkBlockResponse } from "./server-mark";
 import { type ActivityFeedbackCopy, type ActivityResult } from "./types";
 export type TextResponseProps = {
     id?: string;
@@ -17,9 +18,10 @@ export type TextResponseProps = {
     maxAttempts?: number;
     initialResponse?: string;
     saveLabel?: string;
+    onMarkResponse?: OnMarkBlockResponse;
     onResult?: (result: ActivityResult) => void;
 };
-export declare function TextResponse({ id, blockType, title, prompt, instructions, guidance, placeholder, minChars, minimumCharacters, defaultMinChars, rows, feedback, retry, maxAttempts, initialResponse, saveLabel, onResult }: TextResponseProps): ReactNode;
+export declare function TextResponse({ id, blockType, title, prompt, instructions, guidance, placeholder, minChars, minimumCharacters, defaultMinChars, rows, feedback, retry, maxAttempts, initialResponse, saveLabel, onMarkResponse, onResult }: TextResponseProps): ReactNode;
 export type ShortResponseProps = Omit<TextResponseProps, "blockType" | "defaultMinChars" | "rows"> & {
     rows?: number;
 };
