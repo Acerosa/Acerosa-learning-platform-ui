@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { FeedbackPanel, type FeedbackState } from "./FeedbackPanel";
 import {
   activityResultFromMark,
@@ -11,6 +11,7 @@ import {
 } from "./server-mark";
 import { shuffled } from "./shuffle";
 import type { ActivityFeedbackCopy, ActivityOption, ActivityResult } from "./types";
+import { useRestoredChecked, useRestoredState } from "./useRestoredState";
 
 export type OptionCardsProps = {
   id?: string;
@@ -25,6 +26,7 @@ export type OptionCardsProps = {
   shuffle?: boolean;
   maxAttempts?: number;
   initialSelectedId?: string;
+  initialChecked?: boolean;
   onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
 };
@@ -42,17 +44,24 @@ export function OptionCards({
   shuffle = false,
   maxAttempts,
   initialSelectedId,
+  initialChecked = false,
   onMarkResponse,
   onResult
 }: OptionCardsProps): ReactNode {
   const ordered = useMemo(() => shuffled(options, shuffle), [options, shuffle]);
-  const [selectedId, setSelectedId] = useState<string | null>(initialSelectedId || null);
+  const [selectedId, setSelectedId] = useRestoredState<string | null>(initialSelectedId || null, null);
   const [attempts, setAttempts] = useState(0);
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useRestoredChecked(initialChecked, Boolean(initialSelectedId));
   const [checking, setChecking] = useState(false);
-  const [status, setStatus] = useState<FeedbackState>("neutral");
-  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<FeedbackState>(initialChecked && initialSelectedId ? "informative" : "neutral");
+  const [message, setMessage] = useState(initialChecked && initialSelectedId ? "Your answer was recorded." : "");
   const [serverCorrect, setServerCorrect] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!initialChecked || !selectedId) return;
+    setStatus("informative");
+    setMessage("Your answer was recorded.");
+  }, [initialChecked, selectedId]);
   const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
   const serverMode = usesServerMark(onMarkResponse);
   const scored = localScoreEnabled(formative, Boolean(correctOptionId), onMarkResponse);

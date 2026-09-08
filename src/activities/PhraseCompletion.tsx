@@ -11,6 +11,7 @@ import {
 import { shuffled } from "./shuffle";
 import type { ActivityFeedbackCopy, ActivityItem, ActivityOption, ActivityResult } from "./types";
 import { usePlacement } from "./usePlacement";
+import { useRestoredChecked } from "./useRestoredState";
 
 export type PhraseGap = ActivityItem & { correctOptionId?: string };
 
@@ -27,6 +28,8 @@ export type PhraseCompletionProps = {
   retry?: boolean;
   shuffle?: boolean;
   maxAttempts?: number;
+  initialPlacements?: Record<string, string>;
+  initialChecked?: boolean;
   onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
 };
@@ -65,6 +68,8 @@ export function PhraseCompletion({
   retry = true,
   shuffle = false,
   maxAttempts,
+  initialPlacements = {},
+  initialChecked = false,
   onMarkResponse,
   onResult
 }: PhraseCompletionProps): ReactNode {
@@ -74,12 +79,12 @@ export function PhraseCompletion({
   }, [correctOptionId, gaps]);
   const orderedOptions = useMemo(() => shuffled(options, shuffle), [options, shuffle]);
   const promptParts = useMemo(() => parsePrompt(prompt, resolvedGaps), [prompt, resolvedGaps]);
-  const { placements, selectedItemId, selectItem, selectTarget, occupantOf, reset: resetPlacement } = usePlacement();
+  const { placements, selectedItemId, selectItem, selectTarget, occupantOf, reset: resetPlacement } = usePlacement(initialPlacements);
   const [attempts, setAttempts] = useState(0);
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useRestoredChecked(initialChecked, Object.keys(initialPlacements).length > 0);
   const [checking, setChecking] = useState(false);
-  const [status, setStatus] = useState<FeedbackState>("neutral");
-  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<FeedbackState>(initialChecked && Object.keys(initialPlacements).length ? "informative" : "neutral");
+  const [message, setMessage] = useState(initialChecked && Object.keys(initialPlacements).length ? "Your answer was recorded." : "");
   const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
   const expected = Object.fromEntries(
     resolvedGaps.map((gap) => [gap.id, gap.correctOptionId]).filter((entry) => entry[1])

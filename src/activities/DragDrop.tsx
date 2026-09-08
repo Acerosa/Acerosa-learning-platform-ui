@@ -11,6 +11,7 @@ import {
 import { shuffled } from "./shuffle";
 import type { ActivityFeedbackCopy, ActivityItem, ActivityResult } from "./types";
 import { usePlacement } from "./usePlacement";
+import { useRestoredChecked } from "./useRestoredState";
 
 export type DragDropProps = {
   id?: string;
@@ -25,6 +26,8 @@ export type DragDropProps = {
   retry?: boolean;
   shuffle?: boolean;
   maxAttempts?: number;
+  initialPlacements?: Record<string, string>;
+  initialChecked?: boolean;
   onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
 };
@@ -42,16 +45,19 @@ export function DragDrop({
   retry = true,
   shuffle = false,
   maxAttempts,
+  initialPlacements = {},
+  initialChecked = false,
   onMarkResponse,
   onResult
 }: DragDropProps): ReactNode {
   const orderedItems = useMemo(() => shuffled(items, shuffle), [items, shuffle]);
-  const { placements, selectedItemId, selectItem, selectTarget, occupantOf, reset: resetPlacement } = usePlacement();
+  const { placements, selectedItemId, selectItem, selectTarget, occupantOf, reset: resetPlacement } = usePlacement(initialPlacements);
   const [attempts, setAttempts] = useState(0);
-  const [checked, setChecked] = useState(false);
+  const restoredComplete = items.length > 0 && items.every((item) => initialPlacements[item.id]);
+  const [checked, setChecked] = useRestoredChecked(initialChecked, restoredComplete);
   const [checking, setChecking] = useState(false);
-  const [status, setStatus] = useState<FeedbackState>("neutral");
-  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<FeedbackState>(initialChecked && restoredComplete ? "informative" : "neutral");
+  const [message, setMessage] = useState(initialChecked && restoredComplete ? "Your answer was recorded." : "");
   const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
   const serverMode = usesServerMark(onMarkResponse);
   const scored = localScoreEnabled(formative, Object.keys(correct).length > 0, onMarkResponse);

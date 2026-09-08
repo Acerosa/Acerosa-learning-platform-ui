@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.1.9
+
+- Catalogue activities restore the latest checked response when `initialResponse`
+  / `initialChecked` arrive after mount (server hydrate). Retry still unlocks
+  only that question. Check remains the persistence boundary for hosts.
+
 ## 0.1.8
 
 - Catalogue activities use server-marked formative feedback when `platform.marking.markBlock` is present.

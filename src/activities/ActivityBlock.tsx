@@ -22,6 +22,7 @@ import {
 export type ActivityBlockProps = {
   block: ActivityBlockDocument;
   initialResponse?: unknown;
+  initialChecked?: boolean;
   onMarkResponse?: (responses: unknown) => Promise<import("./server-mark").MarkResponseResult>;
   onResult?: (result: ActivityResult, block: ActivityBlockDocument) => void;
 };
@@ -29,6 +30,7 @@ export type ActivityBlockProps = {
 export type InteractiveActivityProps = {
   activity: ActivityDocument;
   initialResponses?: Record<string, unknown>;
+  initialChecked?: Record<string, boolean>;
   renderFallback?: (block: ActivityBlockDocument) => ReactNode;
   platform?: unknown;
   markingMode?: "server" | "local";
@@ -53,7 +55,7 @@ function initialText(value: unknown): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
-export function ActivityBlock({ block, initialResponse, onMarkResponse, onResult }: ActivityBlockProps): ReactNode {
+export function ActivityBlock({ block, initialResponse, initialChecked, onMarkResponse, onResult }: ActivityBlockProps): ReactNode {
   const type = normaliseActivityType(block.type);
   const content = block.content || {};
   const presentation = normaliseActivityType(content.presentation);
@@ -74,6 +76,7 @@ export function ActivityBlock({ block, initialResponse, onMarkResponse, onResult
         options={content.options || []}
         correctOptionId={content.correctOptionId}
         initialSelectedId={typeof initialResponse === "string" ? initialResponse : undefined}
+        initialChecked={initialChecked}
         onMarkResponse={onMarkResponse}
         onResult={emit}
       />
@@ -91,6 +94,7 @@ export function ActivityBlock({ block, initialResponse, onMarkResponse, onResult
         items={content.items || []}
         categories={content.categories || []}
         initialAssignments={initialAssignments}
+        initialChecked={initialChecked}
         onMarkResponse={onMarkResponse}
         onResult={emit}
       />
@@ -105,6 +109,10 @@ export function ActivityBlock({ block, initialResponse, onMarkResponse, onResult
         items={content.items || []}
         targets={content.targets || []}
         correct={content.correct}
+        initialPlacements={initialResponse && typeof initialResponse === "object" && !Array.isArray(initialResponse)
+          ? initialResponse as Record<string, string>
+          : undefined}
+        initialChecked={initialChecked}
         onMarkResponse={onMarkResponse}
         onResult={emit}
       />
@@ -119,6 +127,10 @@ export function ActivityBlock({ block, initialResponse, onMarkResponse, onResult
         gaps={content.gaps}
         options={content.options || []}
         correctOptionId={content.correctOptionId}
+        initialPlacements={initialResponse && typeof initialResponse === "object" && !Array.isArray(initialResponse)
+          ? initialResponse as Record<string, string>
+          : undefined}
+        initialChecked={initialChecked}
         onMarkResponse={onMarkResponse}
         onResult={emit}
       />
@@ -132,6 +144,8 @@ export function ActivityBlock({ block, initialResponse, onMarkResponse, onResult
         prompt={content.prompt || "Put the items in order"}
         items={content.items || []}
         correctOrder={content.correctOrder}
+        initialOrder={Array.isArray(initialResponse) ? initialResponse as string[] : undefined}
+        initialChecked={initialChecked}
         onMarkResponse={onMarkResponse}
         onResult={emit}
       />
@@ -152,6 +166,7 @@ export function ActivityBlock({ block, initialResponse, onMarkResponse, onResult
         retry={mechanics.retry}
         maxAttempts={mechanics.maxAttempts}
         initialResponse={initialText(initialResponse)}
+        initialChecked={initialChecked}
         onMarkResponse={onMarkResponse}
         onResult={emit}
       />
@@ -172,6 +187,7 @@ export function ActivityBlock({ block, initialResponse, onMarkResponse, onResult
         retry={mechanics.retry}
         maxAttempts={mechanics.maxAttempts}
         initialResponse={initialText(initialResponse)}
+        initialChecked={initialChecked}
         onMarkResponse={onMarkResponse}
         onResult={emit}
       />
@@ -200,6 +216,7 @@ function resolveActivityMarkHandler(
 export function InteractiveActivity({
   activity,
   initialResponses = {},
+  initialChecked = {},
   renderFallback,
   platform,
   markingMode,
@@ -226,6 +243,7 @@ export function InteractiveActivity({
                 key={block.id}
                 block={block}
                 initialResponse={initialResponses[questionIdFor(block)]}
+                initialChecked={Boolean(initialChecked[questionIdFor(block)])}
                 onMarkResponse={markActivity
                   ? (responses) => markActivity({
                     activityId: activity.id,

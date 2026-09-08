@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { FeedbackPanel, type FeedbackState } from "./FeedbackPanel";
 import {
   activityResultFromMark,
@@ -11,6 +11,7 @@ import {
 } from "./server-mark";
 import { shuffled } from "./shuffle";
 import type { ActivityFeedbackCopy, ActivityItem, ActivityItemResult, ActivityResult } from "./types";
+import { useRestoredChecked, useRestoredState } from "./useRestoredState";
 
 export type ClassificationProps = {
   id?: string;
@@ -25,6 +26,7 @@ export type ClassificationProps = {
   shuffle?: boolean;
   maxAttempts?: number;
   initialAssignments?: Record<string, string>;
+  initialChecked?: boolean;
   onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
 };
@@ -68,18 +70,27 @@ export function Classification({
   shuffle = false,
   maxAttempts,
   initialAssignments = {},
+  initialChecked = false,
   onMarkResponse,
   onResult
 }: ClassificationProps): ReactNode {
   const orderedItems = useMemo(() => shuffled(items, shuffle), [items, shuffle]);
-  const [assignments, setAssignments] = useState<Record<string, string>>({ ...initialAssignments });
+  const [assignments, setAssignments] = useRestoredState<Record<string, string>>(initialAssignments, {});
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
-  const [checked, setChecked] = useState(false);
+  const restoredComplete = items.length > 0 && items.every((item) => initialAssignments[item.id]);
+  const [checked, setChecked] = useRestoredChecked(initialChecked, restoredComplete);
   const [checking, setChecking] = useState(false);
-  const [status, setStatus] = useState<FeedbackState>("neutral");
-  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<FeedbackState>(initialChecked && restoredComplete ? "informative" : "neutral");
+  const [message, setMessage] = useState(initialChecked && restoredComplete ? "Your answer was recorded." : "");
   const [itemResults, setItemResults] = useState<ActivityItemResult[] | undefined>();
+
+  useEffect(() => {
+    if (!initialChecked) return;
+    if (!items.every((item) => assignments[item.id])) return;
+    setStatus("informative");
+    setMessage("Your answer was recorded.");
+  }, [assignments, initialChecked, items]);
   const [requiresReview, setRequiresReview] = useState(false);
   const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
   const expected = Object.fromEntries(

@@ -1,10 +1,19 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export type PlacementMap = Record<string, string>;
 
-export function usePlacement() {
-  const [placements, setPlacements] = useState<PlacementMap>({});
+function hasPlacements(value: PlacementMap | undefined): boolean {
+  return Boolean(value && Object.keys(value).length);
+}
+
+export function usePlacement(initialPlacements: PlacementMap = {}) {
+  const [placements, setPlacements] = useState<PlacementMap>({ ...initialPlacements });
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!hasPlacements(initialPlacements)) return;
+    setPlacements({ ...initialPlacements });
+  }, [initialPlacements]);
 
   const occupantOf = useCallback((targetId: string, current: PlacementMap = placements) => {
     return Object.keys(current).find((itemId) => current[itemId] === targetId) || null;

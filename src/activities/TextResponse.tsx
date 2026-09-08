@@ -16,6 +16,7 @@ import {
   type ActivityFeedbackCopy,
   type ActivityResult
 } from "./types";
+import { useRestoredChecked, useRestoredState } from "./useRestoredState";
 
 export type TextResponseProps = {
   id?: string;
@@ -33,6 +34,7 @@ export type TextResponseProps = {
   retry?: boolean;
   maxAttempts?: number;
   initialResponse?: string;
+  initialChecked?: boolean;
   saveLabel?: string;
   onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
@@ -61,17 +63,18 @@ export function TextResponse({
   retry = true,
   maxAttempts,
   initialResponse = "",
+  initialChecked = false,
   saveLabel = "Save response",
   onMarkResponse,
   onResult
 }: TextResponseProps): ReactNode {
   const min = resolveMinChars({ minChars, minimumCharacters }, defaultMinChars);
-  const [value, setValue] = useState(String(initialResponse || ""));
+  const [value, setValue] = useRestoredState(String(initialResponse || ""), "");
   const [attempts, setAttempts] = useState(0);
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useRestoredChecked(initialChecked, Boolean(String(initialResponse || "").trim()));
   const [checking, setChecking] = useState(false);
-  const [status, setStatus] = useState<FeedbackState>("neutral");
-  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<FeedbackState>(initialChecked && String(initialResponse || "").trim() ? "informative" : "neutral");
+  const [message, setMessage] = useState(initialChecked && String(initialResponse || "").trim() ? "Your answer was recorded." : "");
   const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
   const trimmed = value.trim();
   const length = trimmed.length;
