@@ -14,7 +14,8 @@ export type ClassificationProps = {
     shuffle?: boolean;
     maxAttempts?: number;
     initialAssignments?: Record<string, string>;
+    initialChecked?: boolean;
     onMarkResponse?: OnMarkBlockResponse;
     onResult?: (result: ActivityResult) => void;
 };
-export declare function Classification({ id, title, prompt, instructions, items, categories, feedback, formative, retry, shuffle, maxAttempts, initialAssignments, onMarkResponse, onResult }: ClassificationProps): ReactNode;
+export declare function Classification({ id, title, prompt, instructions, items, categories, feedback, formative, retry, shuffle, maxAttempts, initialAssignments, initialChecked, onMarkResponse, onResult }: ClassificationProps): ReactNode;

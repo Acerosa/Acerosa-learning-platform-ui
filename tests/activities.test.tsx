@@ -83,6 +83,31 @@ describe("OptionCards", () => {
     }));
   });
 
+  it("restores a later server-checked option without waiting for a remount", async () => {
+    function Harness() {
+      const [selected, setSelected] = useState<string | undefined>();
+      const [checked, setChecked] = useState(false);
+      return (
+        <>
+          <button type="button" onClick={() => { setSelected("sensor"); setChecked(true); }}>hydrate</button>
+          <OptionCards
+            prompt="Which device collects a measurement?"
+            options={options}
+            correctOptionId="sensor"
+            initialSelectedId={selected}
+            initialChecked={checked}
+          />
+        </>
+      );
+    }
+    const user = userEvent.setup();
+    render(<Harness />);
+    expect(screen.getByRole("radio", { name: /Sensor/ })).not.toBeChecked();
+    await user.click(screen.getByRole("button", { name: "hydrate" }));
+    expect(screen.getByRole("radio", { name: /Sensor/ })).toBeChecked();
+    expect(screen.getByText("Your answer was recorded.")).toBeInTheDocument();
+  });
+
   it("records a decision without a local mark when no correct option is set", async () => {
     const user = userEvent.setup();
     const onResult = vi.fn();
@@ -827,6 +852,34 @@ describe("Classification", () => {
     { id: "rfid", label: "RFID" },
     { id: "nfc", label: "NFC" }
   ];
+
+  it("restores a later server-checked mapping onto the board", async () => {
+    function Harness() {
+      const [assignments, setAssignments] = useState<Record<string, string>>({});
+      const [checked, setChecked] = useState(false);
+      return (
+        <>
+          <button type="button" onClick={() => {
+            setAssignments({ warehouse: "rfid", payments: "nfc", inventory: "rfid" });
+            setChecked(true);
+          }}>hydrate</button>
+          <Classification
+            prompt="Put each use into the matching technology."
+            items={items}
+            categories={categories}
+            initialAssignments={assignments}
+            initialChecked={checked}
+          />
+        </>
+      );
+    }
+    const user = userEvent.setup();
+    render(<Harness />);
+    expect(screen.getByRole("button", { name: "Warehouse tracking" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "hydrate" }));
+    expect(screen.queryByRole("button", { name: "Warehouse tracking" })).not.toBeInTheDocument();
+    expect(screen.getByText("Your answer was recorded.")).toBeInTheDocument();
+  });
 
   it("places items, scores locally, shows feedback and retries", async () => {
     const user = userEvent.setup();

@@ -1,5 +1,5 @@
 export type PlacementMap = Record<string, string>;
-export declare function usePlacement(): {
+export declare function usePlacement(initialPlacements?: PlacementMap): {
     placements: PlacementMap;
     selectedItemId: string | null;
     selectItem: (itemId: string) => void;

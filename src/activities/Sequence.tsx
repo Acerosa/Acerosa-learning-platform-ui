@@ -1,4 +1,4 @@
-import { useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
 import { FeedbackPanel, type FeedbackState } from "./FeedbackPanel";
 import {
   activityResultFromMark,
@@ -10,6 +10,7 @@ import {
 } from "./server-mark";
 import { shuffled } from "./shuffle";
 import type { ActivityFeedbackCopy, ActivityItem, ActivityResult } from "./types";
+import { useRestoredChecked } from "./useRestoredState";
 
 export type SequenceProps = {
   id?: string;
@@ -23,6 +24,8 @@ export type SequenceProps = {
   retry?: boolean;
   shuffle?: boolean;
   maxAttempts?: number;
+  initialOrder?: string[];
+  initialChecked?: boolean;
   onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
 };
@@ -39,16 +42,28 @@ export function Sequence({
   retry = true,
   shuffle = false,
   maxAttempts,
+  initialOrder,
+  initialChecked = false,
   onMarkResponse,
   onResult
 }: SequenceProps): ReactNode {
   const initial = useMemo(() => shuffled(items, shuffle), [items, shuffle]);
-  const [order, setOrder] = useState<ActivityItem[]>(initial);
+  const restoredItems = useMemo(() => {
+    if (!Array.isArray(initialOrder) || !initialOrder.length) return initial;
+    const byId = new Map(items.map((item) => [item.id, item]));
+    const ordered = initialOrder.map((id) => byId.get(id)).filter(Boolean) as ActivityItem[];
+    return ordered.length === items.length ? ordered : initial;
+  }, [initial, initialOrder, items]);
+  const [order, setOrder] = useState<ActivityItem[]>(restoredItems);
+  useEffect(() => {
+    if (!Array.isArray(initialOrder) || !initialOrder.length) return;
+    setOrder(restoredItems);
+  }, [initialOrder, restoredItems]);
   const [attempts, setAttempts] = useState(0);
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useRestoredChecked(initialChecked, Boolean(initialOrder?.length));
   const [checking, setChecking] = useState(false);
-  const [status, setStatus] = useState<FeedbackState>("neutral");
-  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<FeedbackState>(initialChecked && initialOrder?.length ? "informative" : "neutral");
+  const [message, setMessage] = useState(initialChecked && initialOrder?.length ? "Your answer was recorded." : "");
   const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
   const serverMode = usesServerMark(onMarkResponse);
   const scored = localScoreEnabled(formative, correctOrder.length > 0, onMarkResponse);
