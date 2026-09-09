@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { FeedbackPanel, type FeedbackState } from "./FeedbackPanel";
 import {
   activityResultFromMark,
@@ -6,6 +6,8 @@ import {
   learnerCheckMessage,
   localScoreEnabled,
   resolveCanRetry,
+  RESTORED_CHECKED_MESSAGE,
+  restoredCheckedDisplay,
   usesServerMark,
   type OnMarkBlockResponse
 } from "./server-mark";
@@ -27,6 +29,8 @@ export type OptionCardsProps = {
   maxAttempts?: number;
   initialSelectedId?: string;
   initialChecked?: boolean;
+  initialCorrect?: boolean | null;
+  initialCanRetry?: boolean;
   onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
 };
@@ -45,6 +49,8 @@ export function OptionCards({
   maxAttempts,
   initialSelectedId,
   initialChecked = false,
+  initialCorrect,
+  initialCanRetry,
   onMarkResponse,
   onResult
 }: OptionCardsProps): ReactNode {
@@ -53,16 +59,38 @@ export function OptionCards({
   const [attempts, setAttempts] = useState(0);
   const [checked, setChecked] = useRestoredChecked(initialChecked, Boolean(initialSelectedId));
   const [checking, setChecking] = useState(false);
-  const [status, setStatus] = useState<FeedbackState>(initialChecked && initialSelectedId ? "informative" : "neutral");
-  const [message, setMessage] = useState(initialChecked && initialSelectedId ? "Your answer was recorded." : "");
-  const [serverCorrect, setServerCorrect] = useState<boolean | null>(null);
+  const opening = restoredCheckedDisplay({
+    checked: Boolean(initialChecked && initialSelectedId),
+    hasResponse: Boolean(initialSelectedId),
+    correct: initialCorrect,
+    feedback,
+    recordedMessage: RESTORED_CHECKED_MESSAGE
+  });
+  const restoreLockRef = useRef<"idle" | "restored" | "live" | "retry">("idle");
+  const [status, setStatus] = useState<FeedbackState>(opening?.status || "neutral");
+  const [message, setMessage] = useState(opening?.message || "");
+  const [serverCorrect, setServerCorrect] = useState<boolean | null>(opening?.serverCorrect ?? null);
+  const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>(initialCanRetry);
 
   useEffect(() => {
+    if (restoreLockRef.current === "live" || restoreLockRef.current === "retry") return;
     if (!initialChecked || !selectedId) return;
-    setStatus("informative");
-    setMessage("Your answer was recorded.");
-  }, [initialChecked, selectedId]);
-  const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
+    const restored = restoredCheckedDisplay({
+      checked: true,
+      hasResponse: true,
+      correct: initialCorrect,
+      feedback,
+      recordedMessage: RESTORED_CHECKED_MESSAGE
+    });
+    if (!restored) return;
+    setStatus(restored.status);
+    setMessage(restored.message);
+    setServerCorrect(restored.serverCorrect);
+    if (typeof initialCanRetry === "boolean") setServerCanRetry(initialCanRetry);
+    if (restored.status === "correct" || restored.status === "incorrect") {
+      restoreLockRef.current = "restored";
+    }
+  }, [feedback, initialCanRetry, initialChecked, initialCorrect, selectedId]);
   const serverMode = usesServerMark(onMarkResponse);
   const scored = localScoreEnabled(formative, Boolean(correctOptionId), onMarkResponse);
   const name = `lp-option-cards-${id}`;
@@ -95,6 +123,7 @@ export function OptionCards({
       setMessage("Checking your answer…");
       try {
         const marked = displayForMark(await onMarkResponse(responses), feedback, "Your choice has been recorded.");
+        restoreLockRef.current = "live";
         setAttempts(nextAttempts);
         setChecked(true);
         setServerCorrect(marked.correct);
@@ -129,6 +158,7 @@ export function OptionCards({
       : "Your choice has been recorded.";
     setAttempts(nextAttempts);
     setChecked(true);
+    restoreLockRef.current = "live";
     setServerCorrect(null);
     setStatus(isCorrect === true ? "correct" : isCorrect === false ? "incorrect" : "informative");
     setMessage(nextMessage);
@@ -142,6 +172,7 @@ export function OptionCards({
   }
 
   function reset() {
+    restoreLockRef.current = "retry";
     setSelectedId(null);
     setChecked(false);
     setChecking(false);

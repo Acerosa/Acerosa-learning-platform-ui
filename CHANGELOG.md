@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.1.10
+
+- Restored checked option-cards show Correct/Incorrect and authored learner
+  feedback when a previous server verdict is supplied. A live Check is not
+  overwritten by a later hydrate that only has `checked: true`. Hydration still
+  does not call `markBlock`.
+
 ## 0.1.9
 
 - Catalogue activities restore the latest checked response when `initialResponse`
