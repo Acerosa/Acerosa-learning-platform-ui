@@ -43,7 +43,7 @@ export { WeekAccessGuard } from "./components/WeekAccessGuard";
 export type { WeekAccessGuardProps } from "./components/WeekAccessGuard";
 export { WEEK_ACCESS_COPY, resolveWeekStatus, weekAccessFallbackCopy, weekIsAccessible, type WeekAccessRecord } from "./week-access";
 export { ActivityBlock, InteractiveActivity } from "./activities/ActivityBlock";
-export type { ActivityBlockProps, InteractiveActivityProps } from "./activities/ActivityBlock";
+export type { ActivityBlockProps, InteractiveActivityProps, RestoredActivityResult } from "./activities/ActivityBlock";
 export { CompletionModal } from "./activities/CompletionModal";
 export type { CompletionModalProps } from "./activities/CompletionModal";
 export { ProgressSummary, resolveProgressFraction } from "./activities/ProgressSummary";
@@ -69,5 +69,5 @@ export type { ActivityBlockContent, ActivityBlockDocument, ActivityDocument, Act
 export { isCatalogueReactType, normaliseActivityType, questionIdFor, resolveMinChars, REFLECTION_DEFAULT_MIN_CHARS, SHORT_RESPONSE_DEFAULT_MIN_CHARS } from "./activities/types";
 export { aggregatePracticeProgress, applyPracticeResult, blockScorableTotal as catalogueBlockScorableTotal, emptyPracticeProgress, isCompletableReactBlock, isPracticeCompletionCue, isScorableReactBlock, scorableBlocksComplete } from "./activities/practice-progress";
 export type { PracticeProgressAggregate, PracticeProgressState } from "./activities/practice-progress";
-export { SERVER_CHECK_FAILED_MESSAGE, SERVER_REVIEW_MESSAGE, createMarkResponseHandler, learnerSafeBlock } from "./activities/server-mark";
+export { SERVER_CHECK_FAILED_MESSAGE, SERVER_REVIEW_MESSAGE, createMarkResponseHandler, learnerSafeBlock, restoredCheckedDisplay } from "./activities/server-mark";
 export type { MarkResponseRequest, MarkResponseResult, OnMarkResponse } from "./activities/server-mark";

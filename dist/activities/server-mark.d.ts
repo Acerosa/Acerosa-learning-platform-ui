@@ -44,6 +44,18 @@ export declare function displayForMark(marked: MarkResponseResult, feedback?: Ac
     checkNumber?: number;
     remainingAttempts?: number | null;
 };
+export declare const RESTORED_CHECKED_MESSAGE = "Your answer was recorded.";
+export declare function restoredCheckedDisplay(options: {
+    checked: boolean;
+    hasResponse: boolean;
+    correct?: boolean | null;
+    feedback?: ActivityFeedbackCopy;
+    recordedMessage?: string;
+}): {
+    status: FeedbackState;
+    message: string;
+    serverCorrect: boolean | null;
+} | null;
 export declare function activityResultFromMark(marked: ReturnType<typeof displayForMark>, attempts: number, responses: unknown): ActivityResult;
 export declare function runMarkedCheck(onMarkResponse: OnMarkBlockResponse, responses: unknown, feedback?: ActivityFeedbackCopy, recordedMessage?: string): Promise<{
     ok: true;

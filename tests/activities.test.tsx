@@ -108,6 +108,103 @@ describe("OptionCards", () => {
     expect(screen.getByText("Your answer was recorded.")).toBeInTheDocument();
   });
 
+  it("keeps Incorrect and authored feedback when a later hydrate only marks the option checked", async () => {
+    const onMarkResponse = vi.fn(async () => ({
+      completed: true,
+      correct: false,
+      score: { correct: 0, total: 1 },
+      status: "incorrect" as const,
+      canRetry: true
+    }));
+    function Harness() {
+      const [selected, setSelected] = useState<string | undefined>();
+      const [checked, setChecked] = useState(false);
+      return (
+        <>
+          <button type="button" onClick={() => { setSelected("router"); setChecked(true); }}>hydrate</button>
+          <OptionCards
+            prompt="Which device collects a measurement?"
+            options={options}
+            onMarkResponse={onMarkResponse}
+            feedback={{ correct: "A sensor collects the measurement.", incorrect: "Not that device." }}
+            initialSelectedId={selected}
+            initialChecked={checked}
+          />
+        </>
+      );
+    }
+    const user = userEvent.setup();
+    render(<Harness />);
+    await user.click(screen.getByRole("radio", { name: /Router/ }));
+    await user.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Incorrect");
+    expect(screen.getByText("Not that device.")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "hydrate" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("Incorrect");
+    expect(screen.getByText("Not that device.")).toBeInTheDocument();
+    expect(screen.queryByText("Your answer was recorded.")).not.toBeInTheDocument();
+  });
+
+  it("restores Incorrect and authored feedback without marking again", async () => {
+    const onMarkResponse = vi.fn();
+    render(
+      <OptionCards
+        prompt="Which device collects a measurement?"
+        options={options}
+        onMarkResponse={onMarkResponse}
+        feedback={{ correct: "A sensor collects the measurement.", incorrect: "Not that device." }}
+        initialSelectedId="router"
+        initialChecked
+        initialCorrect={false}
+      />
+    );
+    expect(screen.getByRole("radio", { name: /Router/ })).toBeChecked();
+    expect(screen.getByRole("alert")).toHaveTextContent("Incorrect");
+    expect(screen.getByText("Not that device.")).toBeInTheDocument();
+    expect(screen.queryByText("Your answer was recorded.")).not.toBeInTheDocument();
+    expect(onMarkResponse).not.toHaveBeenCalled();
+  });
+
+  it("restores Correct and authored feedback without marking again", async () => {
+    const onMarkResponse = vi.fn();
+    render(
+      <OptionCards
+        prompt="Which device collects a measurement?"
+        options={options}
+        onMarkResponse={onMarkResponse}
+        feedback={{ correct: "A sensor collects the measurement.", incorrect: "Not that device." }}
+        initialSelectedId="sensor"
+        initialChecked
+        initialCorrect
+      />
+    );
+    expect(screen.getByRole("radio", { name: /Sensor/ })).toBeChecked();
+    expect(document.querySelector("[data-lp-feedback-state='correct']")).toHaveTextContent("A sensor collects the measurement.");
+    expect(screen.getAllByText("Correct").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Your answer was recorded.")).not.toBeInTheDocument();
+    expect(onMarkResponse).not.toHaveBeenCalled();
+  });
+
+  it("does not invent Correct or Incorrect for an unchecked restored draft", async () => {
+    const onMarkResponse = vi.fn();
+    render(
+      <OptionCards
+        prompt="Which device collects a measurement?"
+        options={options}
+        onMarkResponse={onMarkResponse}
+        feedback={{ correct: "A sensor collects the measurement.", incorrect: "Not that device." }}
+        initialSelectedId="router"
+        initialChecked={false}
+      />
+    );
+    expect(screen.getByRole("radio", { name: /Router/ })).toBeChecked();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.queryByText("Incorrect")).not.toBeInTheDocument();
+    expect(screen.queryByText("Correct")).not.toBeInTheDocument();
+    expect(screen.queryByText("Your answer was recorded.")).not.toBeInTheDocument();
+    expect(onMarkResponse).not.toHaveBeenCalled();
+  });
+
   it("records a decision without a local mark when no correct option is set", async () => {
     const user = userEvent.setup();
     const onResult = vi.fn();
@@ -1149,6 +1246,24 @@ describe("ActivityBlock", () => {
     const payload = markBlock.mock.calls.at(0)?.at(0) as { responses?: unknown } | undefined;
     expect(JSON.stringify(payload)).not.toMatch(/correctOptionId/);
     expect(payload?.responses).toEqual({ optionId: "a" });
+  });
+
+  it("restores a checked incorrect option-card from learner-safe results without marking", async () => {
+    const markBlock = vi.fn();
+    render(
+      <InteractiveActivity
+        activity={demoOptionCards}
+        platform={{ marking: { markBlock } }}
+        initialResponses={{ "cloud-models": "saas" }}
+        initialChecked={{ "cloud-models": true }}
+        initialResults={{ "cloud-models": { correct: false } }}
+      />
+    );
+    expect(screen.getByRole("radio", { name: /Software as a Service/ })).toBeChecked();
+    expect(screen.getByRole("alert")).toHaveTextContent("Incorrect");
+    expect(screen.getByText("Think about who manages the operating system.")).toBeInTheDocument();
+    expect(screen.queryByText("Your answer was recorded.")).not.toBeInTheDocument();
+    expect(markBlock).not.toHaveBeenCalled();
   });
 
   it("fails closed when catalogue platform marking is unavailable", async () => {

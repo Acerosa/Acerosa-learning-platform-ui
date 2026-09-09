@@ -74,7 +74,7 @@ export {
 } from "./week-access";
 
 export { ActivityBlock, InteractiveActivity } from "./activities/ActivityBlock";
-export type { ActivityBlockProps, InteractiveActivityProps } from "./activities/ActivityBlock";
+export type { ActivityBlockProps, InteractiveActivityProps, RestoredActivityResult } from "./activities/ActivityBlock";
 export { CompletionModal } from "./activities/CompletionModal";
 export type { CompletionModalProps } from "./activities/CompletionModal";
 export { ProgressSummary, resolveProgressFraction } from "./activities/ProgressSummary";
@@ -153,7 +153,8 @@ export {
   SERVER_CHECK_FAILED_MESSAGE,
   SERVER_REVIEW_MESSAGE,
   createMarkResponseHandler,
-  learnerSafeBlock
+  learnerSafeBlock,
+  restoredCheckedDisplay
 } from "./activities/server-mark";
 export type {
   MarkResponseRequest,

@@ -148,6 +148,32 @@ export function displayForMark(
   };
 }
 
+export const RESTORED_CHECKED_MESSAGE = "Your answer was recorded.";
+
+export function restoredCheckedDisplay(options: {
+  checked: boolean;
+  hasResponse: boolean;
+  correct?: boolean | null;
+  feedback?: ActivityFeedbackCopy;
+  recordedMessage?: string;
+}): {
+  status: FeedbackState;
+  message: string;
+  serverCorrect: boolean | null;
+} | null {
+  if (!options.checked || !options.hasResponse) return null;
+  const marked = displayForMark(
+    { completed: true, correct: options.correct ?? null },
+    options.feedback,
+    options.recordedMessage || RESTORED_CHECKED_MESSAGE
+  );
+  return {
+    status: marked.status,
+    message: marked.message,
+    serverCorrect: marked.correct
+  };
+}
+
 export function activityResultFromMark(
   marked: ReturnType<typeof displayForMark>,
   attempts: number,
