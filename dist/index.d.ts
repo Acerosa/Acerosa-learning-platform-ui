@@ -68,7 +68,7 @@ export type { LearningTextFieldProps, ReflectionProps, ShortResponseProps, TextR
 export type { ActivityBlockContent, ActivityBlockDocument, ActivityDocument, ActivityFeedbackCopy, ActivityItem, ActivityItemResult, ActivityOption, ActivityResult, ActivityScore } from "./activities/types";
 export { isCatalogueReactType, looksLikeTrueFalseOptions, normaliseActivityType, questionIdFor, resolveMinChars, shouldShuffle, REFLECTION_DEFAULT_MIN_CHARS, SHORT_RESPONSE_DEFAULT_MIN_CHARS } from "./activities/types";
 export { createSeededRandom, hashSeed, presentationShuffleSeed, shuffled, stableShuffle } from "./activities/shuffle";
-export { aggregatePracticeProgress, applyPracticeResult, blockScorableTotal as catalogueBlockScorableTotal, emptyPracticeProgress, isCompletableReactBlock, isPracticeCompletionCue, isScorableReactBlock, scorableBlocksComplete } from "./activities/practice-progress";
+export { activityProgressLabel, aggregatePracticeProgress, applyPracticeResult, blockScorableTotal as catalogueBlockScorableTotal, completableBlockIds, completedActivityCountFromCheckedDrafts, completedActivityCountFromState, emptyPracticeProgress, isActivityCheckedComplete, isActivityPracticeComplete, isCompletableReactBlock, isPracticeCompletionCue, isScorableReactBlock, scorableBlocksComplete } from "./activities/practice-progress";
 export type { PracticeProgressAggregate, PracticeProgressState } from "./activities/practice-progress";
 export { SERVER_CHECK_FAILED_MESSAGE, SERVER_REVIEW_MESSAGE, createMarkResponseHandler, learnerSafeBlock, restoredCheckedDisplay } from "./activities/server-mark";
 export type { MarkResponseRequest, MarkResponseResult, OnMarkResponse } from "./activities/server-mark";

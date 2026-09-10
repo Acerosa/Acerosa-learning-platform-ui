@@ -32,6 +32,8 @@ describe("package exports", () => {
     expect(ui.learnerSafeBlock).toBeTypeOf("function");
     expect(ui.aggregatePracticeProgress).toBeTypeOf("function");
     expect(ui.isPracticeCompletionCue).toBeTypeOf("function");
+    expect(ui.activityProgressLabel).toBeTypeOf("function");
+    expect(ui.completedActivityCountFromCheckedDrafts).toBeTypeOf("function");
     expect(ui.ShortResponse).toBeTypeOf("function");
     expect(ui.Reflection).toBeTypeOf("function");
     expect(ui.LearningTextField).toBeTypeOf("function");
@@ -44,7 +46,7 @@ describe("package exports", () => {
   it("points the published package at the ESM build and types", () => {
     const pkg = JSON.parse(readFileSync(join(root, "../package.json"), "utf8"));
     expect(pkg.name).toBe("@learning-platform/ui");
-    expect(pkg.version).toBe("0.1.12");
+    expect(pkg.version).toBe("0.1.13");
     expect(pkg.exports["."].import).toBe("./dist/index.js");
     expect(pkg.exports["."].types).toBe("./dist/index.d.ts");
     expect(pkg.peerDependencies["@learning-platform/core"]).toBe("^0.2.4");
