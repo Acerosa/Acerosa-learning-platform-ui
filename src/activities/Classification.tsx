@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { FeedbackPanel, type FeedbackState } from "./FeedbackPanel";
+import { useMemo, useState, type ReactNode } from "react";
+import { FeedbackPanel } from "./FeedbackPanel";
 import {
   activityResultFromMark,
   displayForMark,
@@ -11,6 +11,7 @@ import {
 } from "./server-mark";
 import { shuffled } from "./shuffle";
 import type { ActivityFeedbackCopy, ActivityItem, ActivityItemResult, ActivityResult } from "./types";
+import { useRestoredCheckedFeedback } from "./useRestoredCheckedFeedback";
 import { useRestoredChecked, useRestoredState } from "./useRestoredState";
 
 export type ClassificationProps = {
@@ -27,6 +28,8 @@ export type ClassificationProps = {
   maxAttempts?: number;
   initialAssignments?: Record<string, string>;
   initialChecked?: boolean;
+  initialCorrect?: boolean | null;
+  initialCanRetry?: boolean;
   onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
 };
@@ -71,6 +74,8 @@ export function Classification({
   maxAttempts,
   initialAssignments = {},
   initialChecked = false,
+  initialCorrect,
+  initialCanRetry,
   onMarkResponse,
   onResult
 }: ClassificationProps): ReactNode {
@@ -81,18 +86,26 @@ export function Classification({
   const restoredComplete = items.length > 0 && items.every((item) => initialAssignments[item.id]);
   const [checked, setChecked] = useRestoredChecked(initialChecked, restoredComplete);
   const [checking, setChecking] = useState(false);
-  const [status, setStatus] = useState<FeedbackState>(initialChecked && restoredComplete ? "informative" : "neutral");
-  const [message, setMessage] = useState(initialChecked && restoredComplete ? "Your answer was recorded." : "");
+  const hasResponse = items.length > 0 && items.every((item) => assignments[item.id]);
+  const {
+    status,
+    message,
+    serverCanRetry,
+    setStatus,
+    setMessage,
+    setServerCorrect,
+    setServerCanRetry,
+    markLive,
+    markRetry
+  } = useRestoredCheckedFeedback({
+    initialChecked,
+    hasResponse,
+    initialCorrect,
+    initialCanRetry,
+    feedback
+  });
   const [itemResults, setItemResults] = useState<ActivityItemResult[] | undefined>();
-
-  useEffect(() => {
-    if (!initialChecked) return;
-    if (!items.every((item) => assignments[item.id])) return;
-    setStatus("informative");
-    setMessage("Your answer was recorded.");
-  }, [assignments, initialChecked, items]);
   const [requiresReview, setRequiresReview] = useState(false);
-  const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
   const expected = Object.fromEntries(
     items.filter((item) => item.correctCategoryId).map((item) => [item.id, item.correctCategoryId as string])
   );
@@ -157,10 +170,12 @@ export function Classification({
           feedback,
           "Your categories have been recorded."
         );
+        markLive();
         setAttempts(nextAttempts);
         setChecked(true);
         setItemResults(marked.itemResults);
         setRequiresReview(marked.requiresReview);
+        setServerCorrect(marked.correct);
         setServerCanRetry(marked.canRetry);
         setStatus(marked.status);
         setMessage(marked.message);
@@ -169,6 +184,7 @@ export function Classification({
         setChecked(false);
         setItemResults(undefined);
         setRequiresReview(false);
+        setServerCorrect(null);
         setServerCanRetry(false);
         setStatus("informative");
         setMessage(learnerCheckMessage(error));
@@ -189,10 +205,12 @@ export function Classification({
       ? items.filter((item) => assignments[item.id] === expected[item.id]).length
       : 0;
     const isCorrect = scored ? correctCount === items.length : null;
+    markLive();
     setAttempts(nextAttempts);
     setChecked(true);
     setItemResults(undefined);
     setRequiresReview(false);
+    setServerCorrect(null);
     setStatus(isCorrect === true ? "correct" : isCorrect === false ? "incorrect" : "informative");
     setMessage(scored
       ? (isCorrect
@@ -209,12 +227,14 @@ export function Classification({
   }
 
   function reset() {
+    markRetry();
     setAssignments({});
     setSelectedItemId(null);
     setChecked(false);
     setChecking(false);
     setItemResults(undefined);
     setRequiresReview(false);
+    setServerCorrect(null);
     setServerCanRetry(undefined);
     setStatus("neutral");
     setMessage("");

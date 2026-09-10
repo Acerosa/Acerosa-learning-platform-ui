@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
-import { FeedbackPanel, type FeedbackState } from "./FeedbackPanel";
+import { FeedbackPanel } from "./FeedbackPanel";
 import {
   activityResultFromMark,
   localScoreEnabled,
@@ -10,6 +10,7 @@ import {
 } from "./server-mark";
 import { shuffled } from "./shuffle";
 import type { ActivityFeedbackCopy, ActivityItem, ActivityResult } from "./types";
+import { useRestoredCheckedFeedback } from "./useRestoredCheckedFeedback";
 import { useRestoredChecked } from "./useRestoredState";
 
 export type SequenceProps = {
@@ -26,6 +27,8 @@ export type SequenceProps = {
   maxAttempts?: number;
   initialOrder?: string[];
   initialChecked?: boolean;
+  initialCorrect?: boolean | null;
+  initialCanRetry?: boolean;
   onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
 };
@@ -44,6 +47,8 @@ export function Sequence({
   maxAttempts,
   initialOrder,
   initialChecked = false,
+  initialCorrect,
+  initialCanRetry,
   onMarkResponse,
   onResult
 }: SequenceProps): ReactNode {
@@ -62,9 +67,24 @@ export function Sequence({
   const [attempts, setAttempts] = useState(0);
   const [checked, setChecked] = useRestoredChecked(initialChecked, Boolean(initialOrder?.length));
   const [checking, setChecking] = useState(false);
-  const [status, setStatus] = useState<FeedbackState>(initialChecked && initialOrder?.length ? "informative" : "neutral");
-  const [message, setMessage] = useState(initialChecked && initialOrder?.length ? "Your answer was recorded." : "");
-  const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
+  const hasResponse = order.length > 0;
+  const {
+    status,
+    message,
+    serverCanRetry,
+    setStatus,
+    setMessage,
+    setServerCorrect,
+    setServerCanRetry,
+    markLive,
+    markRetry
+  } = useRestoredCheckedFeedback({
+    initialChecked,
+    hasResponse,
+    initialCorrect,
+    initialCanRetry,
+    feedback
+  });
   const serverMode = usesServerMark(onMarkResponse);
   const scored = localScoreEnabled(formative, correctOrder.length > 0, onMarkResponse);
   const locked = checked || checking;
@@ -119,14 +139,17 @@ export function Sequence({
       setChecking(false);
       if (!outcome.ok) {
         setChecked(false);
+        setServerCorrect(null);
         setServerCanRetry(false);
         setStatus("informative");
         setMessage(outcome.message);
         emit({ completed: false, correct: null, attempts: nextAttempts, responses, status: "error" });
         return;
       }
+      markLive();
       setAttempts(nextAttempts);
       setChecked(true);
+      setServerCorrect(outcome.marked.correct);
       setServerCanRetry(outcome.marked.canRetry);
       setStatus(outcome.marked.status);
       setMessage(outcome.marked.message);
@@ -135,8 +158,10 @@ export function Sequence({
     }
     const correctCount = scored ? ids.filter((itemId, index) => itemId === correctOrder[index]).length : 0;
     const isCorrect = scored ? correctCount === correctOrder.length && ids.length === correctOrder.length : null;
+    markLive();
     setAttempts(nextAttempts);
     setChecked(true);
+    setServerCorrect(null);
     setStatus(isCorrect === true ? "correct" : isCorrect === false ? "incorrect" : "informative");
     setMessage(scored
       ? (isCorrect
@@ -153,9 +178,11 @@ export function Sequence({
   }
 
   function reset() {
+    markRetry();
     setOrder(initial);
     setChecked(false);
     setChecking(false);
+    setServerCorrect(null);
     setServerCanRetry(undefined);
     setStatus("neutral");
     setMessage("");

@@ -19,7 +19,9 @@ export type PhraseCompletionProps = {
     maxAttempts?: number;
     initialPlacements?: Record<string, string>;
     initialChecked?: boolean;
+    initialCorrect?: boolean | null;
+    initialCanRetry?: boolean;
     onMarkResponse?: OnMarkBlockResponse;
     onResult?: (result: ActivityResult) => void;
 };
-export declare function PhraseCompletion({ id, title, prompt, instructions, gaps, options, correctOptionId, feedback, formative, retry, shuffle, maxAttempts, initialPlacements, initialChecked, onMarkResponse, onResult }: PhraseCompletionProps): ReactNode;
+export declare function PhraseCompletion({ id, title, prompt, instructions, gaps, options, correctOptionId, feedback, formative, retry, shuffle, maxAttempts, initialPlacements, initialChecked, initialCorrect, initialCanRetry, onMarkResponse, onResult }: PhraseCompletionProps): ReactNode;

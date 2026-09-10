@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from "react";
-import { FeedbackPanel, type FeedbackState } from "./FeedbackPanel";
+import { FeedbackPanel } from "./FeedbackPanel";
 import {
   activityResultFromMark,
   localScoreEnabled,
@@ -11,6 +11,7 @@ import {
 import { shuffled } from "./shuffle";
 import type { ActivityFeedbackCopy, ActivityItem, ActivityResult } from "./types";
 import { usePlacement } from "./usePlacement";
+import { useRestoredCheckedFeedback } from "./useRestoredCheckedFeedback";
 import { useRestoredChecked } from "./useRestoredState";
 
 export type DragDropProps = {
@@ -28,6 +29,8 @@ export type DragDropProps = {
   maxAttempts?: number;
   initialPlacements?: Record<string, string>;
   initialChecked?: boolean;
+  initialCorrect?: boolean | null;
+  initialCanRetry?: boolean;
   onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
 };
@@ -47,6 +50,8 @@ export function DragDrop({
   maxAttempts,
   initialPlacements = {},
   initialChecked = false,
+  initialCorrect,
+  initialCanRetry,
   onMarkResponse,
   onResult
 }: DragDropProps): ReactNode {
@@ -56,9 +61,24 @@ export function DragDrop({
   const restoredComplete = items.length > 0 && items.every((item) => initialPlacements[item.id]);
   const [checked, setChecked] = useRestoredChecked(initialChecked, restoredComplete);
   const [checking, setChecking] = useState(false);
-  const [status, setStatus] = useState<FeedbackState>(initialChecked && restoredComplete ? "informative" : "neutral");
-  const [message, setMessage] = useState(initialChecked && restoredComplete ? "Your answer was recorded." : "");
-  const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
+  const hasResponse = items.length > 0 && items.every((item) => placements[item.id]);
+  const {
+    status,
+    message,
+    serverCanRetry,
+    setStatus,
+    setMessage,
+    setServerCorrect,
+    setServerCanRetry,
+    markLive,
+    markRetry
+  } = useRestoredCheckedFeedback({
+    initialChecked,
+    hasResponse,
+    initialCorrect,
+    initialCanRetry,
+    feedback
+  });
   const serverMode = usesServerMark(onMarkResponse);
   const scored = localScoreEnabled(formative, Object.keys(correct).length > 0, onMarkResponse);
   const locked = checked || checking;
@@ -99,14 +119,17 @@ export function DragDrop({
       setChecking(false);
       if (!outcome.ok) {
         setChecked(false);
+        setServerCorrect(null);
         setServerCanRetry(false);
         setStatus("informative");
         setMessage(outcome.message);
         emit({ completed: false, correct: null, attempts: nextAttempts, responses, status: "error" });
         return;
       }
+      markLive();
       setAttempts(nextAttempts);
       setChecked(true);
+      setServerCorrect(outcome.marked.correct);
       setServerCanRetry(outcome.marked.canRetry);
       setStatus(outcome.marked.status);
       setMessage(outcome.marked.message);
@@ -117,8 +140,10 @@ export function DragDrop({
       ? items.filter((item) => placements[item.id] === correct[item.id]).length
       : 0;
     const isCorrect = scored ? correctCount === items.length : null;
+    markLive();
     setAttempts(nextAttempts);
     setChecked(true);
+    setServerCorrect(null);
     setStatus(isCorrect === true ? "correct" : isCorrect === false ? "incorrect" : "informative");
     setMessage(scored
       ? (isCorrect
@@ -135,9 +160,11 @@ export function DragDrop({
   }
 
   function reset() {
+    markRetry();
     resetPlacement();
     setChecked(false);
     setChecking(false);
+    setServerCorrect(null);
     setServerCanRetry(undefined);
     setStatus("neutral");
     setMessage("");

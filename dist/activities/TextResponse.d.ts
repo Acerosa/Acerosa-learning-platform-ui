@@ -18,11 +18,13 @@ export type TextResponseProps = {
     maxAttempts?: number;
     initialResponse?: string;
     initialChecked?: boolean;
+    initialCorrect?: boolean | null;
+    initialCanRetry?: boolean;
     saveLabel?: string;
     onMarkResponse?: OnMarkBlockResponse;
     onResult?: (result: ActivityResult) => void;
 };
-export declare function TextResponse({ id, blockType, title, prompt, instructions, guidance, placeholder, minChars, minimumCharacters, defaultMinChars, rows, feedback, retry, maxAttempts, initialResponse, initialChecked, saveLabel, onMarkResponse, onResult }: TextResponseProps): ReactNode;
+export declare function TextResponse({ id, blockType, title, prompt, instructions, guidance, placeholder, minChars, minimumCharacters, defaultMinChars, rows, feedback, retry, maxAttempts, initialResponse, initialChecked, initialCorrect, initialCanRetry, saveLabel, onMarkResponse, onResult }: TextResponseProps): ReactNode;
 export type ShortResponseProps = Omit<TextResponseProps, "blockType" | "defaultMinChars" | "rows"> & {
     rows?: number;
 };
