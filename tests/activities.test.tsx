@@ -1338,7 +1338,7 @@ describe("ActivityBlock", () => {
             content: {
               questionId: "demo-gap:g1",
               prompt: "The ___ layer",
-              gaps: [{ id: "blank" }],
+              gaps: [{ id: "blank", label: "blank" }],
               options: [{ id: "network", label: "network" }, { id: "data", label: "data" }],
               feedback: { correct: "Yes.", incorrect: "Not that term." }
             }

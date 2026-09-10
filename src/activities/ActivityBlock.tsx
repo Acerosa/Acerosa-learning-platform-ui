@@ -22,6 +22,7 @@ import {
 export type RestoredActivityResult = {
   correct?: boolean | null;
   canRetry?: boolean;
+  status?: "correct" | "incorrect" | "review" | "recorded" | "error";
 };
 
 export type ActivityBlockProps = {
