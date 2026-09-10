@@ -24,6 +24,7 @@ export type SequenceProps = {
   formative?: boolean;
   retry?: boolean;
   shuffle?: boolean;
+  shuffleSeed?: string;
   maxAttempts?: number;
   initialOrder?: string[];
   initialChecked?: boolean;
@@ -44,6 +45,7 @@ export function Sequence({
   formative = true,
   retry = true,
   shuffle = false,
+  shuffleSeed,
   maxAttempts,
   initialOrder,
   initialChecked = false,
@@ -52,7 +54,10 @@ export function Sequence({
   onMarkResponse,
   onResult
 }: SequenceProps): ReactNode {
-  const initial = useMemo(() => shuffled(items, shuffle), [items, shuffle]);
+  const initial = useMemo(
+    () => shuffled(items, shuffle, shuffleSeed || id),
+    [items, shuffle, shuffleSeed, id]
+  );
   const restoredItems = useMemo(() => {
     if (!Array.isArray(initialOrder) || !initialOrder.length) return initial;
     const byId = new Map(items.map((item) => [item.id, item]));

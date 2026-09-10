@@ -86,7 +86,19 @@ export type ActivityDocument = {
 export declare function normaliseActivityType(value: string | undefined): string;
 export declare function isFormativeContent(content?: ActivityBlockContent): boolean;
 export declare function allowsRetry(content?: ActivityBlockContent): boolean;
-export declare function shouldShuffle(content?: ActivityBlockContent): boolean;
+export type ShuffleDecisionContext = {
+    presentation?: string;
+    options?: ActivityOption[];
+};
+/** True/False banks keep conventional True → False order for usability. */
+export declare function looksLikeTrueFalseOptions(options?: ActivityOption[]): boolean;
+/**
+ * Catalogue presentation shuffle policy:
+ * - default ON for objective option/item banks (breaks authored first-correct bias)
+ * - explicit shuffle/randomise false opts out
+ * - true/false presentation (and conventional True/False labels) stay ordered
+ */
+export declare function shouldShuffle(content?: ActivityBlockContent, context?: ShuffleDecisionContext): boolean;
 export declare const CATALOGUE_REACT_TYPES: readonly ["single-choice", "option-cards", "classification", "drag-drop", "fill-gap", "phrase-completion", "ordering", "sequence", "short-response", "reflection"];
 export declare const SHORT_RESPONSE_DEFAULT_MIN_CHARS = 200;
 export declare const REFLECTION_DEFAULT_MIN_CHARS = 500;

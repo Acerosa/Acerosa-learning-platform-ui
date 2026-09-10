@@ -26,6 +26,7 @@ export type OptionCardsProps = {
   formative?: boolean;
   retry?: boolean;
   shuffle?: boolean;
+  shuffleSeed?: string;
   maxAttempts?: number;
   initialSelectedId?: string;
   initialChecked?: boolean;
@@ -46,6 +47,7 @@ export function OptionCards({
   formative = true,
   retry = true,
   shuffle = false,
+  shuffleSeed,
   maxAttempts,
   initialSelectedId,
   initialChecked = false,
@@ -54,7 +56,10 @@ export function OptionCards({
   onMarkResponse,
   onResult
 }: OptionCardsProps): ReactNode {
-  const ordered = useMemo(() => shuffled(options, shuffle), [options, shuffle]);
+  const ordered = useMemo(
+    () => shuffled(options, shuffle, shuffleSeed || id),
+    [options, shuffle, shuffleSeed, id]
+  );
   const [selectedId, setSelectedId] = useRestoredState<string | null>(initialSelectedId || null, null);
   const [attempts, setAttempts] = useState(0);
   const [checked, setChecked] = useRestoredChecked(initialChecked, Boolean(initialSelectedId));

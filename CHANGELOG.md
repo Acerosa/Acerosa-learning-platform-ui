@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.1.12
+
+- Catalogue objective banks (option cards, phrase banks, classification items,
+  drag-drop items, sequence starts) use a deterministic seeded shuffle by default
+  so authored “correct first” ordering is not learner-visible. True/False keeps
+  conventional order. Explicit `shuffle: false` / `randomise: false` opts out.
+- Shuffle seed derives from activity id, version, question/block id, and optional
+  `shuffleSalt` (e.g. learner id). Same seed → same order across rerender, retry,
+  and cross-device hydrate. Responses remain option/item IDs, not positions.
+
 ## 0.1.11
 
 - Classification, DragDrop, PhraseCompletion, Sequence and TextResponse restore

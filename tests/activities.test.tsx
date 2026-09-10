@@ -929,8 +929,8 @@ describe("content-driven catalogue demo", () => {
     expect(screen.getByRole("button", { name: "Sensor" })).toBeInTheDocument();
 
     rerender(<InteractiveActivity activity={demoSequence} />);
-    expect(screen.getByRole("listitem", { name: /RFID tag, position 1/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Move RFID tag down" })).toBeInTheDocument();
+    expect(screen.getByRole("listitem", { name: /RFID tag/ })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /Move RFID tag/ }).length).toBeGreaterThan(0);
 
     rerender(<InteractiveActivity activity={demoClassification} />);
     expect(screen.getByText("RFID and NFC uses")).toBeInTheDocument();

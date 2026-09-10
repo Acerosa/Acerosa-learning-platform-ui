@@ -100,8 +100,36 @@ export function allowsRetry(content?: ActivityBlockContent): boolean {
   return content?.retry !== false;
 }
 
-export function shouldShuffle(content?: ActivityBlockContent): boolean {
-  return content?.shuffle === true || content?.randomise === true;
+export type ShuffleDecisionContext = {
+  presentation?: string;
+  options?: ActivityOption[];
+};
+
+/** True/False banks keep conventional True → False order for usability. */
+export function looksLikeTrueFalseOptions(options?: ActivityOption[]): boolean {
+  if (!options || options.length !== 2) return false;
+  const labels = options
+    .map((option) => String(option.label || "").trim().toLowerCase())
+    .sort();
+  return labels[0] === "false" && labels[1] === "true";
+}
+
+/**
+ * Catalogue presentation shuffle policy:
+ * - default ON for objective option/item banks (breaks authored first-correct bias)
+ * - explicit shuffle/randomise false opts out
+ * - true/false presentation (and conventional True/False labels) stay ordered
+ */
+export function shouldShuffle(
+  content?: ActivityBlockContent,
+  context?: ShuffleDecisionContext
+): boolean {
+  if (content?.shuffle === false || content?.randomise === false) return false;
+  const presentation = normaliseActivityType(context?.presentation ?? content?.presentation);
+  if (presentation === "true-false") return false;
+  const options = context?.options ?? content?.options;
+  if (looksLikeTrueFalseOptions(options)) return false;
+  return true;
 }
 
 export const CATALOGUE_REACT_TYPES = [

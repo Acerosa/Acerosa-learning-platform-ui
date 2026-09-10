@@ -13,6 +13,7 @@ export type DragDropProps = {
     formative?: boolean;
     retry?: boolean;
     shuffle?: boolean;
+    shuffleSeed?: string;
     maxAttempts?: number;
     initialPlacements?: Record<string, string>;
     initialChecked?: boolean;
@@ -21,4 +22,4 @@ export type DragDropProps = {
     onMarkResponse?: OnMarkBlockResponse;
     onResult?: (result: ActivityResult) => void;
 };
-export declare function DragDrop({ id, title, prompt, instructions, items, targets, correct, feedback, formative, retry, shuffle, maxAttempts, initialPlacements, initialChecked, initialCorrect, initialCanRetry, onMarkResponse, onResult }: DragDropProps): ReactNode;
+export declare function DragDrop({ id, title, prompt, instructions, items, targets, correct, feedback, formative, retry, shuffle, shuffleSeed, maxAttempts, initialPlacements, initialChecked, initialCorrect, initialCanRetry, onMarkResponse, onResult }: DragDropProps): ReactNode;
