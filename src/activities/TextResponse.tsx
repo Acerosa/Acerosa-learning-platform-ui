@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { FeedbackPanel, type FeedbackState } from "./FeedbackPanel";
+import { FeedbackPanel } from "./FeedbackPanel";
 import { LearningTextField } from "./LearningTextField";
 import {
   activityResultFromMark,
@@ -16,6 +16,7 @@ import {
   type ActivityFeedbackCopy,
   type ActivityResult
 } from "./types";
+import { useRestoredCheckedFeedback } from "./useRestoredCheckedFeedback";
 import { useRestoredChecked, useRestoredState } from "./useRestoredState";
 
 export type TextResponseProps = {
@@ -35,6 +36,8 @@ export type TextResponseProps = {
   maxAttempts?: number;
   initialResponse?: string;
   initialChecked?: boolean;
+  initialCorrect?: boolean | null;
+  initialCanRetry?: boolean;
   saveLabel?: string;
   onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
@@ -64,6 +67,8 @@ export function TextResponse({
   maxAttempts,
   initialResponse = "",
   initialChecked = false,
+  initialCorrect,
+  initialCanRetry,
   saveLabel = "Save response",
   onMarkResponse,
   onResult
@@ -73,12 +78,26 @@ export function TextResponse({
   const [attempts, setAttempts] = useState(0);
   const [checked, setChecked] = useRestoredChecked(initialChecked, Boolean(String(initialResponse || "").trim()));
   const [checking, setChecking] = useState(false);
-  const [status, setStatus] = useState<FeedbackState>(initialChecked && String(initialResponse || "").trim() ? "informative" : "neutral");
-  const [message, setMessage] = useState(initialChecked && String(initialResponse || "").trim() ? "Your answer was recorded." : "");
-  const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
   const trimmed = value.trim();
   const length = trimmed.length;
   const met = length >= min;
+  const {
+    status,
+    message,
+    serverCanRetry,
+    setStatus,
+    setMessage,
+    setServerCorrect,
+    setServerCanRetry,
+    markLive,
+    markRetry
+  } = useRestoredCheckedFeedback({
+    initialChecked,
+    hasResponse: Boolean(trimmed),
+    initialCorrect,
+    initialCanRetry,
+    feedback
+  });
   const serverMode = usesServerMark(onMarkResponse);
   const locked = checked || checking;
   const canRetry = resolveCanRetry({
@@ -111,14 +130,17 @@ export function TextResponse({
           feedback,
           guidance || "Your response has been recorded."
         );
+        markLive();
         setAttempts(nextAttempts);
         setChecked(true);
+        setServerCorrect(marked.correct);
         setServerCanRetry(marked.canRetry);
         setStatus(marked.status);
         setMessage(marked.requiresReview || marked.correct !== null ? marked.message : (guidance || marked.message));
         emit(activityResultFromMark(marked, nextAttempts, trimmed));
       } catch (error) {
         setChecked(false);
+        setServerCorrect(null);
         setServerCanRetry(false);
         setStatus("informative");
         setMessage(learnerCheckMessage(error));
@@ -135,8 +157,10 @@ export function TextResponse({
       return;
     }
     const nextMessage = guidance || feedback?.correct || "Saved.";
+    markLive();
     setAttempts(nextAttempts);
     setChecked(true);
+    setServerCorrect(null);
     setStatus("informative");
     setMessage(nextMessage);
     emit({
@@ -148,9 +172,11 @@ export function TextResponse({
   }
 
   function reset() {
+    markRetry();
     setValue("");
     setChecked(false);
     setChecking(false);
+    setServerCorrect(null);
     setServerCanRetry(undefined);
     setStatus("neutral");
     setMessage("");

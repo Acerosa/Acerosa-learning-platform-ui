@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from "react";
-import { FeedbackPanel, type FeedbackState } from "./FeedbackPanel";
+import { FeedbackPanel } from "./FeedbackPanel";
 import {
   activityResultFromMark,
   localScoreEnabled,
@@ -11,6 +11,7 @@ import {
 import { shuffled } from "./shuffle";
 import type { ActivityFeedbackCopy, ActivityItem, ActivityOption, ActivityResult } from "./types";
 import { usePlacement } from "./usePlacement";
+import { useRestoredCheckedFeedback } from "./useRestoredCheckedFeedback";
 import { useRestoredChecked } from "./useRestoredState";
 
 export type PhraseGap = ActivityItem & { correctOptionId?: string };
@@ -30,6 +31,8 @@ export type PhraseCompletionProps = {
   maxAttempts?: number;
   initialPlacements?: Record<string, string>;
   initialChecked?: boolean;
+  initialCorrect?: boolean | null;
+  initialCanRetry?: boolean;
   onMarkResponse?: OnMarkBlockResponse;
   onResult?: (result: ActivityResult) => void;
 };
@@ -55,6 +58,30 @@ function parsePrompt(prompt: string, gaps: PhraseGap[]): Array<string | { gapId:
   return parts;
 }
 
+/** Persisted checks store gapId→optionId; usePlacement expects optionId→gapId. */
+function placementsFromInitial(
+  initial: Record<string, string> | undefined,
+  gaps: PhraseGap[],
+  options: ActivityOption[]
+): Record<string, string> {
+  if (!initial || !Object.keys(initial).length) return {};
+  const gapIds = new Set(gaps.map((gap) => gap.id));
+  const optionIds = new Set(options.map((option) => option.id));
+  const keys = Object.keys(initial);
+  const values = Object.values(initial).map(String);
+  if (keys.every((key) => optionIds.has(key)) && values.every((value) => gapIds.has(value))) {
+    return { ...initial };
+  }
+  if (keys.every((key) => gapIds.has(key)) && values.every((value) => optionIds.has(value))) {
+    const next: Record<string, string> = {};
+    for (const [gapId, optionId] of Object.entries(initial)) {
+      next[String(optionId)] = gapId;
+    }
+    return next;
+  }
+  return { ...initial };
+}
+
 export function PhraseCompletion({
   id = "phrase-completion",
   title,
@@ -70,6 +97,8 @@ export function PhraseCompletion({
   maxAttempts,
   initialPlacements = {},
   initialChecked = false,
+  initialCorrect,
+  initialCanRetry,
   onMarkResponse,
   onResult
 }: PhraseCompletionProps): ReactNode {
@@ -79,13 +108,32 @@ export function PhraseCompletion({
   }, [correctOptionId, gaps]);
   const orderedOptions = useMemo(() => shuffled(options, shuffle), [options, shuffle]);
   const promptParts = useMemo(() => parsePrompt(prompt, resolvedGaps), [prompt, resolvedGaps]);
-  const { placements, selectedItemId, selectItem, selectTarget, occupantOf, reset: resetPlacement } = usePlacement(initialPlacements);
+  const normalizedInitial = useMemo(
+    () => placementsFromInitial(initialPlacements, resolvedGaps, options),
+    [initialPlacements, options, resolvedGaps]
+  );
+  const { placements, selectedItemId, selectItem, selectTarget, occupantOf, reset: resetPlacement } = usePlacement(normalizedInitial);
   const [attempts, setAttempts] = useState(0);
-  const [checked, setChecked] = useRestoredChecked(initialChecked, Object.keys(initialPlacements).length > 0);
+  const [checked, setChecked] = useRestoredChecked(initialChecked, Object.keys(normalizedInitial).length > 0);
   const [checking, setChecking] = useState(false);
-  const [status, setStatus] = useState<FeedbackState>(initialChecked && Object.keys(initialPlacements).length ? "informative" : "neutral");
-  const [message, setMessage] = useState(initialChecked && Object.keys(initialPlacements).length ? "Your answer was recorded." : "");
-  const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>();
+  const hasResponse = resolvedGaps.length > 0 && resolvedGaps.every((gap) => Boolean(occupantOf(gap.id)));
+  const {
+    status,
+    message,
+    serverCanRetry,
+    setStatus,
+    setMessage,
+    setServerCorrect,
+    setServerCanRetry,
+    markLive,
+    markRetry
+  } = useRestoredCheckedFeedback({
+    initialChecked,
+    hasResponse,
+    initialCorrect,
+    initialCanRetry,
+    feedback
+  });
   const expected = Object.fromEntries(
     resolvedGaps.map((gap) => [gap.id, gap.correctOptionId]).filter((entry) => entry[1])
   ) as Record<string, string>;
@@ -132,14 +180,17 @@ export function PhraseCompletion({
       setChecking(false);
       if (!outcome.ok) {
         setChecked(false);
+        setServerCorrect(null);
         setServerCanRetry(false);
         setStatus("informative");
         setMessage(outcome.message);
         emit({ completed: false, correct: null, attempts: nextAttempts, responses, status: "error" });
         return;
       }
+      markLive();
       setAttempts(nextAttempts);
       setChecked(true);
+      setServerCorrect(outcome.marked.correct);
       setServerCanRetry(outcome.marked.canRetry);
       setStatus(outcome.marked.status);
       setMessage(outcome.marked.message);
@@ -150,8 +201,10 @@ export function PhraseCompletion({
       ? resolvedGaps.filter((gap) => responses[gap.id] === expected[gap.id]).length
       : 0;
     const isCorrect = scored ? correctCount === resolvedGaps.length : null;
+    markLive();
     setAttempts(nextAttempts);
     setChecked(true);
+    setServerCorrect(null);
     setStatus(isCorrect === true ? "correct" : isCorrect === false ? "incorrect" : "informative");
     setMessage(scored
       ? (isCorrect
@@ -168,9 +221,11 @@ export function PhraseCompletion({
   }
 
   function reset() {
+    markRetry();
     resetPlacement();
     setChecked(false);
     setChecking(false);
+    setServerCorrect(null);
     setServerCanRetry(undefined);
     setStatus("neutral");
     setMessage("");

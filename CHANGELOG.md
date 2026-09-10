@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.1.11
+
+- Classification, DragDrop, PhraseCompletion, Sequence and TextResponse restore
+  Correct / Incorrect / review feedback from learner-safe `initialResult` the same
+  way OptionCards already did. Opening a checked activity does not call marking.
+- PhraseCompletion accepts persisted gapId→optionId maps on hydrate (inverts to the
+  internal option→gap placement map).
+- Export `learnerSafeCheckedResult(s)` helpers for hub activity-state persistence.
+
 ## 0.1.10
 
 - Restored checked option-cards show Correct/Incorrect and authored learner

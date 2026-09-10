@@ -22,6 +22,7 @@ import {
 export type RestoredActivityResult = {
   correct?: boolean | null;
   canRetry?: boolean;
+  status?: "correct" | "incorrect" | "review" | "recorded" | "error";
 };
 
 export type ActivityBlockProps = {
@@ -104,6 +105,8 @@ export function ActivityBlock({ block, initialResponse, initialChecked, initialR
         categories={content.categories || []}
         initialAssignments={initialAssignments}
         initialChecked={initialChecked}
+        initialCorrect={initialResult?.correct}
+        initialCanRetry={initialResult?.canRetry}
         onMarkResponse={onMarkResponse}
         onResult={emit}
       />
@@ -122,6 +125,8 @@ export function ActivityBlock({ block, initialResponse, initialChecked, initialR
           ? initialResponse as Record<string, string>
           : undefined}
         initialChecked={initialChecked}
+        initialCorrect={initialResult?.correct}
+        initialCanRetry={initialResult?.canRetry}
         onMarkResponse={onMarkResponse}
         onResult={emit}
       />
@@ -140,6 +145,8 @@ export function ActivityBlock({ block, initialResponse, initialChecked, initialR
           ? initialResponse as Record<string, string>
           : undefined}
         initialChecked={initialChecked}
+        initialCorrect={initialResult?.correct}
+        initialCanRetry={initialResult?.canRetry}
         onMarkResponse={onMarkResponse}
         onResult={emit}
       />
@@ -155,6 +162,8 @@ export function ActivityBlock({ block, initialResponse, initialChecked, initialR
         correctOrder={content.correctOrder}
         initialOrder={Array.isArray(initialResponse) ? initialResponse as string[] : undefined}
         initialChecked={initialChecked}
+        initialCorrect={initialResult?.correct}
+        initialCanRetry={initialResult?.canRetry}
         onMarkResponse={onMarkResponse}
         onResult={emit}
       />
@@ -176,6 +185,8 @@ export function ActivityBlock({ block, initialResponse, initialChecked, initialR
         maxAttempts={mechanics.maxAttempts}
         initialResponse={initialText(initialResponse)}
         initialChecked={initialChecked}
+        initialCorrect={initialResult?.correct}
+        initialCanRetry={initialResult?.canRetry}
         onMarkResponse={onMarkResponse}
         onResult={emit}
       />
@@ -197,6 +208,8 @@ export function ActivityBlock({ block, initialResponse, initialChecked, initialR
         maxAttempts={mechanics.maxAttempts}
         initialResponse={initialText(initialResponse)}
         initialChecked={initialChecked}
+        initialCorrect={initialResult?.correct}
+        initialCanRetry={initialResult?.canRetry}
         onMarkResponse={onMarkResponse}
         onResult={emit}
       />

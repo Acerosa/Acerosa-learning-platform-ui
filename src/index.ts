@@ -161,3 +161,11 @@ export type {
   MarkResponseResult,
   OnMarkResponse
 } from "./activities/server-mark";
+export {
+  learnerSafeCheckedResult,
+  learnerSafeCheckedResults,
+  learnerSafeResultFromActivityResult
+} from "./activities/learner-safe-results";
+export type { LearnerSafeCheckedResult } from "./activities/learner-safe-results";
+export { useRestoredCheckedFeedback } from "./activities/useRestoredCheckedFeedback";
+export type { RestoredVerdictProps } from "./activities/useRestoredCheckedFeedback";

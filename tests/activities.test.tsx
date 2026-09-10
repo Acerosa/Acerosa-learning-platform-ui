@@ -1266,6 +1266,109 @@ describe("ActivityBlock", () => {
     expect(markBlock).not.toHaveBeenCalled();
   });
 
+  it("restores classification correct verdict from learner-safe results without marking", async () => {
+    const markBlock = vi.fn();
+    render(
+      <InteractiveActivity
+        activity={{
+          id: "demo-class",
+          version: "1.0.0",
+          blocks: [{
+            id: "sort",
+            type: "classification",
+            content: {
+              questionId: "demo-class:sort",
+              prompt: "Sort",
+              feedback: { correct: "Nice grouping.", incorrect: "Try again." },
+              items: [{ id: "one", label: "One" }],
+              categories: [{ id: "a", label: "Group A" }]
+            }
+          }]
+        }}
+        platform={{ marking: { markBlock } }}
+        initialResponses={{ "demo-class:sort": { one: "a" } }}
+        initialChecked={{ "demo-class:sort": true }}
+        initialResults={{ "demo-class:sort": { correct: true } }}
+      />
+    );
+    expect(screen.getByText("Correct")).toBeInTheDocument();
+    expect(screen.getByText("Nice grouping.")).toBeInTheDocument();
+    expect(markBlock).not.toHaveBeenCalled();
+  });
+
+  it("restores open ordering as review without inventing Correct/Incorrect", async () => {
+    const markBlock = vi.fn();
+    render(
+      <InteractiveActivity
+        activity={{
+          id: "demo-order",
+          version: "1.0.0",
+          blocks: [{
+            id: "rank",
+            type: "ordering",
+            content: {
+              questionId: "demo-order:rank",
+              prompt: "Rank",
+              items: [{ id: "a", label: "A" }, { id: "b", label: "B" }]
+            }
+          }]
+        }}
+        platform={{ marking: { markBlock } }}
+        initialResponses={{ "demo-order:rank": ["b", "a"] }}
+        initialChecked={{ "demo-order:rank": true }}
+        initialResults={{ "demo-order:rank": { correct: null, status: "review" } }}
+      />
+    );
+    expect(screen.queryByText("Correct")).not.toBeInTheDocument();
+    expect(screen.queryByText("Incorrect")).not.toBeInTheDocument();
+    expect(screen.getByText(/recorded|review|teacher/i)).toBeInTheDocument();
+    expect(markBlock).not.toHaveBeenCalled();
+  });
+
+  it("restores phrase-completion incorrect feedback from results without marking", async () => {
+    const markBlock = vi.fn();
+    render(
+      <InteractiveActivity
+        activity={{
+          id: "demo-gap",
+          version: "1.0.0",
+          blocks: [{
+            id: "g1",
+            type: "fill-gap",
+            content: {
+              questionId: "demo-gap:g1",
+              prompt: "The ___ layer",
+              gaps: [{ id: "blank", label: "blank" }],
+              options: [{ id: "network", label: "network" }, { id: "data", label: "data" }],
+              feedback: { correct: "Yes.", incorrect: "Not that term." }
+            }
+          }]
+        }}
+        platform={{ marking: { markBlock } }}
+        initialResponses={{ "demo-gap:g1": { blank: "data" } }}
+        initialChecked={{ "demo-gap:g1": true }}
+        initialResults={{ "demo-gap:g1": { correct: false } }}
+      />
+    );
+    expect(screen.getByRole("alert")).toHaveTextContent("Incorrect");
+    expect(screen.getByText("Not that term.")).toBeInTheDocument();
+    expect(markBlock).not.toHaveBeenCalled();
+  });
+
+  it("keeps old checked-only state on the generic recorded message", async () => {
+    const markBlock = vi.fn();
+    render(
+      <InteractiveActivity
+        activity={demoOptionCards}
+        platform={{ marking: { markBlock } }}
+        initialResponses={{ "cloud-models": "saas" }}
+        initialChecked={{ "cloud-models": true }}
+      />
+    );
+    expect(screen.getByText("Your answer was recorded.")).toBeInTheDocument();
+    expect(markBlock).not.toHaveBeenCalled();
+  });
+
   it("fails closed when catalogue platform marking is unavailable", async () => {
     const user = userEvent.setup();
     render(

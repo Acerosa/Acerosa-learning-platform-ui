@@ -71,3 +71,7 @@ export { aggregatePracticeProgress, applyPracticeResult, blockScorableTotal as c
 export type { PracticeProgressAggregate, PracticeProgressState } from "./activities/practice-progress";
 export { SERVER_CHECK_FAILED_MESSAGE, SERVER_REVIEW_MESSAGE, createMarkResponseHandler, learnerSafeBlock, restoredCheckedDisplay } from "./activities/server-mark";
 export type { MarkResponseRequest, MarkResponseResult, OnMarkResponse } from "./activities/server-mark";
+export { learnerSafeCheckedResult, learnerSafeCheckedResults, learnerSafeResultFromActivityResult } from "./activities/learner-safe-results";
+export type { LearnerSafeCheckedResult } from "./activities/learner-safe-results";
+export { useRestoredCheckedFeedback } from "./activities/useRestoredCheckedFeedback";
+export type { RestoredVerdictProps } from "./activities/useRestoredCheckedFeedback";

@@ -41,7 +41,7 @@ describe("package exports", () => {
   it("points the published package at the ESM build and types", () => {
     const pkg = JSON.parse(readFileSync(join(root, "../package.json"), "utf8"));
     expect(pkg.name).toBe("@learning-platform/ui");
-    expect(pkg.version).toBe("0.1.10");
+    expect(pkg.version).toBe("0.1.11");
     expect(pkg.exports["."].import).toBe("./dist/index.js");
     expect(pkg.exports["."].types).toBe("./dist/index.d.ts");
     expect(pkg.peerDependencies["@learning-platform/core"]).toBe("^0.2.4");
