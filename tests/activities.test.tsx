@@ -1038,6 +1038,49 @@ describe("Classification", () => {
     }));
   });
 
+  it("clears placements when parent re-injects an empty draft after Try again", async () => {
+    const user = userEvent.setup();
+    const onResult = vi.fn();
+    const stale = {
+      warehouse: "nfc",
+      payments: "nfc",
+      inventory: "rfid"
+    };
+    const { rerender } = render(
+      <Classification
+        prompt="Put each use into the matching technology."
+        items={items}
+        categories={categories}
+        initialAssignments={stale}
+        initialChecked
+        initialCorrect={false}
+        onResult={onResult}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: /Warehouse tracking ·/ })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Try again" }));
+    expect(onResult).toHaveBeenLastCalledWith(expect.objectContaining({
+      completed: false,
+      responses: {}
+    }));
+
+    rerender(
+      <Classification
+        prompt="Put each use into the matching technology."
+        items={items}
+        categories={categories}
+        initialAssignments={{}}
+        initialChecked={false}
+        onResult={onResult}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Warehouse tracking" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Warehouse tracking ·/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
   it("supports keyboard select-and-place", async () => {
     const user = userEvent.setup();
     render(

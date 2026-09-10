@@ -145,10 +145,16 @@ export {
   stableShuffle
 } from "./activities/shuffle";
 export {
+  activityProgressLabel,
   aggregatePracticeProgress,
   applyPracticeResult,
   blockScorableTotal as catalogueBlockScorableTotal,
+  completableBlockIds,
+  completedActivityCountFromCheckedDrafts,
+  completedActivityCountFromState,
   emptyPracticeProgress,
+  isActivityCheckedComplete,
+  isActivityPracticeComplete,
   isCompletableReactBlock,
   isPracticeCompletionCue,
   isScorableReactBlock,

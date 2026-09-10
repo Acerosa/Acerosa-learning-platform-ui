@@ -1,20 +1,20 @@
-import { jsxs as d, jsx as n, Fragment as tt } from "react/jsx-runtime";
-import { useId as $e, useState as T, useEffect as fe, useRef as Fe, useMemo as pe, useCallback as Me } from "react";
-import { isUnsafeAuthoredHtml as rt, resolveActivityVersion as nt } from "@learning-platform/core";
-import { isWeekAvailable as at } from "@learning-platform/core/curriculum-runtime";
-const st = ["exam", "assignment", "project"], ct = [
+import { jsxs as d, jsx as n, Fragment as nt } from "react/jsx-runtime";
+import { useId as Le, useState as T, useEffect as fe, useRef as we, useMemo as pe, useCallback as $e } from "react";
+import { isUnsafeAuthoredHtml as at, resolveActivityVersion as st } from "@learning-platform/core";
+import { isWeekAvailable as ct } from "@learning-platform/core/curriculum-runtime";
+const lt = ["exam", "assignment", "project"], ot = [
   "session",
   "independent-study",
   "homework",
   "revision",
   "retrieval"
-], Pe = {
+], Fe = {
   session: "Session",
   "independent-study": "Independent study",
   homework: "Homework",
   revision: "Revision",
   retrieval: "Retrieval"
-}, Ir = ["not-started", "in-progress", "completed"], Tr = ["available", "planned", "progress", "completed"], lt = {
+}, $r = ["not-started", "in-progress", "completed"], xr = ["available", "planned", "progress", "completed"], it = {
   showTitle: !0,
   showLearningOutcomes: !0,
   showAssignmentContext: !0,
@@ -23,19 +23,19 @@ const st = ["exam", "assignment", "project"], ct = [
   showIndependentStudy: !0,
   showProgress: !0
 };
-function ot(e = {}) {
-  return { ...lt, ...e };
+function dt(e = {}) {
+  return { ...it, ...e };
 }
-function it(e, t) {
+function ut(e, t) {
   return t ? t === "assignment" ? e.showAssignmentContext !== !1 : t === "exam" ? e.showExamContext !== !1 : t === "project" ? e.showProjectContext !== !1 : !0 : !1;
 }
-function dt(e) {
+function pt(e) {
   return e === "independent-study" || e === "homework";
 }
-function ut(e) {
-  return ct.includes(e);
+function mt(e) {
+  return ot.includes(e);
 }
-const pt = {
+const ht = {
   available: "available",
   active: "available",
   planned: "planned",
@@ -45,7 +45,7 @@ const pt = {
   "in-progress": "progress",
   progress: "progress",
   completed: "completed"
-}, mt = {
+}, ft = {
   available: "Available",
   active: "Available",
   planned: "Planned",
@@ -56,27 +56,27 @@ const pt = {
   progress: "In progress",
   completed: "Completed"
 };
-function ht(e) {
-  return pt[e || ""] || "planned";
+function gt(e) {
+  return ht[e || ""] || "planned";
 }
-function Ke(e, t = "") {
-  return mt[e || ""] || t || String(e || "Planned");
+function Ue(e, t = "") {
+  return ft[e || ""] || t || String(e || "Planned");
 }
-function ft(e, t = "Open activity") {
+function yt(e, t = "Open activity") {
   return e === "completed" ? "Review activity" : e === "in-progress" ? "Resume activity" : e === "not-started" ? "Start activity" : t;
 }
-function we({
+function Ae({
   status: e = "planned",
   label: t,
   marker: r = !0
 }) {
-  const s = ht(e);
+  const s = gt(e);
   return /* @__PURE__ */ d("span", { className: `lp-status-badge lp-status-badge--${s}`, role: "status", children: [
     r ? /* @__PURE__ */ n("span", { "aria-hidden": "true", children: "● " }) : null,
-    t || Ke(e)
+    t || Ue(e)
   ] });
 }
-function gt({
+function vt({
   title: e = "Untitled activity",
   description: t = "",
   activityType: r = "Activity",
@@ -86,38 +86,38 @@ function gt({
   href: c,
   actionLabel: o,
   badge: i = !1,
-  badgeStatus: u,
-  headingLevel: m = 2,
+  badgeStatus: h,
+  headingLevel: u = 2,
   muted: f = !1
 }) {
-  const h = m === 3 ? "h3" : "h2", y = [r, s].filter(Boolean), C = l ? Ke(l, a) : a;
+  const m = u === 3 ? "h3" : "h2", g = [r, s].filter(Boolean), N = l ? Ue(l, a) : a;
   return /* @__PURE__ */ d("article", { className: f ? "lp-card lp-activity-card lp-card--muted is-coming-soon" : "lp-card lp-activity-card", "data-state": l || void 0, children: [
     i ? /* @__PURE__ */ n(
-      we,
+      Ae,
       {
-        status: u || l || "planned",
+        status: h || l || "planned",
         label: typeof a == "string" && a !== "Not started" ? a : void 0
       }
     ) : null,
-    y.length ? /* @__PURE__ */ n("p", { className: "lp-card__meta", children: y.join(" · ") }) : null,
-    /* @__PURE__ */ n(h, { children: e }),
+    g.length ? /* @__PURE__ */ n("p", { className: "lp-card__meta", children: g.join(" · ") }) : null,
+    /* @__PURE__ */ n(m, { children: e }),
     t ? /* @__PURE__ */ n("p", { children: t }) : null,
-    /* @__PURE__ */ n("p", { className: "lp-card__meta", children: `Status: ${C}` }),
-    c ? /* @__PURE__ */ n("div", { className: "lp-card__actions", children: /* @__PURE__ */ n("a", { className: "lp-button", href: c, children: o || ft(l) }) }) : null
+    /* @__PURE__ */ n("p", { className: "lp-card__meta", children: `Status: ${N}` }),
+    c ? /* @__PURE__ */ n("div", { className: "lp-card__actions", children: /* @__PURE__ */ n("a", { className: "lp-button", href: c, children: o || yt(l) }) }) : null
   ] });
 }
-function yt(e, t) {
+function bt(e, t) {
   return e.href ? e.href : e.path != null && t ? t(e.path) : e.path || void 0;
 }
-function vt({ items: e = [], resolveHref: t }) {
+function Ct({ items: e = [], resolveHref: t }) {
   return e.length ? /* @__PURE__ */ n("nav", { className: "lp-breadcrumbs", "aria-label": "Breadcrumb", children: /* @__PURE__ */ n("ol", { className: "lp-breadcrumbs__list", children: e.map((r, s) => {
-    const a = s === e.length - 1, l = yt(r, t);
+    const a = s === e.length - 1, l = bt(r, t);
     return /* @__PURE__ */ n("li", { children: a || !l ? /* @__PURE__ */ n("span", { "aria-current": "page", children: r.label }) : /* @__PURE__ */ n("a", { href: l, children: r.label }) }, `${r.label}-${s}`);
   }) }) }) : /* @__PURE__ */ n("nav", { className: "lp-breadcrumbs", "aria-label": "Breadcrumb", hidden: !0 });
 }
-const bt = ["info", "success", "warning", "error"];
-function Nt({ tone: e = "info", title: t, message: r }) {
-  const s = bt.includes(e) ? e : "info";
+const Nt = ["info", "success", "warning", "error"];
+function kt({ tone: e = "info", title: t, message: r }) {
+  const s = Nt.includes(e) ? e : "info";
   return /* @__PURE__ */ d(
     "aside",
     {
@@ -130,14 +130,14 @@ function Nt({ tone: e = "info", title: t, message: r }) {
     }
   );
 }
-function Ct({
+function _t({
   contextType: e = "assignment",
   heading: t = "Context",
   items: r = [],
   description: s = "",
   action: a
 }) {
-  const l = st.includes(e) ? e : "assignment", c = `lp-context-${l}`;
+  const l = lt.includes(e) ? e : "assignment", c = `lp-context-${l}`;
   return /* @__PURE__ */ d(
     "section",
     {
@@ -156,7 +156,7 @@ function Ct({
     }
   );
 }
-function Ue({
+function Ve({
   heading: e = "Nothing to show yet",
   message: t = "Check again later.",
   action: r
@@ -167,7 +167,7 @@ function Ue({
     r != null && r.label && (r != null && r.href) ? /* @__PURE__ */ n("a", { className: "lp-button", href: r.href, children: r.label }) : null
   ] });
 }
-function Er({
+function Lr({
   heading: e = "There is a problem",
   message: t = "Try again."
 }) {
@@ -176,7 +176,7 @@ function Er({
     /* @__PURE__ */ n("p", { children: t })
   ] });
 }
-function kt({
+function St({
   items: e,
   currentId: t = "home",
   currentIds: r = [],
@@ -187,22 +187,22 @@ function kt({
   actions: o,
   listId: i
 }) {
-  const u = $e(), m = i || `lp-navigation-list-${u}`, [f, h] = T(!1), y = new Set([t, ...r].filter(Boolean)), C = e.find((g) => g.id === "home" && g.enabled !== !1), I = e.filter((g) => g.enabled !== !1);
+  const h = Le(), u = i || `lp-navigation-list-${h}`, [f, m] = T(!1), g = new Set([t, ...r].filter(Boolean)), N = e.find((y) => y.id === "home" && y.enabled !== !1), A = e.filter((y) => y.enabled !== !1);
   fe(() => {
-    function g(E) {
-      E.key === "Escape" && h(!1);
+    function y(E) {
+      E.key === "Escape" && m(!1);
     }
-    return document.addEventListener("keydown", g), () => document.removeEventListener("keydown", g);
+    return document.addEventListener("keydown", y), () => document.removeEventListener("keydown", y);
   }, []);
-  function v(g) {
-    if (g.key === "Escape") {
-      h(!1);
-      const E = g.currentTarget.querySelector(".lp-navigation__toggle");
+  function v(y) {
+    if (y.key === "Escape") {
+      m(!1);
+      const E = y.currentTarget.querySelector(".lp-navigation__toggle");
       E == null || E.focus();
     }
   }
   return /* @__PURE__ */ n("nav", { className: "lp-navigation", "aria-label": "Main navigation", onKeyDown: v, children: /* @__PURE__ */ d("div", { className: "lp-navigation__bar", children: [
-    /* @__PURE__ */ d("a", { className: "lp-navigation__brand", href: l || (C == null ? void 0 : C.path) || "./", children: [
+    /* @__PURE__ */ d("a", { className: "lp-navigation__brand", href: l || (N == null ? void 0 : N.path) || "./", children: [
       /* @__PURE__ */ n("span", { className: "lp-navigation__brand-title", children: s }),
       a ? /* @__PURE__ */ n("span", { className: "lp-navigation__brand-tagline", children: a }) : null
     ] }),
@@ -212,9 +212,9 @@ function kt({
         className: "lp-button lp-button--secondary lp-navigation__toggle",
         type: "button",
         "aria-expanded": f,
-        "aria-controls": m,
+        "aria-controls": u,
         "aria-label": f ? "Close main menu" : "Open main menu",
-        onClick: () => h((g) => !g),
+        onClick: () => m((y) => !y),
         children: "Menu"
       }
     ),
@@ -222,18 +222,18 @@ function kt({
       "ul",
       {
         className: "lp-navigation__list",
-        id: m,
+        id: u,
         "data-open": f ? "true" : "false",
-        children: I.map((g) => /* @__PURE__ */ n("li", { children: /* @__PURE__ */ n(
+        children: A.map((y) => /* @__PURE__ */ n("li", { children: /* @__PURE__ */ n(
           "a",
           {
             className: "lp-navigation__link",
-            href: g.path,
-            "aria-current": y.has(g.id) ? "page" : void 0,
-            onClick: () => h(!1),
-            children: g.label
+            href: y.path,
+            "aria-current": g.has(y.id) ? "page" : void 0,
+            onClick: () => m(!1),
+            children: y.label
           }
-        ) }, g.id))
+        ) }, y.id))
       }
     ),
     c ? /* @__PURE__ */ d("label", { className: "lp-theme-control", children: [
@@ -243,15 +243,15 @@ function kt({
         {
           "aria-label": "Theme preference",
           value: c.preference,
-          onChange: (g) => c.onChange(g.target.value),
-          children: c.modes.map((g) => /* @__PURE__ */ n("option", { value: g, children: g[0].toUpperCase() + g.slice(1) }, g))
+          onChange: (y) => c.onChange(y.target.value),
+          children: c.modes.map((y) => /* @__PURE__ */ n("option", { value: y, children: y[0].toUpperCase() + y.slice(1) }, y))
         }
       )
     ] }) : null,
     o ? /* @__PURE__ */ n("div", { className: "lp-navigation__actions", children: o }) : null
   ] }) });
 }
-function Mr({
+function Pr({
   brandTitle: e,
   brandTagline: t,
   navigation: r,
@@ -261,19 +261,19 @@ function Mr({
   actions: c,
   breadcrumbs: o,
   resolveHref: i,
-  pageHeader: u,
-  footer: m,
+  pageHeader: h,
+  footer: u,
   learnerHeader: f,
-  notice: h,
-  skipLabel: y = "Skip to main content",
-  mainId: C = "main-content",
-  children: I
+  notice: m,
+  skipLabel: g = "Skip to main content",
+  mainId: N = "main-content",
+  children: A
 }) {
-  const v = m && typeof m == "object" && "lines" in m ? m.lines.map((g) => /* @__PURE__ */ n("p", { children: g }, g)) : m;
+  const v = u && typeof u == "object" && "lines" in u ? u.lines.map((y) => /* @__PURE__ */ n("p", { children: y }, y)) : u;
   return /* @__PURE__ */ d("div", { className: "lp-shell", children: [
-    /* @__PURE__ */ n("a", { className: "lp-skip-link skip-link", href: `#${C}`, children: y }),
+    /* @__PURE__ */ n("a", { className: "lp-skip-link skip-link", href: `#${N}`, children: g }),
     /* @__PURE__ */ n("header", { className: "lp-shell__banner", role: "banner", children: /* @__PURE__ */ n(
-      kt,
+      St,
       {
         items: r,
         currentId: s,
@@ -285,17 +285,17 @@ function Mr({
       }
     ) }),
     /* @__PURE__ */ n("div", { className: "lp-shell__learner", children: f }),
-    h,
-    o ? /* @__PURE__ */ n(vt, { items: o, resolveHref: i }) : null,
-    u != null && u.title ? /* @__PURE__ */ d("div", { className: "lp-page-header page-header", children: [
-      /* @__PURE__ */ n("h1", { children: u.title }),
-      u.subtitle ? /* @__PURE__ */ n("p", { className: "lp-page-header__subtitle", children: u.subtitle }) : null
+    m,
+    o ? /* @__PURE__ */ n(Ct, { items: o, resolveHref: i }) : null,
+    h != null && h.title ? /* @__PURE__ */ d("div", { className: "lp-page-header page-header", children: [
+      /* @__PURE__ */ n("h1", { children: h.title }),
+      h.subtitle ? /* @__PURE__ */ n("p", { className: "lp-page-header__subtitle", children: h.subtitle }) : null
     ] }) : null,
-    /* @__PURE__ */ n("main", { id: C, className: "lp-shell__main site-main", tabIndex: -1, children: I }),
+    /* @__PURE__ */ n("main", { id: N, className: "lp-shell__main site-main", tabIndex: -1, children: A }),
     /* @__PURE__ */ n("footer", { className: "lp-shell__footer site-footer", role: "contentinfo", children: v })
   ] });
 }
-function xr({
+function Rr({
   learner: e,
   hubName: t,
   accountHref: r = "./account/",
@@ -328,17 +328,17 @@ function xr({
     ] })
   ] }) : /* @__PURE__ */ n("section", { className: "lp-learner-header", "aria-label": "Learner account", hidden: !0 });
 }
-function _t({ id: e, title: t }) {
+function wt({ id: e, title: t }) {
   const r = [e, t].filter(Boolean).join(" ") || "Learning outcome";
   return /* @__PURE__ */ n("span", { className: "lp-outcome-badge", children: r });
 }
-function $r({ message: e = "Loading…" }) {
+function Fr({ message: e = "Loading…" }) {
   return /* @__PURE__ */ d("div", { className: "lp-loading", role: "status", "aria-live": "polite", children: [
     /* @__PURE__ */ n("span", { className: "lp-loading__spinner", "aria-hidden": "true" }),
     /* @__PURE__ */ n("span", { children: e })
   ] });
 }
-function St({
+function At({
   title: e = "Progress",
   completed: t = 0,
   total: r = 0,
@@ -360,7 +360,7 @@ function St({
     /* @__PURE__ */ n("p", { children: `${l} of ${a} complete (${c}%)` })
   ] });
 }
-function wt({
+function It({
   id: e,
   title: t,
   kind: r = "session",
@@ -369,7 +369,7 @@ function wt({
   meta: l,
   children: c
 }) {
-  const o = ut(r) ? r : "session", i = Pe[o];
+  const o = mt(r) ? r : "session", i = Fe[o];
   return /* @__PURE__ */ d("details", { className: "lp-session lp-panel", id: e, "data-kind": o, open: a, children: [
     /* @__PURE__ */ n("summary", { className: "lp-session__summary", children: /* @__PURE__ */ d("span", { className: "lp-session__text", children: [
       /* @__PURE__ */ n("h2", { className: "lp-session__heading", children: t || i }),
@@ -381,7 +381,7 @@ function wt({
     ] })
   ] });
 }
-function At({
+function Tt({
   teachingWeek: e,
   title: t = "",
   subtitle: r = "",
@@ -392,38 +392,38 @@ function At({
 }) {
   const o = e ? `Week ${e}${t ? `: ${t}` : ""}` : t || "Week";
   return /* @__PURE__ */ d("header", { className: "lp-week-header", children: [
-    s ? /* @__PURE__ */ n(we, { status: s }) : null,
+    s ? /* @__PURE__ */ n(Ae, { status: s }) : null,
     c ? /* @__PURE__ */ n(l === 2 ? "h2" : "h1", { children: o }) : e ? /* @__PURE__ */ n("p", { className: "lp-week-header__kicker", children: `Teaching week ${e}` }) : null,
     r ? /* @__PURE__ */ n("p", { className: "lp-week-header__subtitle", children: r }) : null,
-    a.length ? /* @__PURE__ */ n("ul", { className: "lp-week-header__outcomes", children: a.map((u) => /* @__PURE__ */ n("li", { children: /* @__PURE__ */ n(_t, { id: u.id, title: u.title }) }, u.id || u.title)) }) : null
+    a.length ? /* @__PURE__ */ n("ul", { className: "lp-week-header__outcomes", children: a.map((h) => /* @__PURE__ */ n("li", { children: /* @__PURE__ */ n(wt, { id: h.id, title: h.title }) }, h.id || h.title)) }) : null
   ] });
 }
-function It({ previousWeek: e, nextWeek: t }) {
+function Et({ previousWeek: e, nextWeek: t }) {
   return !(e != null && e.href) && !(t != null && t.href) ? null : /* @__PURE__ */ n("nav", { className: "lp-week-nav", "aria-label": "Week", children: /* @__PURE__ */ d("ul", { className: "lp-week-nav__list", children: [
     e != null && e.href ? /* @__PURE__ */ n("li", { children: /* @__PURE__ */ n("a", { className: "lp-text-link", href: e.href, rel: "prev", children: e.label || "Previous week" }) }) : null,
     t != null && t.href ? /* @__PURE__ */ n("li", { children: /* @__PURE__ */ n("a", { className: "lp-text-link", href: t.href, rel: "next", children: t.label || "Next week" }) }) : null
   ] }) });
 }
-function Tt({ html: e, className: t, ...r }) {
+function Mt({ html: e, className: t, ...r }) {
   const s = e == null ? "" : String(e);
-  return rt(s) ? /* @__PURE__ */ n("div", { className: t, "data-lp-html-rejected": "true", ...r }) : /* @__PURE__ */ n("div", { className: t, dangerouslySetInnerHTML: { __html: s }, ...r });
+  return at(s) ? /* @__PURE__ */ n("div", { className: t, "data-lp-html-rejected": "true", ...r }) : /* @__PURE__ */ n("div", { className: t, dangerouslySetInnerHTML: { __html: s }, ...r });
 }
-function Et(e) {
+function $t(e) {
   if (e.meta) return e.meta;
-  const t = (e.activities || []).length, r = `${t} ${t === 1 ? "activity" : "activities"}`, s = Pe[e.kind || "session"] || Pe.session;
+  const t = (e.activities || []).length, r = `${t} ${t === 1 ? "activity" : "activities"}`, s = Fe[e.kind || "session"] || Fe.session;
   return e.kind && e.kind !== "session" ? `${s} · ${r}` : r;
 }
-function Mt(e, t) {
+function xt(e, t) {
   return "html" in e && e.html ? /* @__PURE__ */ n(
-    Tt,
+    Mt,
     {
       className: "lp-activity-html",
       html: e.html
     },
     t
-  ) : "children" in e && e.children ? /* @__PURE__ */ n("div", { children: e.children }, t) : /* @__PURE__ */ n(gt, { ...e }, t);
+  ) : "children" in e && e.children ? /* @__PURE__ */ n("div", { children: e.children }, t) : /* @__PURE__ */ n(vt, { ...e }, t);
 }
-function Lr({
+function Or({
   week: e = {},
   learningOutcomes: t = [],
   context: r = null,
@@ -434,52 +434,52 @@ function Lr({
   features: o = {},
   renderActivity: i
 }) {
-  const u = ot(o), m = (r == null ? void 0 : r.type) || (r == null ? void 0 : r.contextType), f = s.filter((y) => !(u.showIndependentStudy === !1 && dt(y.kind))), h = i || Mt;
+  const h = dt(o), u = (r == null ? void 0 : r.type) || (r == null ? void 0 : r.contextType), f = s.filter((g) => !(h.showIndependentStudy === !1 && pt(g.kind))), m = i || xt;
   return /* @__PURE__ */ d("div", { className: "lp-week", "data-week": e.id || void 0, children: [
     /* @__PURE__ */ n(
-      At,
+      Tt,
       {
         teachingWeek: e.teachingWeek,
         title: e.title,
         subtitle: e.subtitle,
         status: e.status,
-        learningOutcomes: u.showLearningOutcomes ? t : [],
+        learningOutcomes: h.showLearningOutcomes ? t : [],
         headingLevel: e.headingLevel || 1,
-        showTitle: u.showTitle !== !1
+        showTitle: h.showTitle !== !1
       }
     ),
-    r && it(u, m) ? /* @__PURE__ */ n(
-      Ct,
+    r && ut(h, u) ? /* @__PURE__ */ n(
+      _t,
       {
-        contextType: m,
+        contextType: u,
         heading: r.heading,
         items: r.items,
         description: r.description,
         action: r.action
       }
     ) : null,
-    f.length ? f.map((y) => /* @__PURE__ */ n(
-      wt,
+    f.length ? f.map((g) => /* @__PURE__ */ n(
+      It,
       {
-        id: y.id,
-        title: y.title,
-        kind: y.kind,
-        summary: y.summary,
-        defaultOpen: y.defaultOpen,
-        meta: Et(y),
-        children: (y.activities || []).map((C, I) => h(C, I))
+        id: g.id,
+        title: g.title,
+        kind: g.kind,
+        summary: g.summary,
+        defaultOpen: g.defaultOpen,
+        meta: $t(g),
+        children: (g.activities || []).map((N, A) => m(N, A))
       },
-      y.id || y.title
+      g.id || g.title
     )) : /* @__PURE__ */ n(
-      Ue,
+      Ve,
       {
         heading: "Planned teaching week",
         message: e.emptyMessage || "Detailed session activities for this week have not been added yet.",
         action: e.emptyAction
       }
     ),
-    u.showProgress && a ? /* @__PURE__ */ n(St, { ...a }) : null,
-    /* @__PURE__ */ n(It, { previousWeek: l, nextWeek: c })
+    h.showProgress && a ? /* @__PURE__ */ n(At, { ...a }) : null,
+    /* @__PURE__ */ n(Et, { previousWeek: l, nextWeek: c })
   ] });
 }
 const ye = {
@@ -490,14 +490,14 @@ const ye = {
   inaccessibleHeading: "Week not available",
   inaccessibleMessage: "This week is not available."
 };
-function Be(e) {
+function je(e) {
   var t;
   return String(e.status ?? ((t = e.metadata) == null ? void 0 : t.status) ?? "").trim();
 }
-function Ve(e) {
-  return at(Be(e));
+function Ge(e) {
+  return ct(je(e));
 }
-function xt(e) {
+function Lt(e) {
   const t = e.toLowerCase();
   return t === "planned" ? {
     heading: ye.plannedHeading,
@@ -510,81 +510,81 @@ function xt(e) {
     message: ye.inaccessibleMessage
   };
 }
-function $t({ href: e, children: t, className: r }) {
+function Pt({ href: e, children: t, className: r }) {
   return /* @__PURE__ */ n("a", { className: r, href: e, children: t });
 }
-function Pr({
+function Br({
   week: e,
   href: t,
   children: r,
   className: s = "lp-text-link",
   lockedClassName: a = "lp-week-access-link lp-week-access-link--locked",
-  renderLink: l = $t
+  renderLink: l = Pt
 }) {
-  if (Ve(e))
+  if (Ge(e))
     return l({ href: t, children: r, className: s });
-  const c = Be(e);
+  const c = je(e);
   return /* @__PURE__ */ d("span", { className: a, "aria-disabled": "true", children: [
     /* @__PURE__ */ n("span", { className: "lp-week-access-link__label", children: r }),
     " ",
-    /* @__PURE__ */ n(we, { status: c || "planned" })
+    /* @__PURE__ */ n(Ae, { status: c || "planned" })
   ] });
 }
-function Rr({ week: e, children: t, fallback: r }) {
-  if (Ve(e))
+function jr({ week: e, children: t, fallback: r }) {
+  if (Ge(e))
     return t;
   if (r != null)
     return r;
-  const s = Be(e), a = xt(s);
+  const s = je(e), a = Lt(s);
   return /* @__PURE__ */ d("div", { className: "lp-week-access-guard", children: [
-    /* @__PURE__ */ n(we, { status: s || "planned" }),
-    /* @__PURE__ */ n(Ue, { heading: a.heading, message: a.message })
+    /* @__PURE__ */ n(Ae, { status: s || "planned" }),
+    /* @__PURE__ */ n(Ve, { heading: a.heading, message: a.message })
   ] });
 }
-const Lt = ["neutral", "correct", "incorrect", "informative", "hint"], Pt = {
+const Rt = ["neutral", "correct", "incorrect", "informative", "hint"], Ft = {
   neutral: { tone: "info", label: "Feedback" },
   correct: { tone: "success", label: "Correct" },
   incorrect: { tone: "error", label: "Incorrect" },
   informative: { tone: "info", label: "Information" },
   hint: { tone: "warning", label: "Hint" }
 };
-function ve({
+function be({
   state: e = "neutral",
   title: t,
   message: r
 }) {
-  const s = Lt.includes(e) ? e : "neutral", a = Pt[s];
-  return !r && !t ? null : /* @__PURE__ */ n("div", { className: "lp-feedback", "data-lp-feedback-state": s, "data-lp-feedback": !0, children: /* @__PURE__ */ n(Nt, { tone: a.tone, title: t || a.label, message: r }) });
+  const s = Rt.includes(e) ? e : "neutral", a = Ft[s];
+  return !r && !t ? null : /* @__PURE__ */ n("div", { className: "lp-feedback", "data-lp-feedback-state": s, "data-lp-feedback": !0, children: /* @__PURE__ */ n(kt, { tone: a.tone, title: t || a.label, message: r }) });
 }
-const Re = "Your answer could not be checked. Please try again.", Rt = "Your response has been recorded for review.";
+const Oe = "Your answer could not be checked. Please try again.", Ot = "Your response has been recorded for review.";
 function ge(e) {
   return typeof e == "function";
 }
-function Le(e) {
+function Pe(e) {
   if (e && typeof e == "object" && "learnerMessage" in e) {
     const t = String(e.learnerMessage || "").trim();
     if (t) return t;
   }
-  return Re;
+  return Oe;
 }
-function Ge() {
+function ze() {
   return async () => {
-    throw Object.assign(new Error(Re), {
+    throw Object.assign(new Error(Oe), {
       code: "MARKING_UNAVAILABLE",
-      learnerMessage: Re
+      learnerMessage: Oe
     });
   };
 }
-function be(e) {
+function Ce(e) {
   return !e.checked || e.serverCanRetry === !1 ? !1 : e.serverCanRetry === !0 ? !0 : e.localRetry && (typeof e.localMaxAttempts != "number" || e.attempts < e.localMaxAttempts);
 }
-function Ae(e, t, r) {
+function Ie(e, t, r) {
   return !!(e && t && !ge(r));
 }
-function Ie(e, t, r = "Your response has been recorded.") {
+function Te(e, t, r = "Your response has been recorded.") {
   return e.requiresReview || e.status === "review" ? {
     status: "informative",
-    message: Rt,
+    message: Ot,
     correct: null,
     score: void 0,
     requiresReview: !0,
@@ -631,7 +631,7 @@ function Ie(e, t, r = "Your response has been recorded.") {
 const Se = "Your answer was recorded.";
 function xe(e) {
   if (!e.checked || !e.hasResponse) return null;
-  const t = Ie(
+  const t = Te(
     { completed: !0, correct: e.correct ?? null },
     e.feedback,
     e.recordedMessage || Se
@@ -657,67 +657,67 @@ function Ne(e, t, r) {
     remainingAttempts: e.remainingAttempts
   };
 }
-async function je(e, t, r, s = "Your response has been recorded.") {
+async function De(e, t, r, s = "Your response has been recorded.") {
   try {
     return {
       ok: !0,
-      marked: Ie(await e(t), r, s)
+      marked: Te(await e(t), r, s)
     };
   } catch (a) {
-    return { ok: !1, message: Le(a) };
+    return { ok: !1, message: Pe(a) };
   }
 }
-const Ot = /^(correctOptionId|correctCategoryId|correctValues|answerKey|markScheme|modelAnswer|correctOptions|correctOrder|spec)$/;
-function Oe(e) {
-  if (Array.isArray(e)) return e.map(Oe);
+const Bt = /^(correctOptionId|correctCategoryId|correctValues|answerKey|markScheme|modelAnswer|correctOptions|correctOrder|spec)$/;
+function Be(e) {
+  if (Array.isArray(e)) return e.map(Be);
   if (!e || typeof e != "object") return e;
   const t = {};
   for (const [r, s] of Object.entries(e))
-    Ot.test(r) || r === "correct" && s && typeof s == "object" || (t[r] = Oe(s));
+    Bt.test(r) || r === "correct" && s && typeof s == "object" || (t[r] = Be(s));
   return t;
 }
-function Ft(e) {
-  return Oe(e);
+function jt(e) {
+  return Be(e);
 }
-function Bt(e, t) {
+function Dt(e, t) {
   if (!e || typeof e != "object") return;
   const r = e.marking;
   if (!r || typeof r.markBlock != "function")
-    return Ge();
+    return ze();
   const s = r.markBlock;
   return (a) => s({
     activityKey: t.id,
     activityVersion: a.activityVersion,
-    block: Ft(a.block),
+    block: jt(a.block),
     responses: a.responses,
     sourcePage: typeof window < "u" ? window.location.pathname : void 0
   });
 }
-function jt(e) {
+function qt(e) {
   let t = 2166136261;
   for (let r = 0; r < e.length; r += 1)
     t ^= e.charCodeAt(r), t = Math.imul(t, 16777619);
   return t >>> 0;
 }
-function Dt(e) {
-  let t = jt(e) || 1;
+function Yt(e) {
+  let t = qt(e) || 1;
   return () => {
     t |= 0, t = t + 1831565813 | 0;
     let r = Math.imul(t ^ t >>> 15, 1 | t);
     return r = r + Math.imul(r ^ r >>> 7, 61 | r) ^ r, ((r ^ r >>> 14) >>> 0) / 4294967296;
   };
 }
-function qt(e, t) {
+function Ht(e, t) {
   const r = e.slice();
   if (r.length < 2) return r;
-  const s = Dt(t);
+  const s = Yt(t);
   for (let a = r.length - 1; a > 0; a -= 1) {
     const l = Math.floor(s() * (a + 1)), c = r[a];
     r[a] = r[l], r[l] = c;
   }
   return r;
 }
-function ze(e) {
+function We(e) {
   const t = [
     e.activityId,
     e.activityVersion,
@@ -727,27 +727,27 @@ function ze(e) {
   ].map((r) => r == null ? "" : String(r).trim()).filter(Boolean);
   return t.length ? t.join("|") : "default";
 }
-function Te(e, t, r = "default") {
-  return !t || e.length < 2 ? e.slice() : qt(e, r);
+function Ee(e, t, r = "default") {
+  return !t || e.length < 2 ? e.slice() : Ht(e, r);
 }
-function Ee(e) {
+function Me(e) {
   const t = !!(e.initialChecked && e.hasResponse), r = xe({
     checked: t,
     hasResponse: e.hasResponse,
     correct: e.initialCorrect,
     feedback: e.feedback,
     recordedMessage: Se
-  }), s = Fe("idle"), [a, l] = T((r == null ? void 0 : r.status) || "neutral"), [c, o] = T((r == null ? void 0 : r.message) || ""), [i, u] = T((r == null ? void 0 : r.serverCorrect) ?? null), [m, f] = T(e.initialCanRetry);
+  }), s = we("idle"), [a, l] = T((r == null ? void 0 : r.status) || "neutral"), [c, o] = T((r == null ? void 0 : r.message) || ""), [i, h] = T((r == null ? void 0 : r.serverCorrect) ?? null), [u, f] = T(e.initialCanRetry);
   return fe(() => {
     if (s.current === "live" || s.current === "retry" || !e.initialChecked || !e.hasResponse) return;
-    const h = xe({
+    const m = xe({
       checked: !0,
       hasResponse: !0,
       correct: e.initialCorrect,
       feedback: e.feedback,
       recordedMessage: Se
     });
-    h && (l(h.status), o(h.message), u(h.serverCorrect), typeof e.initialCanRetry == "boolean" && f(e.initialCanRetry), (h.status === "correct" || h.status === "incorrect" || h.status === "informative") && (s.current = "restored"));
+    m && (l(m.status), o(m.message), h(m.serverCorrect), typeof e.initialCanRetry == "boolean" && f(e.initialCanRetry), (m.status === "correct" || m.status === "incorrect" || m.status === "informative") && (s.current = "restored"));
   }, [
     e.feedback,
     e.hasResponse,
@@ -758,10 +758,10 @@ function Ee(e) {
     status: a,
     message: c,
     serverCorrect: i,
-    serverCanRetry: m,
+    serverCanRetry: u,
     setStatus: l,
     setMessage: o,
-    setServerCorrect: u,
+    setServerCorrect: h,
     setServerCanRetry: f,
     markLive: () => {
       s.current = "live";
@@ -771,33 +771,41 @@ function Ee(e) {
     }
   };
 }
-function Ye(e) {
+function Re(e) {
   return e == null ? !1 : typeof e == "string" || Array.isArray(e) ? e.length > 0 : typeof e == "object" ? Object.keys(e).length > 0 : !0;
 }
-function De(e, t) {
-  const [r, s] = T(Ye(e) ? e : t);
+function qe(e, t) {
+  const [r, s] = T(Re(e) ? e : t), a = we(Re(e));
   return fe(() => {
-    Ye(e) && s(e);
-  }, [e]), [r, s];
-}
-function Ce(e, t) {
-  const [r, s] = T(!!(e && t));
-  return fe(() => {
-    e && t && s(!0);
+    if (Re(e)) {
+      a.current = !0, s(e);
+      return;
+    }
+    a.current && (a.current = !1, s(t));
   }, [t, e]), [r, s];
 }
-function ke(e) {
+function ke(e, t) {
+  const [r, s] = T(!!(e && t));
+  return fe(() => {
+    if (e && t) {
+      s(!0);
+      return;
+    }
+    (e === !1 || !t) && s(!1);
+  }, [t, e]), [r, s];
+}
+function _e(e) {
   return e.label || e.text || e.id;
 }
-function Yt(e, t, r, s, a, l, c, o) {
+function Kt(e, t, r, s, a, l, c, o) {
   if (!r) return "Placed";
   if (l) {
-    const i = c == null ? void 0 : c.find((u) => u.itemId === e);
+    const i = c == null ? void 0 : c.find((h) => h.itemId === e);
     return (i == null ? void 0 : i.correct) === !0 ? "Correct" : (i == null ? void 0 : i.correct) === !1 ? "Incorrect" : o || i != null && i.requiresReview ? "Recorded" : "Placed";
   }
   return s ? a[e] === t ? "Correct" : "Incorrect" : "Placed";
 }
-function Ht({
+function Ut({
   id: e = "classification",
   title: t,
   prompt: r,
@@ -807,20 +815,20 @@ function Ht({
   feedback: c,
   formative: o = !0,
   retry: i = !0,
-  shuffle: u = !1,
-  shuffleSeed: m,
+  shuffle: h = !1,
+  shuffleSeed: u,
   maxAttempts: f,
-  initialAssignments: h = {},
-  initialChecked: y = !1,
-  initialCorrect: C,
-  initialCanRetry: I,
+  initialAssignments: m = {},
+  initialChecked: g = !1,
+  initialCorrect: N,
+  initialCanRetry: A,
   onMarkResponse: v,
-  onResult: g
+  onResult: y
 }) {
   const E = pe(
-    () => Te(a, u, m || e),
-    [a, u, m, e]
-  ), [k, x] = De(h, {}), [F, V] = T(null), [W, G] = T(0), X = a.length > 0 && a.every((p) => h[p.id]), [$, M] = Ce(y, X), [z, J] = T(!1), B = a.length > 0 && a.every((p) => k[p.id]), {
+    () => Ee(a, h, u || e),
+    [a, h, u, e]
+  ), [k, $] = qe(m, {}), [O, V] = T(null), [W, G] = T(0), X = a.length > 0 && a.every((p) => m[p.id]), [x, M] = ke(g, X), [z, J] = T(!1), B = a.length > 0 && a.every((p) => k[p.id]), {
     status: ce,
     message: j,
     serverCanRetry: Q,
@@ -830,35 +838,35 @@ function Ht({
     setServerCanRetry: q,
     markLive: U,
     markRetry: Y
-  } = Ee({
-    initialChecked: y,
+  } = Me({
+    initialChecked: g,
     hasResponse: B,
-    initialCorrect: C,
-    initialCanRetry: I,
+    initialCorrect: N,
+    initialCanRetry: A,
     feedback: c
   }), [H, ne] = T(), [ee, Z] = T(!1), le = Object.fromEntries(
     a.filter((p) => p.correctCategoryId).map((p) => [p.id, p.correctCategoryId])
-  ), N = ge(v), O = Ae(o, Object.keys(le).length > 0, v), b = $ || z, S = be({
-    checked: $,
+  ), C = ge(v), F = Ie(o, Object.keys(le).length > 0, v), b = x || z, S = Ce({
+    checked: x,
     localRetry: i,
     localMaxAttempts: f,
     attempts: W,
     serverCanRetry: Q
-  }), A = E.filter((p) => !k[p.id]), R = E.find((p) => p.id === F);
+  }), I = E.filter((p) => !k[p.id]), R = E.find((p) => p.id === O);
   function ae(p) {
-    g == null || g(p);
+    y == null || y(p);
   }
   function se(p, P) {
-    x((w) => ({ ...w, [p]: P })), V(null);
+    $((w) => ({ ...w, [p]: P })), V(null);
   }
   function L(p) {
     V((P) => P === p ? null : p);
   }
   function oe(p) {
-    F && se(F, p);
+    O && se(O, p);
   }
   function _(p) {
-    x((P) => {
+    $((P) => {
       const w = { ...P };
       return delete w[p], w;
     }), V(null);
@@ -870,17 +878,17 @@ function Ht({
       return;
     }
     const P = W + 1, w = { ...k };
-    if (N && v) {
+    if (C && v) {
       J(!0), D("informative"), re("Checking your answer…");
       try {
-        const de = Ie(
+        const de = Te(
           await v(w),
           c,
           "Your categories have been recorded."
         );
         U(), G(P), M(!0), ne(de.itemResults), Z(de.requiresReview), K(de.correct), q(de.canRetry), D(de.status), re(de.message), ae(Ne(de, P, w));
       } catch (de) {
-        M(!1), ne(void 0), Z(!1), K(null), q(!1), D("informative"), re(Le(de)), ae({
+        M(!1), ne(void 0), Z(!1), K(null), q(!1), D("informative"), re(Pe(de)), ae({
           completed: !1,
           correct: null,
           attempts: P,
@@ -892,17 +900,17 @@ function Ht({
       }
       return;
     }
-    const ue = O ? a.filter((de) => k[de.id] === le[de.id]).length : 0, he = O ? ue === a.length : null;
-    U(), G(P), M(!0), ne(void 0), Z(!1), K(null), D(he === !0 ? "correct" : he === !1 ? "incorrect" : "informative"), re(O ? he ? (c == null ? void 0 : c.correct) || "Those items match the expected categories." : (c == null ? void 0 : c.incorrect) || "Check the categories and try again." : "Your categories have been recorded."), ae({
+    const ue = F ? a.filter((de) => k[de.id] === le[de.id]).length : 0, he = F ? ue === a.length : null;
+    U(), G(P), M(!0), ne(void 0), Z(!1), K(null), D(he === !0 ? "correct" : he === !1 ? "incorrect" : "informative"), re(F ? he ? (c == null ? void 0 : c.correct) || "Those items match the expected categories." : (c == null ? void 0 : c.incorrect) || "Check the categories and try again." : "Your categories have been recorded."), ae({
       completed: !0,
       correct: he,
-      score: O ? { correct: ue, total: a.length } : void 0,
+      score: F ? { correct: ue, total: a.length } : void 0,
       attempts: P,
       responses: w
     });
   }
   function te() {
-    Y(), x({}), V(null), M(!1), J(!1), ne(void 0), Z(!1), K(null), q(void 0), D("neutral"), re(""), ae({ completed: !1, correct: null, attempts: W, responses: {} });
+    Y(), $({}), V(null), M(!1), J(!1), ne(void 0), Z(!1), K(null), q(void 0), D("neutral"), re(""), ae({ completed: !1, correct: null, attempts: W, responses: {} });
   }
   return /* @__PURE__ */ d(
     "section",
@@ -914,39 +922,39 @@ function Ht({
       children: [
         t ? /* @__PURE__ */ n("h3", { children: t }) : null,
         s ? /* @__PURE__ */ n("p", { className: "lp-instructions", children: s }) : null,
-        /* @__PURE__ */ n("p", { role: "status", "aria-live": "polite", className: "lp-card__meta", children: R ? `Selected: ${ke(R)}. Choose a category.` : "Select an item, then select a category. More than one item can share a category." }),
+        /* @__PURE__ */ n("p", { role: "status", "aria-live": "polite", className: "lp-card__meta", children: R ? `Selected: ${_e(R)}. Choose a category.` : "Select an item, then select a category. More than one item can share a category." }),
         /* @__PURE__ */ d("fieldset", { className: "lp-fieldset", disabled: b, children: [
           /* @__PURE__ */ n("legend", { children: r }),
           /* @__PURE__ */ n("p", { className: "lp-card__meta", children: "Items" }),
           /* @__PURE__ */ d("div", { className: "lp-card__actions", children: [
-            A.map((p) => /* @__PURE__ */ d(
+            I.map((p) => /* @__PURE__ */ d(
               "button",
               {
                 type: "button",
                 className: "lp-button lp-button--secondary",
-                "aria-pressed": F === p.id,
+                "aria-pressed": O === p.id,
                 onClick: () => L(p.id),
                 children: [
-                  ke(p),
-                  F === p.id ? " (selected)" : ""
+                  _e(p),
+                  O === p.id ? " (selected)" : ""
                 ]
               },
               p.id
             )),
-            A.length === 0 ? /* @__PURE__ */ n("p", { className: "lp-card__meta", children: "All items placed." }) : null
+            I.length === 0 ? /* @__PURE__ */ n("p", { className: "lp-card__meta", children: "All items placed." }) : null
           ] }),
           /* @__PURE__ */ n("div", { className: "lp-card-grid", children: l.map((p) => {
             const P = E.filter((w) => k[w.id] === p.id);
             return /* @__PURE__ */ d("div", { className: "lp-card", children: [
               /* @__PURE__ */ n("p", { children: /* @__PURE__ */ n("strong", { children: p.label }) }),
               /* @__PURE__ */ n("ul", { className: "lp-activity-list", children: P.map((w) => {
-                const ue = Yt(
+                const ue = Kt(
                   w.id,
                   p.id,
-                  $,
-                  O,
+                  x,
+                  F,
                   le,
-                  N,
+                  C,
                   H,
                   ee
                 );
@@ -957,7 +965,7 @@ function Ht({
                     className: "lp-button lp-button--secondary",
                     onClick: () => _(w.id),
                     children: [
-                      ke(w),
+                      _e(w),
                       " · ",
                       ue,
                       b ? "" : " · Return"
@@ -971,11 +979,11 @@ function Ht({
                 {
                   type: "button",
                   className: "lp-button",
-                  disabled: !F,
+                  disabled: !O,
                   onClick: () => oe(p.id),
                   children: [
                     "Place in ",
-                    ke(p)
+                    _e(p)
                   ]
                 }
               )
@@ -984,7 +992,7 @@ function Ht({
           /* @__PURE__ */ d("details", { children: [
             /* @__PURE__ */ n("summary", { children: "Use dropdown lists instead" }),
             E.map((p) => /* @__PURE__ */ d("p", { className: "lp-form__field", children: [
-              /* @__PURE__ */ n("label", { htmlFor: `${e}-${p.id}`, children: ke(p) }),
+              /* @__PURE__ */ n("label", { htmlFor: `${e}-${p.id}`, children: _e(p) }),
               /* @__PURE__ */ d(
                 "select",
                 {
@@ -994,7 +1002,7 @@ function Ht({
                   disabled: b,
                   onChange: (P) => {
                     const w = P.target.value;
-                    x((ue) => {
+                    $((ue) => {
                       const he = { ...ue };
                       return w ? he[p.id] = w : delete he[p.id], he;
                     }), V(null);
@@ -1012,38 +1020,42 @@ function Ht({
           /* @__PURE__ */ n("button", { type: "button", className: "lp-button", onClick: () => void ie(), disabled: b, children: z ? "Checking…" : "Check types" }),
           S ? /* @__PURE__ */ n("button", { type: "button", className: "lp-button lp-button--secondary", onClick: te, children: "Try again" }) : null
         ] }),
-        /* @__PURE__ */ n(ve, { state: ce, message: j })
+        /* @__PURE__ */ n(be, { state: ce, message: j })
       ]
     }
   );
 }
-function Kt(e) {
+function He(e) {
   return !!(e && Object.keys(e).length);
 }
-function We(e = {}) {
-  const [t, r] = T({ ...e }), [s, a] = T(null);
+function Xe(e = {}) {
+  const [t, r] = T({ ...e }), [s, a] = T(null), l = we(He(e));
   fe(() => {
-    Kt(e) && r({ ...e });
-  }, [e]);
-  const l = Me((u, m = t) => Object.keys(m).find((f) => m[f] === u) || null, [t]), c = Me((u) => {
-    a((m) => m === u ? null : u);
-  }, []), o = Me((u) => {
-    if (!s) {
-      const f = l(u);
-      f && a(f);
+    if (He(e)) {
+      l.current = !0, r({ ...e });
       return;
     }
-    const m = s;
-    r((f) => {
-      const h = { ...f }, y = Object.keys(h).find((C) => h[C] === u);
-      return y && delete h[y], h[m] = u, h;
+    l.current && (l.current = !1, r({}), a(null));
+  }, [e]);
+  const c = $e((u, f = t) => Object.keys(f).find((m) => f[m] === u) || null, [t]), o = $e((u) => {
+    a((f) => f === u ? null : u);
+  }, []), i = $e((u) => {
+    if (!s) {
+      const m = c(u);
+      m && a(m);
+      return;
+    }
+    const f = s;
+    r((m) => {
+      const g = { ...m }, N = Object.keys(g).find((A) => g[A] === u);
+      return N && delete g[N], g[f] = u, g;
     }), a(null);
-  }, [l, s]), i = Me(() => {
+  }, [c, s]), h = $e(() => {
     r({}), a(null);
   }, []);
-  return { placements: t, selectedItemId: s, selectItem: c, selectTarget: o, occupantOf: l, reset: i };
+  return { placements: t, selectedItemId: s, selectItem: o, selectTarget: i, occupantOf: c, reset: h };
 }
-function Ut({
+function Vt({
   id: e = "drag-drop",
   title: t,
   prompt: r,
@@ -1053,22 +1065,22 @@ function Ut({
   correct: c = {},
   feedback: o,
   formative: i = !0,
-  retry: u = !0,
-  shuffle: m = !1,
+  retry: h = !0,
+  shuffle: u = !1,
   shuffleSeed: f,
-  maxAttempts: h,
-  initialPlacements: y = {},
-  initialChecked: C = !1,
-  initialCorrect: I,
+  maxAttempts: m,
+  initialPlacements: g = {},
+  initialChecked: N = !1,
+  initialCorrect: A,
   initialCanRetry: v,
-  onMarkResponse: g,
+  onMarkResponse: y,
   onResult: E
 }) {
   var se;
   const k = pe(
-    () => Te(a, m, f || e),
-    [a, m, f, e]
-  ), { placements: x, selectedItemId: F, selectItem: V, selectTarget: W, occupantOf: G, reset: X } = We(y), [$, M] = T(0), z = a.length > 0 && a.every((L) => y[L.id]), [J, B] = Ce(C, z), [ce, j] = T(!1), Q = a.length > 0 && a.every((L) => x[L.id]), {
+    () => Ee(a, u, f || e),
+    [a, u, f, e]
+  ), { placements: $, selectedItemId: O, selectItem: V, selectTarget: W, occupantOf: G, reset: X } = Xe(g), [x, M] = T(0), z = a.length > 0 && a.every((L) => g[L.id]), [J, B] = ke(N, z), [ce, j] = T(!1), Q = a.length > 0 && a.every((L) => $[L.id]), {
     status: D,
     message: re,
     serverCanRetry: K,
@@ -1078,46 +1090,46 @@ function Ut({
     setServerCanRetry: H,
     markLive: ne,
     markRetry: ee
-  } = Ee({
-    initialChecked: C,
+  } = Me({
+    initialChecked: N,
     hasResponse: Q,
-    initialCorrect: I,
+    initialCorrect: A,
     initialCanRetry: v,
     feedback: o
-  }), Z = ge(g), le = Ae(i, Object.keys(c).length > 0, g), N = J || ce, O = be({
+  }), Z = ge(y), le = Ie(i, Object.keys(c).length > 0, y), C = J || ce, F = Ce({
     checked: J,
-    localRetry: u,
-    localMaxAttempts: h,
-    attempts: $,
+    localRetry: h,
+    localMaxAttempts: m,
+    attempts: x,
     serverCanRetry: K
-  }), b = k.filter((L) => !x[L.id]), S = (se = k.find((L) => L.id === F)) == null ? void 0 : se.label;
-  function A(L) {
+  }), b = k.filter((L) => !$[L.id]), S = (se = k.find((L) => L.id === O)) == null ? void 0 : se.label;
+  function I(L) {
     E == null || E(L);
   }
   async function R() {
     if (ce) return;
-    if (!a.every((p) => x[p.id])) {
+    if (!a.every((p) => $[p.id])) {
       q("informative"), U("Place every item before checking.");
       return;
     }
-    const oe = $ + 1, _ = { ...x };
-    if (Z && g) {
+    const oe = x + 1, _ = { ...$ };
+    if (Z && y) {
       j(!0), q("informative"), U("Checking your answer…");
-      const p = await je(
-        g,
+      const p = await De(
+        y,
         _,
         o,
         "Your placements have been recorded."
       );
       if (j(!1), !p.ok) {
-        B(!1), Y(null), H(!1), q("informative"), U(p.message), A({ completed: !1, correct: null, attempts: oe, responses: _, status: "error" });
+        B(!1), Y(null), H(!1), q("informative"), U(p.message), I({ completed: !1, correct: null, attempts: oe, responses: _, status: "error" });
         return;
       }
-      ne(), M(oe), B(!0), Y(p.marked.correct), H(p.marked.canRetry), q(p.marked.status), U(p.marked.message), A(Ne(p.marked, oe, _));
+      ne(), M(oe), B(!0), Y(p.marked.correct), H(p.marked.canRetry), q(p.marked.status), U(p.marked.message), I(Ne(p.marked, oe, _));
       return;
     }
-    const ie = le ? a.filter((p) => x[p.id] === c[p.id]).length : 0, te = le ? ie === a.length : null;
-    ne(), M(oe), B(!0), Y(null), q(te === !0 ? "correct" : te === !1 ? "incorrect" : "informative"), U(le ? te ? (o == null ? void 0 : o.correct) || "Those placements match the expected targets." : (o == null ? void 0 : o.incorrect) || "Check the targets and try again." : "Your placements have been recorded."), A({
+    const ie = le ? a.filter((p) => $[p.id] === c[p.id]).length : 0, te = le ? ie === a.length : null;
+    ne(), M(oe), B(!0), Y(null), q(te === !0 ? "correct" : te === !1 ? "incorrect" : "informative"), U(le ? te ? (o == null ? void 0 : o.correct) || "Those placements match the expected targets." : (o == null ? void 0 : o.incorrect) || "Check the targets and try again." : "Your placements have been recorded."), I({
       completed: !0,
       correct: te,
       score: le ? { correct: ie, total: a.length } : void 0,
@@ -1126,7 +1138,7 @@ function Ut({
     });
   }
   function ae() {
-    ee(), X(), B(!1), j(!1), Y(null), H(void 0), q("neutral"), U(""), A({ completed: !1, correct: null, attempts: $, responses: {} });
+    ee(), X(), B(!1), j(!1), Y(null), H(void 0), q("neutral"), U(""), I({ completed: !1, correct: null, attempts: x, responses: {} });
   }
   return /* @__PURE__ */ d(
     "section",
@@ -1140,7 +1152,7 @@ function Ut({
         s ? /* @__PURE__ */ n("p", { className: "lp-instructions", children: s }) : null,
         /* @__PURE__ */ n("p", { children: r }),
         /* @__PURE__ */ n("p", { role: "status", "aria-live": "polite", className: "lp-card__meta", children: S ? `Selected: ${S}. Choose a target.` : "Select an item, then select a target to place it." }),
-        /* @__PURE__ */ d("fieldset", { className: "lp-fieldset", disabled: N, children: [
+        /* @__PURE__ */ d("fieldset", { className: "lp-fieldset", disabled: C, children: [
           /* @__PURE__ */ n("legend", { children: "Items" }),
           /* @__PURE__ */ d("div", { className: "lp-card__actions", children: [
             b.map((L) => /* @__PURE__ */ d(
@@ -1148,11 +1160,11 @@ function Ut({
               {
                 type: "button",
                 className: "lp-button lp-button--secondary",
-                "aria-pressed": F === L.id,
+                "aria-pressed": O === L.id,
                 onClick: () => V(L.id),
                 children: [
                   L.label,
-                  F === L.id ? " (selected)" : ""
+                  O === L.id ? " (selected)" : ""
                 ]
               },
               L.id
@@ -1160,7 +1172,7 @@ function Ut({
             b.length === 0 ? /* @__PURE__ */ n("p", { className: "lp-card__meta", children: "All items placed." }) : null
           ] })
         ] }),
-        /* @__PURE__ */ d("fieldset", { className: "lp-fieldset", disabled: N, children: [
+        /* @__PURE__ */ d("fieldset", { className: "lp-fieldset", disabled: C, children: [
           /* @__PURE__ */ n("legend", { children: "Targets" }),
           /* @__PURE__ */ n("div", { className: "lp-card-grid", children: l.map((L) => {
             const oe = G(L.id), _ = a.find((te) => te.id === oe), ie = J && le && oe && !Z ? c[oe] === L.id ? "Correct" : "Incorrect" : _ ? "Placed" : "Empty";
@@ -1184,15 +1196,15 @@ function Ut({
           }) })
         ] }),
         /* @__PURE__ */ d("div", { className: "lp-card__actions", children: [
-          /* @__PURE__ */ n("button", { type: "button", className: "lp-button", onClick: () => void R(), disabled: N, children: ce ? "Checking…" : "Check placement" }),
-          O ? /* @__PURE__ */ n("button", { type: "button", className: "lp-button lp-button--secondary", onClick: ae, children: "Try again" }) : null
+          /* @__PURE__ */ n("button", { type: "button", className: "lp-button", onClick: () => void R(), disabled: C, children: ce ? "Checking…" : "Check placement" }),
+          F ? /* @__PURE__ */ n("button", { type: "button", className: "lp-button lp-button--secondary", onClick: ae, children: "Try again" }) : null
         ] }),
-        /* @__PURE__ */ n(ve, { state: D, message: re })
+        /* @__PURE__ */ n(be, { state: D, message: re })
       ]
     }
   );
 }
-function Vt({
+function Gt({
   id: e = "option-cards",
   title: t,
   prompt: r,
@@ -1202,46 +1214,46 @@ function Vt({
   feedback: c,
   formative: o = !0,
   retry: i = !0,
-  shuffle: u = !1,
-  shuffleSeed: m,
+  shuffle: h = !1,
+  shuffleSeed: u,
   maxAttempts: f,
-  initialSelectedId: h,
-  initialChecked: y = !1,
-  initialCorrect: C,
-  initialCanRetry: I,
+  initialSelectedId: m,
+  initialChecked: g = !1,
+  initialCorrect: N,
+  initialCanRetry: A,
   onMarkResponse: v,
-  onResult: g
+  onResult: y
 }) {
   const E = pe(
-    () => Te(a, u, m || e),
-    [a, u, m, e]
-  ), [k, x] = De(h || null, null), [F, V] = T(0), [W, G] = Ce(y, !!h), [X, $] = T(!1), M = xe({
-    checked: !!(y && h),
-    hasResponse: !!h,
-    correct: C,
+    () => Ee(a, h, u || e),
+    [a, h, u, e]
+  ), [k, $] = qe(m || null, null), [O, V] = T(0), [W, G] = ke(g, !!m), [X, x] = T(!1), M = xe({
+    checked: !!(g && m),
+    hasResponse: !!m,
+    correct: N,
     feedback: c,
     recordedMessage: Se
-  }), z = Fe("idle"), [J, B] = T((M == null ? void 0 : M.status) || "neutral"), [ce, j] = T((M == null ? void 0 : M.message) || ""), [Q, D] = T((M == null ? void 0 : M.serverCorrect) ?? null), [re, K] = T(I);
+  }), z = we("idle"), [J, B] = T((M == null ? void 0 : M.status) || "neutral"), [ce, j] = T((M == null ? void 0 : M.message) || ""), [Q, D] = T((M == null ? void 0 : M.serverCorrect) ?? null), [re, K] = T(A);
   fe(() => {
-    if (z.current === "live" || z.current === "retry" || !y || !k) return;
-    const N = xe({
+    if (z.current === "live" || z.current === "retry" || !g || !k) return;
+    const C = xe({
       checked: !0,
       hasResponse: !0,
-      correct: C,
+      correct: N,
       feedback: c,
       recordedMessage: Se
     });
-    N && (B(N.status), j(N.message), D(N.serverCorrect), typeof I == "boolean" && K(I), (N.status === "correct" || N.status === "incorrect") && (z.current = "restored"));
-  }, [c, I, y, C, k]);
-  const q = ge(v), U = Ae(o, !!l, v), Y = `lp-option-cards-${e}`, H = W || X, ne = be({
+    C && (B(C.status), j(C.message), D(C.serverCorrect), typeof A == "boolean" && K(A), (C.status === "correct" || C.status === "incorrect") && (z.current = "restored"));
+  }, [c, A, g, N, k]);
+  const q = ge(v), U = Ie(o, !!l, v), Y = `lp-option-cards-${e}`, H = W || X, ne = Ce({
     checked: W,
     localRetry: i,
     localMaxAttempts: f,
-    attempts: F,
+    attempts: O,
     serverCanRetry: re
   });
-  function ee(N) {
-    g == null || g(N);
+  function ee(C) {
+    y == null || y(C);
   }
   async function Z() {
     if (X) return;
@@ -1249,39 +1261,39 @@ function Vt({
       B("informative"), j("Choose an option before checking.");
       return;
     }
-    const N = F + 1, O = { optionId: k };
+    const C = O + 1, F = { optionId: k };
     if (q && v) {
-      $(!0), B("informative"), j("Checking your answer…");
+      x(!0), B("informative"), j("Checking your answer…");
       try {
-        const A = Ie(await v(O), c, "Your choice has been recorded.");
-        z.current = "live", V(N), G(!0), D(A.correct), K(A.canRetry), B(A.status), j(A.message), ee(Ne(A, N, O));
-      } catch (A) {
-        G(!1), D(null), K(!1), B("informative"), j(Le(A)), ee({
+        const I = Te(await v(F), c, "Your choice has been recorded.");
+        z.current = "live", V(C), G(!0), D(I.correct), K(I.canRetry), B(I.status), j(I.message), ee(Ne(I, C, F));
+      } catch (I) {
+        G(!1), D(null), K(!1), B("informative"), j(Pe(I)), ee({
           completed: !1,
           correct: null,
-          attempts: N,
-          responses: O,
+          attempts: C,
+          responses: F,
           status: "error"
         });
       } finally {
-        $(!1);
+        x(!1);
       }
       return;
     }
     const b = U ? k === l : null, S = U ? b ? (c == null ? void 0 : c.correct) || "That matches the expected option." : (c == null ? void 0 : c.incorrect) || "Check the options and try again." : "Your choice has been recorded.";
-    V(N), G(!0), z.current = "live", D(null), B(b === !0 ? "correct" : b === !1 ? "incorrect" : "informative"), j(S), ee({
+    V(C), G(!0), z.current = "live", D(null), B(b === !0 ? "correct" : b === !1 ? "incorrect" : "informative"), j(S), ee({
       completed: !0,
       correct: b,
       score: U ? { correct: b ? 1 : 0, total: 1 } : void 0,
-      attempts: N,
-      responses: O
+      attempts: C,
+      responses: F
     });
   }
   function le() {
-    z.current = "retry", x(null), G(!1), $(!1), D(null), K(void 0), B("neutral"), j(""), ee({
+    z.current = "retry", $(null), G(!1), x(!1), D(null), K(void 0), B("neutral"), j(""), ee({
       completed: !1,
       correct: null,
-      attempts: F,
+      attempts: O,
       responses: { optionId: null }
     });
   }
@@ -1297,42 +1309,42 @@ function Vt({
         s ? /* @__PURE__ */ n("p", { className: "lp-instructions", children: s }) : null,
         /* @__PURE__ */ d("fieldset", { className: "lp-fieldset", disabled: H, children: [
           /* @__PURE__ */ n("legend", { children: r }),
-          /* @__PURE__ */ n("div", { className: "lp-card-grid", children: E.map((N) => {
-            const O = k === N.id, R = W && U && O || W && q && O && Q !== null ? (q ? Q === !0 : N.id === l) ? "Correct" : "Incorrect" : O ? "Selected" : "";
+          /* @__PURE__ */ n("div", { className: "lp-card-grid", children: E.map((C) => {
+            const F = k === C.id, R = W && U && F || W && q && F && Q !== null ? (q ? Q === !0 : C.id === l) ? "Correct" : "Incorrect" : F ? "Selected" : "";
             return /* @__PURE__ */ d("label", { className: "lp-card lp-activity-card", children: [
               /* @__PURE__ */ n(
                 "input",
                 {
                   type: "radio",
                   name: Y,
-                  value: N.id,
-                  checked: O,
+                  value: C.id,
+                  checked: F,
                   "data-lp-response": "",
-                  onChange: () => x(N.id)
+                  onChange: () => $(C.id)
                 }
               ),
               /* @__PURE__ */ d("span", { children: [
-                /* @__PURE__ */ n("strong", { children: N.label }),
-                N.description ? /* @__PURE__ */ d("span", { className: "lp-card__meta", children: [
+                /* @__PURE__ */ n("strong", { children: C.label }),
+                C.description ? /* @__PURE__ */ d("span", { className: "lp-card__meta", children: [
                   " — ",
-                  N.description
+                  C.description
                 ] }) : null
               ] }),
-              N.imageSrc ? /* @__PURE__ */ n("img", { src: N.imageSrc, alt: N.imageAlt || N.label }) : null,
+              C.imageSrc ? /* @__PURE__ */ n("img", { src: C.imageSrc, alt: C.imageAlt || C.label }) : null,
               R ? /* @__PURE__ */ n("p", { className: "lp-card__meta", children: R }) : null
-            ] }, N.id);
+            ] }, C.id);
           }) })
         ] }),
         /* @__PURE__ */ d("div", { className: "lp-card__actions", children: [
           /* @__PURE__ */ n("button", { type: "button", className: "lp-button", onClick: () => void Z(), disabled: H, children: X ? "Checking…" : "Check answer" }),
           ne ? /* @__PURE__ */ n("button", { type: "button", className: "lp-button lp-button--secondary", onClick: le, children: "Try again" }) : null
         ] }),
-        /* @__PURE__ */ n(ve, { state: J, message: ce })
+        /* @__PURE__ */ n(be, { state: J, message: ce })
       ]
     }
   );
 }
-function Gt(e, t) {
+function zt(e, t) {
   var o;
   const r = [], s = /\{([A-Za-z0-9_-]+)\}|_{3,}/g;
   let a = 0, l = 0, c;
@@ -1343,20 +1355,20 @@ function Gt(e, t) {
   }
   return a < e.length && r.push(e.slice(a)), !r.some((i) => typeof i != "string") && t[0] && (r.push(" "), r.push({ gapId: t[0].id })), r;
 }
-function zt(e, t, r) {
+function Wt(e, t, r) {
   if (!e || !Object.keys(e).length) return {};
   const s = new Set(t.map((o) => o.id)), a = new Set(r.map((o) => o.id)), l = Object.keys(e), c = Object.values(e).map(String);
   if (l.every((o) => a.has(o)) && c.every((o) => s.has(o)))
     return { ...e };
   if (l.every((o) => s.has(o)) && c.every((o) => a.has(o))) {
     const o = {};
-    for (const [i, u] of Object.entries(e))
-      o[String(u)] = i;
+    for (const [i, h] of Object.entries(e))
+      o[String(h)] = i;
     return o;
   }
   return { ...e };
 }
-function Wt({
+function Xt({
   id: e = "phrase-completion",
   title: t,
   prompt: r,
@@ -1366,25 +1378,25 @@ function Wt({
   correctOptionId: c,
   feedback: o,
   formative: i = !0,
-  retry: u = !0,
-  shuffle: m = !1,
+  retry: h = !0,
+  shuffle: u = !1,
   shuffleSeed: f,
-  maxAttempts: h,
-  initialPlacements: y = {},
-  initialChecked: C = !1,
-  initialCorrect: I,
+  maxAttempts: m,
+  initialPlacements: g = {},
+  initialChecked: N = !1,
+  initialCorrect: A,
   initialCanRetry: v,
-  onMarkResponse: g,
+  onMarkResponse: y,
   onResult: E
 }) {
   var oe;
-  const k = pe(() => a && a.length ? a : [{ id: "gap", label: "missing term", correctOptionId: c || void 0 }], [c, a]), x = pe(
-    () => Te(l, m, f || e),
-    [l, m, f, e]
-  ), F = pe(() => Gt(r, k), [r, k]), V = pe(
-    () => zt(y, k, l),
-    [y, l, k]
-  ), { placements: W, selectedItemId: G, selectItem: X, selectTarget: $, occupantOf: M, reset: z } = We(V), [J, B] = T(0), [ce, j] = Ce(C, Object.keys(V).length > 0), [Q, D] = T(!1), re = k.length > 0 && k.every((_) => !!M(_.id)), {
+  const k = pe(() => a && a.length ? a : [{ id: "gap", label: "missing term", correctOptionId: c || void 0 }], [c, a]), $ = pe(
+    () => Ee(l, u, f || e),
+    [l, u, f, e]
+  ), O = pe(() => zt(r, k), [r, k]), V = pe(
+    () => Wt(g, k, l),
+    [g, l, k]
+  ), { placements: W, selectedItemId: G, selectItem: X, selectTarget: x, occupantOf: M, reset: z } = Xe(V), [J, B] = T(0), [ce, j] = ke(N, Object.keys(V).length > 0), [Q, D] = T(!1), re = k.length > 0 && k.every((_) => !!M(_.id)), {
     status: K,
     message: q,
     serverCanRetry: U,
@@ -1394,21 +1406,21 @@ function Wt({
     setServerCanRetry: ee,
     markLive: Z,
     markRetry: le
-  } = Ee({
-    initialChecked: C,
+  } = Me({
+    initialChecked: N,
     hasResponse: re,
-    initialCorrect: I,
+    initialCorrect: A,
     initialCanRetry: v,
     feedback: o
-  }), N = Object.fromEntries(
+  }), C = Object.fromEntries(
     k.map((_) => [_.id, _.correctOptionId]).filter((_) => _[1])
-  ), O = Ae(i, Object.keys(N).length > 0, g), b = ce || Q, S = be({
+  ), F = Ie(i, Object.keys(C).length > 0, y), b = ce || Q, S = Ce({
     checked: ce,
-    localRetry: u,
-    localMaxAttempts: h,
+    localRetry: h,
+    localMaxAttempts: m,
     attempts: J,
     serverCanRetry: U
-  }), A = x.filter((_) => !W[_.id]), R = (oe = l.find((_) => _.id === G)) == null ? void 0 : oe.label;
+  }), I = $.filter((_) => !W[_.id]), R = (oe = l.find((_) => _.id === G)) == null ? void 0 : oe.label;
   function ae(_) {
     E == null || E(_);
   }
@@ -1422,10 +1434,10 @@ function Wt({
     if (k.forEach((w) => {
       const ue = M(w.id);
       ue && (te[w.id] = ue);
-    }), ge(g) && g) {
+    }), ge(y) && y) {
       D(!0), Y("informative"), H("Checking your answer…");
-      const w = await je(
-        g,
+      const w = await De(
+        y,
         te,
         o,
         "Your phrase has been recorded."
@@ -1437,11 +1449,11 @@ function Wt({
       Z(), B(ie), j(!0), ne(w.marked.correct), ee(w.marked.canRetry), Y(w.marked.status), H(w.marked.message), ae(Ne(w.marked, ie, te));
       return;
     }
-    const p = O ? k.filter((w) => te[w.id] === N[w.id]).length : 0, P = O ? p === k.length : null;
-    Z(), B(ie), j(!0), ne(null), Y(P === !0 ? "correct" : P === !1 ? "incorrect" : "informative"), H(O ? P ? (o == null ? void 0 : o.correct) || "That completes the phrase." : (o == null ? void 0 : o.incorrect) || "Check the missing words and try again." : "Your phrase has been recorded."), ae({
+    const p = F ? k.filter((w) => te[w.id] === C[w.id]).length : 0, P = F ? p === k.length : null;
+    Z(), B(ie), j(!0), ne(null), Y(P === !0 ? "correct" : P === !1 ? "incorrect" : "informative"), H(F ? P ? (o == null ? void 0 : o.correct) || "That completes the phrase." : (o == null ? void 0 : o.incorrect) || "Check the missing words and try again." : "Your phrase has been recorded."), ae({
       completed: !0,
       correct: P,
-      score: O ? { correct: p, total: k.length } : void 0,
+      score: F ? { correct: p, total: k.length } : void 0,
       attempts: ie,
       responses: te
     });
@@ -1460,9 +1472,9 @@ function Wt({
         t ? /* @__PURE__ */ n("h3", { children: t }) : null,
         s ? /* @__PURE__ */ n("p", { className: "lp-instructions", children: s }) : null,
         /* @__PURE__ */ n("p", { role: "status", "aria-live": "polite", className: "lp-card__meta", children: R ? `Selected: ${R}. Choose a blank.` : "Select a phrase, then select the blank." }),
-        /* @__PURE__ */ n("p", { children: F.map((_, ie) => {
+        /* @__PURE__ */ n("p", { children: O.map((_, ie) => {
           if (typeof _ == "string") return /* @__PURE__ */ n("span", { children: _ }, `text-${ie}`);
-          const te = M(_.gapId), p = l.find((ue) => ue.id === te), P = k.find((ue) => ue.id === _.gapId), w = ce && O && te ? N[_.gapId] === te ? "Correct" : "Incorrect" : p ? "Filled" : "Blank";
+          const te = M(_.gapId), p = l.find((ue) => ue.id === te), P = k.find((ue) => ue.id === _.gapId), w = ce && F && te ? C[_.gapId] === te ? "Correct" : "Incorrect" : p ? "Filled" : "Blank";
           return /* @__PURE__ */ n(
             "button",
             {
@@ -1470,7 +1482,7 @@ function Wt({
               className: "lp-button lp-button--secondary",
               disabled: b,
               "aria-label": `${(P == null ? void 0 : P.label) || "blank"}: ${(p == null ? void 0 : p.label) || "empty"}. ${w}`,
-              onClick: () => $(_.gapId),
+              onClick: () => x(_.gapId),
               children: (p == null ? void 0 : p.label) || "______"
             },
             _.gapId
@@ -1478,7 +1490,7 @@ function Wt({
         }) }),
         /* @__PURE__ */ d("fieldset", { className: "lp-fieldset", disabled: b, children: [
           /* @__PURE__ */ n("legend", { children: "Available phrases" }),
-          /* @__PURE__ */ n("div", { className: "lp-card__actions", children: A.map((_) => /* @__PURE__ */ d(
+          /* @__PURE__ */ n("div", { className: "lp-card__actions", children: I.map((_) => /* @__PURE__ */ d(
             "button",
             {
               type: "button",
@@ -1497,12 +1509,12 @@ function Wt({
           /* @__PURE__ */ n("button", { type: "button", className: "lp-button", onClick: () => void se(), disabled: b, children: Q ? "Checking…" : "Check phrase" }),
           S ? /* @__PURE__ */ n("button", { type: "button", className: "lp-button lp-button--secondary", onClick: L, children: "Try again" }) : null
         ] }),
-        /* @__PURE__ */ n(ve, { state: K, message: q })
+        /* @__PURE__ */ n(be, { state: K, message: q })
       ]
     }
   );
 }
-function Xt({
+function Zt({
   id: e = "sequence",
   title: t,
   prompt: r,
@@ -1512,28 +1524,28 @@ function Xt({
   feedback: c,
   formative: o = !0,
   retry: i = !0,
-  shuffle: u = !1,
-  shuffleSeed: m,
+  shuffle: h = !1,
+  shuffleSeed: u,
   maxAttempts: f,
-  initialOrder: h,
-  initialChecked: y = !1,
-  initialCorrect: C,
-  initialCanRetry: I,
+  initialOrder: m,
+  initialChecked: g = !1,
+  initialCorrect: N,
+  initialCanRetry: A,
   onMarkResponse: v,
-  onResult: g
+  onResult: y
 }) {
   const E = pe(
-    () => Te(a, u, m || e),
-    [a, u, m, e]
+    () => Ee(a, h, u || e),
+    [a, h, u, e]
   ), k = pe(() => {
-    if (!Array.isArray(h) || !h.length) return E;
-    const b = new Map(a.map((A) => [A.id, A])), S = h.map((A) => b.get(A)).filter(Boolean);
+    if (!Array.isArray(m) || !m.length) return E;
+    const b = new Map(a.map((I) => [I.id, I])), S = m.map((I) => b.get(I)).filter(Boolean);
     return S.length === a.length ? S : E;
-  }, [E, h, a]), [x, F] = T(k);
+  }, [E, m, a]), [$, O] = T(k);
   fe(() => {
-    !Array.isArray(h) || !h.length || F(k);
-  }, [h, k]);
-  const [V, W] = T(0), [G, X] = Ce(y, !!(h != null && h.length)), [$, M] = T(!1), z = x.length > 0, {
+    !Array.isArray(m) || !m.length || O(k);
+  }, [m, k]);
+  const [V, W] = T(0), [G, X] = ke(g, !!(m != null && m.length)), [x, M] = T(!1), z = $.length > 0, {
     status: J,
     message: B,
     serverCanRetry: ce,
@@ -1543,13 +1555,13 @@ function Xt({
     setServerCanRetry: re,
     markLive: K,
     markRetry: q
-  } = Ee({
-    initialChecked: y,
+  } = Me({
+    initialChecked: g,
     hasResponse: z,
-    initialCorrect: C,
-    initialCanRetry: I,
+    initialCorrect: N,
+    initialCanRetry: A,
     feedback: c
-  }), U = ge(v), Y = Ae(o, l.length > 0, v), H = G || $, ne = be({
+  }), U = ge(v), Y = Ie(o, l.length > 0, v), H = G || x, ne = Ce({
     checked: G,
     localRetry: i,
     localMaxAttempts: f,
@@ -1557,33 +1569,33 @@ function Xt({
     serverCanRetry: ce
   });
   function ee(b) {
-    g == null || g(b);
+    y == null || y(b);
   }
   function Z(b, S) {
-    const A = b + S;
-    if (A < 0 || A >= x.length) return;
-    const R = x.slice(), [ae] = R.splice(b, 1);
-    R.splice(A, 0, ae), F(R);
+    const I = b + S;
+    if (I < 0 || I >= $.length) return;
+    const R = $.slice(), [ae] = R.splice(b, 1);
+    R.splice(I, 0, ae), O(R);
   }
   function le(b, S) {
     H || (b.key === "ArrowUp" && (b.preventDefault(), Z(S, -1)), b.key === "ArrowDown" && (b.preventDefault(), Z(S, 1)));
   }
-  async function N() {
-    if ($) return;
-    const b = V + 1, S = x.map((se) => se.id), A = { itemIds: S };
+  async function C() {
+    if (x) return;
+    const b = V + 1, S = $.map((se) => se.id), I = { itemIds: S };
     if (U && v) {
       M(!0), j("informative"), Q("Checking your answer…");
-      const se = await je(
+      const se = await De(
         v,
-        A,
+        I,
         c,
         "Your sequence has been recorded."
       );
       if (M(!1), !se.ok) {
-        X(!1), D(null), re(!1), j("informative"), Q(se.message), ee({ completed: !1, correct: null, attempts: b, responses: A, status: "error" });
+        X(!1), D(null), re(!1), j("informative"), Q(se.message), ee({ completed: !1, correct: null, attempts: b, responses: I, status: "error" });
         return;
       }
-      K(), W(b), X(!0), D(se.marked.correct), re(se.marked.canRetry), j(se.marked.status), Q(se.marked.message), ee(Ne(se.marked, b, A));
+      K(), W(b), X(!0), D(se.marked.correct), re(se.marked.canRetry), j(se.marked.status), Q(se.marked.message), ee(Ne(se.marked, b, I));
       return;
     }
     const R = Y ? S.filter((se, L) => se === l[L]).length : 0, ae = Y ? R === l.length && S.length === l.length : null;
@@ -1592,11 +1604,11 @@ function Xt({
       correct: ae,
       score: Y ? { correct: R, total: l.length } : void 0,
       attempts: b,
-      responses: A
+      responses: I
     });
   }
-  function O() {
-    q(), F(E), X(!1), M(!1), D(null), re(void 0), j("neutral"), Q(""), ee({
+  function F() {
+    q(), O(E), X(!1), M(!1), D(null), re(void 0), j("neutral"), Q(""), ee({
       completed: !1,
       correct: null,
       attempts: V,
@@ -1609,18 +1621,18 @@ function Xt({
       className: "lp-block lp-block--interactive",
       "data-lp-block": "ordering",
       "data-lp-block-id": e,
-      "aria-busy": $ || void 0,
+      "aria-busy": x || void 0,
       children: [
         t ? /* @__PURE__ */ n("h3", { children: t }) : null,
         s ? /* @__PURE__ */ n("p", { className: "lp-instructions", children: s }) : null,
         /* @__PURE__ */ n("p", { children: r }),
-        /* @__PURE__ */ n("ol", { className: "lp-activity-list", children: x.map((b, S) => /* @__PURE__ */ d(
+        /* @__PURE__ */ n("ol", { className: "lp-activity-list", children: $.map((b, S) => /* @__PURE__ */ d(
           "li",
           {
             className: "lp-card",
             tabIndex: H ? -1 : 0,
-            "aria-label": `${b.label}, position ${S + 1} of ${x.length}`,
-            onKeyDown: (A) => le(A, S),
+            "aria-label": `${b.label}, position ${S + 1} of ${$.length}`,
+            onKeyDown: (I) => le(I, S),
             children: [
               /* @__PURE__ */ n("p", { children: /* @__PURE__ */ d("strong", { children: [
                 S + 1,
@@ -1647,7 +1659,7 @@ function Xt({
                   {
                     type: "button",
                     className: "lp-button lp-button--secondary",
-                    disabled: H || S === x.length - 1,
+                    disabled: H || S === $.length - 1,
                     onClick: () => Z(S, 1),
                     children: [
                       "Move ",
@@ -1662,10 +1674,10 @@ function Xt({
           b.id
         )) }),
         /* @__PURE__ */ d("div", { className: "lp-card__actions", children: [
-          /* @__PURE__ */ n("button", { type: "button", className: "lp-button", onClick: () => void N(), disabled: H, children: $ ? "Checking…" : "Check order" }),
-          ne ? /* @__PURE__ */ n("button", { type: "button", className: "lp-button lp-button--secondary", onClick: O, children: "Try again" }) : null
+          /* @__PURE__ */ n("button", { type: "button", className: "lp-button", onClick: () => void C(), disabled: H, children: x ? "Checking…" : "Check order" }),
+          ne ? /* @__PURE__ */ n("button", { type: "button", className: "lp-button lp-button--secondary", onClick: F, children: "Try again" }) : null
         ] }),
-        /* @__PURE__ */ n(ve, { state: J, message: B })
+        /* @__PURE__ */ n(be, { state: J, message: B })
       ]
     }
   );
@@ -1673,24 +1685,24 @@ function Xt({
 function me(e) {
   return String(e || "").trim().toLowerCase().replace(/_/g, "-").replace(/\s+/g, "-");
 }
-function Zt(e) {
+function Jt(e) {
   var t;
   return (e == null ? void 0 : e.formative) === !0 || ((t = e == null ? void 0 : e.marking) == null ? void 0 : t.mode) === "formative-local";
 }
-function Jt(e) {
+function Qt(e) {
   return (e == null ? void 0 : e.retry) !== !1;
 }
-function Qt(e) {
+function er(e) {
   if (!e || e.length !== 2) return !1;
   const t = e.map((r) => String(r.label || "").trim().toLowerCase()).sort();
   return t[0] === "false" && t[1] === "true";
 }
-function er(e, t) {
+function tr(e, t) {
   if ((e == null ? void 0 : e.shuffle) === !1 || (e == null ? void 0 : e.randomise) === !1 || me((t == null ? void 0 : t.presentation) ?? (e == null ? void 0 : e.presentation)) === "true-false") return !1;
   const s = (t == null ? void 0 : t.options) ?? (e == null ? void 0 : e.options);
-  return !Qt(s);
+  return !er(s);
 }
-const tr = [
+const rr = [
   "single-choice",
   "option-cards",
   "classification",
@@ -1701,19 +1713,19 @@ const tr = [
   "sequence",
   "short-response",
   "reflection"
-], qe = 200, rr = 500;
-function Xe(e, t) {
+], Ye = 200, nr = 500;
+function Ze(e, t) {
   const r = Number((e == null ? void 0 : e.minChars) || (e == null ? void 0 : e.minimumCharacters) || 0);
   return r > 0 ? r : t;
 }
-function Ze(e) {
-  return tr.includes(me(e));
+function Je(e) {
+  return rr.includes(me(e));
 }
-function _e(e) {
+function ve(e) {
   var t;
   return ((t = e.content) == null ? void 0 : t.questionId) || e.id;
 }
-function nr({
+function ar({
   id: e,
   prompt: t,
   placeholder: r,
@@ -1721,40 +1733,40 @@ function nr({
   defaultValue: a = "",
   minChars: l,
   minimumCharacters: c,
-  defaultMinChars: o = qe,
+  defaultMinChars: o = Ye,
   rows: i = 4,
-  disabled: u = !1,
-  hidePrompt: m = !1,
+  disabled: h = !1,
+  hidePrompt: u = !1,
   onChange: f
 }) {
-  const h = $e(), y = e || h, C = Xe({ minChars: l, minimumCharacters: c }, o), I = typeof s == "string", [v, g] = T(String(a || "")), [E, k] = T(""), x = I ? s : v, F = x.trim().length, V = F >= C;
-  function W($) {
-    I || g($), f == null || f($);
+  const m = Le(), g = e || m, N = Ze({ minChars: l, minimumCharacters: c }, o), A = typeof s == "string", [v, y] = T(String(a || "")), [E, k] = T(""), $ = A ? s : v, O = $.trim().length, V = O >= N;
+  function W(x) {
+    A || y(x), f == null || f(x);
   }
-  function G($) {
-    $.preventDefault(), k("Paste is disabled. Type your answer in your own words.");
+  function G(x) {
+    x.preventDefault(), k("Paste is disabled. Type your answer in your own words.");
   }
-  function X($) {
-    $.preventDefault(), k("Dropping text is disabled. Type your answer in your own words.");
+  function X(x) {
+    x.preventDefault(), k("Dropping text is disabled. Type your answer in your own words.");
   }
   return /* @__PURE__ */ d("div", { className: "lp-form lp-learning-text-field", "data-lp-learning-text-field": "", children: [
-    /* @__PURE__ */ d("label", { className: "lp-field", htmlFor: y, children: [
-      m ? /* @__PURE__ */ n("span", { className: "lp-visually-hidden", children: t }) : /* @__PURE__ */ n("span", { className: "lp-field__label", children: t }),
+    /* @__PURE__ */ d("label", { className: "lp-field", htmlFor: g, children: [
+      u ? /* @__PURE__ */ n("span", { className: "lp-visually-hidden", children: t }) : /* @__PURE__ */ n("span", { className: "lp-field__label", children: t }),
       /* @__PURE__ */ n(
         "textarea",
         {
-          id: y,
+          id: g,
           className: "lp-textarea",
           "data-lp-response": "",
-          "data-lp-min-chars": String(C),
+          "data-lp-min-chars": String(N),
           rows: i,
-          value: x,
+          value: $,
           placeholder: r,
-          minLength: C,
+          minLength: N,
           autoComplete: "off",
-          disabled: u,
-          "aria-describedby": `${y}-count ${y}-notice`,
-          onChange: ($) => W($.target.value),
+          disabled: h,
+          "aria-describedby": `${g}-count ${g}-notice`,
+          onChange: (x) => W(x.target.value),
           onPaste: G,
           onDrop: X
         }
@@ -1763,18 +1775,18 @@ function nr({
     /* @__PURE__ */ n(
       "p",
       {
-        id: `${y}-count`,
+        id: `${g}-count`,
         className: "lp-char-count",
         "data-lp-char-count": "",
         "data-lp-met": V ? "true" : "false",
         "aria-live": "polite",
-        children: `${F} / ${C} characters minimum`
+        children: `${O} / ${N} characters minimum`
       }
     ),
     /* @__PURE__ */ n(
       "p",
       {
-        id: `${y}-notice`,
+        id: `${g}-notice`,
         className: "lp-paste-notice",
         "data-lp-paste-notice": "",
         role: "status",
@@ -1783,10 +1795,10 @@ function nr({
     )
   ] });
 }
-function ar(e, t) {
+function sr(e, t) {
   return t > 0 ? `Write at least ${e} characters. You currently have ${t}.` : `Write at least ${e} characters before saving.`;
 }
-function Je({
+function Qe({
   id: e = "text-response",
   blockType: t = "short-response",
   title: r,
@@ -1796,20 +1808,20 @@ function Je({
   placeholder: c,
   minChars: o,
   minimumCharacters: i,
-  defaultMinChars: u = qe,
-  rows: m = 4,
+  defaultMinChars: h = Ye,
+  rows: u = 4,
   feedback: f,
-  retry: h = !0,
-  maxAttempts: y,
-  initialResponse: C = "",
-  initialChecked: I = !1,
+  retry: m = !0,
+  maxAttempts: g,
+  initialResponse: N = "",
+  initialChecked: A = !1,
   initialCorrect: v,
-  initialCanRetry: g,
+  initialCanRetry: y,
   saveLabel: E = "Save response",
   onMarkResponse: k,
-  onResult: x
+  onResult: $
 }) {
-  const F = Xe({ minChars: o, minimumCharacters: i }, u), [V, W] = De(String(C || ""), ""), [G, X] = T(0), [$, M] = Ce(I, !!String(C || "").trim()), [z, J] = T(!1), B = V.trim(), ce = B.length, j = ce >= F, {
+  const O = Ze({ minChars: o, minimumCharacters: i }, h), [V, W] = qe(String(N || ""), ""), [G, X] = T(0), [x, M] = ke(A, !!String(N || "").trim()), [z, J] = T(!1), B = V.trim(), ce = B.length, j = ce >= O, {
     status: Q,
     message: D,
     serverCanRetry: re,
@@ -1819,40 +1831,40 @@ function Je({
     setServerCanRetry: Y,
     markLive: H,
     markRetry: ne
-  } = Ee({
-    initialChecked: I,
+  } = Me({
+    initialChecked: A,
     hasResponse: !!B,
     initialCorrect: v,
-    initialCanRetry: g,
+    initialCanRetry: y,
     feedback: f
-  }), ee = ge(k), Z = $ || z, le = be({
-    checked: $,
-    localRetry: h,
-    localMaxAttempts: y,
+  }), ee = ge(k), Z = x || z, le = Ce({
+    checked: x,
+    localRetry: m,
+    localMaxAttempts: g,
     attempts: G,
     serverCanRetry: re
   });
-  function N(S) {
-    x == null || x(S);
+  function C(S) {
+    $ == null || $(S);
   }
-  async function O() {
+  async function F() {
     if (z) return;
     if (!j) {
-      K("informative"), q(ar(F, ce));
+      K("informative"), q(sr(O, ce));
       return;
     }
     const S = G + 1;
     if (ee && k) {
       J(!0), K("informative"), q("Saving your response…");
       try {
-        const R = Ie(
+        const R = Te(
           await k(B),
           f,
           l || "Your response has been recorded."
         );
-        H(), X(S), M(!0), U(R.correct), Y(R.canRetry), K(R.status), q(R.requiresReview || R.correct !== null ? R.message : l || R.message), N(Ne(R, S, B));
+        H(), X(S), M(!0), U(R.correct), Y(R.canRetry), K(R.status), q(R.requiresReview || R.correct !== null ? R.message : l || R.message), C(Ne(R, S, B));
       } catch (R) {
-        M(!1), U(null), Y(!1), K("informative"), q(Le(R)), N({
+        M(!1), U(null), Y(!1), K("informative"), q(Pe(R)), C({
           completed: !1,
           correct: null,
           attempts: S,
@@ -1864,8 +1876,8 @@ function Je({
       }
       return;
     }
-    const A = l || (f == null ? void 0 : f.correct) || "Saved.";
-    H(), X(S), M(!0), U(null), K("informative"), q(A), N({
+    const I = l || (f == null ? void 0 : f.correct) || "Saved.";
+    H(), X(S), M(!0), U(null), K("informative"), q(I), C({
       completed: !0,
       correct: null,
       attempts: S,
@@ -1873,7 +1885,7 @@ function Je({
     });
   }
   function b() {
-    ne(), W(""), M(!1), J(!1), U(null), Y(void 0), K("neutral"), q(""), N({
+    ne(), W(""), M(!1), J(!1), U(null), Y(void 0), K("neutral"), q(""), C({
       completed: !1,
       correct: null,
       attempts: G,
@@ -1891,7 +1903,7 @@ function Je({
         r ? /* @__PURE__ */ n("h3", { children: r }) : null,
         a ? /* @__PURE__ */ n("p", { className: "lp-instructions", children: a }) : null,
         /* @__PURE__ */ n(
-          nr,
+          ar,
           {
             id: `${e}-field`,
             prompt: s,
@@ -1899,66 +1911,66 @@ function Je({
             value: V,
             minChars: o,
             minimumCharacters: i,
-            defaultMinChars: u,
-            rows: m,
+            defaultMinChars: h,
+            rows: u,
             disabled: Z,
             onChange: W
           }
         ),
         /* @__PURE__ */ d("div", { className: "lp-card__actions", children: [
-          /* @__PURE__ */ n("button", { type: "button", className: "lp-button", onClick: () => void O(), disabled: Z, children: z ? "Saving…" : E }),
+          /* @__PURE__ */ n("button", { type: "button", className: "lp-button", onClick: () => void F(), disabled: Z, children: z ? "Saving…" : E }),
           le ? /* @__PURE__ */ n("button", { type: "button", className: "lp-button lp-button--secondary", onClick: b, children: "Try again" }) : null
         ] }),
-        /* @__PURE__ */ n(ve, { state: Q, message: D })
+        /* @__PURE__ */ n(be, { state: Q, message: D })
       ]
     }
   );
 }
-function sr({
+function cr({
   rows: e = 4,
   ...t
 }) {
   return /* @__PURE__ */ n(
-    Je,
+    Qe,
     {
       ...t,
       blockType: "short-response",
-      defaultMinChars: qe,
+      defaultMinChars: Ye,
       rows: e
     }
   );
 }
-function cr({
+function lr({
   rows: e = 6,
   ...t
 }) {
   return /* @__PURE__ */ n(
-    Je,
+    Qe,
     {
       ...t,
       blockType: "reflection",
-      defaultMinChars: rr,
+      defaultMinChars: nr,
       rows: e
     }
   );
 }
-function lr(e, t) {
+function or(e, t) {
   const r = e.content || {}, s = me(r.presentation);
   return {
     id: e.id,
     instructions: r.instructions,
     feedback: r.feedback,
-    formative: Zt(r),
-    retry: Jt(r),
-    shuffle: er(r, { presentation: s, options: r.options }),
+    formative: Jt(r),
+    retry: Qt(r),
+    shuffle: tr(r, { presentation: s, options: r.options }),
     shuffleSeed: t,
     maxAttempts: r.maxAttempts
   };
 }
-function He(e) {
+function Ke(e) {
   return typeof e == "string" ? e : void 0;
 }
-function or({
+function ir({
   block: e,
   shuffleSeed: t,
   initialResponse: r,
@@ -1967,15 +1979,15 @@ function or({
   onMarkResponse: l,
   onResult: c
 }) {
-  const o = me(e.type), i = e.content || {}, u = me(i.presentation), m = lr(
+  const o = me(e.type), i = e.content || {}, h = me(i.presentation), u = or(
     e,
-    t || ze({ questionId: _e(e), blockId: e.id })
-  ), f = (h) => c == null ? void 0 : c(h, e);
-  if (o === "single-choice" || o === "option-cards" || u === "option-cards" || u === "true-false" || u === "picture-quiz")
+    t || We({ questionId: ve(e), blockId: e.id })
+  ), f = (m) => c == null ? void 0 : c(m, e);
+  if (o === "single-choice" || o === "option-cards" || h === "option-cards" || h === "true-false" || h === "picture-quiz")
     return /* @__PURE__ */ n(
-      Vt,
+      Gt,
       {
-        ...m,
+        ...u,
         prompt: i.prompt || "Choose an option",
         options: i.options || [],
         correctOptionId: i.correctOptionId,
@@ -1988,15 +2000,15 @@ function or({
       }
     );
   if (o === "classification") {
-    const h = r && typeof r == "object" && !Array.isArray(r) ? r : void 0;
+    const m = r && typeof r == "object" && !Array.isArray(r) ? r : void 0;
     return /* @__PURE__ */ n(
-      Ht,
+      Ut,
       {
-        ...m,
+        ...u,
         prompt: i.prompt || "Classify each item",
         items: i.items || [],
         categories: i.categories || [],
-        initialAssignments: h,
+        initialAssignments: m,
         initialChecked: s,
         initialCorrect: a == null ? void 0 : a.correct,
         initialCanRetry: a == null ? void 0 : a.canRetry,
@@ -2006,9 +2018,9 @@ function or({
     );
   }
   return o === "drag-drop" ? /* @__PURE__ */ n(
-    Ut,
+    Vt,
     {
-      ...m,
+      ...u,
       prompt: i.prompt || "Place each item",
       items: i.items || [],
       targets: i.targets || [],
@@ -2021,9 +2033,9 @@ function or({
       onResult: f
     }
   ) : o === "fill-gap" || o === "phrase-completion" ? /* @__PURE__ */ n(
-    Wt,
+    Xt,
     {
-      ...m,
+      ...u,
       prompt: i.prompt || "Complete the phrase",
       gaps: i.gaps,
       options: i.options || [],
@@ -2036,9 +2048,9 @@ function or({
       onResult: f
     }
   ) : o === "ordering" || o === "sequence" ? /* @__PURE__ */ n(
-    Xt,
+    Zt,
     {
-      ...m,
+      ...u,
       prompt: i.prompt || "Put the items in order",
       items: i.items || [],
       correctOrder: i.correctOrder,
@@ -2050,19 +2062,19 @@ function or({
       onResult: f
     }
   ) : o === "short-response" ? /* @__PURE__ */ n(
-    sr,
+    cr,
     {
-      id: m.id,
+      id: u.id,
       prompt: i.prompt || "Write your response",
-      instructions: m.instructions,
+      instructions: u.instructions,
       guidance: i.guidance,
       placeholder: i.placeholder,
       minChars: i.minChars,
       minimumCharacters: i.minimumCharacters,
-      feedback: m.feedback,
-      retry: m.retry,
-      maxAttempts: m.maxAttempts,
-      initialResponse: He(r),
+      feedback: u.feedback,
+      retry: u.retry,
+      maxAttempts: u.maxAttempts,
+      initialResponse: Ke(r),
       initialChecked: s,
       initialCorrect: a == null ? void 0 : a.correct,
       initialCanRetry: a == null ? void 0 : a.canRetry,
@@ -2070,19 +2082,19 @@ function or({
       onResult: f
     }
   ) : o === "reflection" ? /* @__PURE__ */ n(
-    cr,
+    lr,
     {
-      id: m.id,
+      id: u.id,
       prompt: i.prompt || "Write your reflection",
-      instructions: m.instructions,
+      instructions: u.instructions,
       guidance: i.guidance,
       placeholder: i.placeholder,
       minChars: i.minChars,
       minimumCharacters: i.minimumCharacters,
-      feedback: m.feedback,
-      retry: m.retry,
-      maxAttempts: m.maxAttempts,
-      initialResponse: He(r),
+      feedback: u.feedback,
+      retry: u.retry,
+      maxAttempts: u.maxAttempts,
+      initialResponse: Ke(r),
       initialChecked: s,
       initialCorrect: a == null ? void 0 : a.correct,
       initialCanRetry: a == null ? void 0 : a.canRetry,
@@ -2095,12 +2107,12 @@ function or({
     " block is not part of the React activity catalogue yet."
   ] });
 }
-function ir(e, t, r, s) {
+function dr(e, t, r, s) {
   if (s === "local") return r;
-  const a = r || Bt(e, t);
-  return s === "server" && !a ? Ge() : a;
+  const a = r || Dt(e, t);
+  return s === "server" && !a ? ze() : a;
 }
-function Or({
+function Dr({
   activity: e,
   initialResponses: t = {},
   initialChecked: r = {},
@@ -2110,43 +2122,43 @@ function Or({
   markingMode: c,
   shuffleSalt: o,
   onMarkResponse: i,
-  onResult: u
+  onResult: h
 }) {
-  var C, I;
-  const [m, f] = T(0), h = nt(e) || void 0, y = ir(l, e, i, c);
+  var N, A;
+  const [u, f] = T(0), m = st(e) || void 0, g = dr(l, e, i, c);
   return /* @__PURE__ */ d(
     "article",
     {
       className: "lp-activity panel",
       "data-lp-activity": e.id,
-      "data-lp-activity-version": h,
+      "data-lp-activity-version": m,
       children: [
-        (C = e.metadata) != null && C.title ? /* @__PURE__ */ n("h3", { children: e.metadata.title }) : null,
-        (I = e.metadata) != null && I.summary ? /* @__PURE__ */ n("p", { children: e.metadata.summary }) : null,
+        (N = e.metadata) != null && N.title ? /* @__PURE__ */ n("h3", { children: e.metadata.title }) : null,
+        (A = e.metadata) != null && A.summary ? /* @__PURE__ */ n("p", { children: e.metadata.summary }) : null,
         /* @__PURE__ */ n("div", { className: "lp-activity-list", children: (e.blocks || []).map((v) => {
-          if (Ze(v.type)) {
-            const g = ze({
+          if (Je(v.type)) {
+            const y = We({
               activityId: e.id,
-              activityVersion: h,
-              questionId: _e(v),
+              activityVersion: m,
+              questionId: ve(v),
               blockId: v.id,
               shuffleSalt: o
             });
             return /* @__PURE__ */ n(
-              or,
+              ir,
               {
                 block: v,
-                shuffleSeed: g,
-                initialResponse: t[_e(v)],
-                initialChecked: !!r[_e(v)],
-                initialResult: s[_e(v)],
-                onMarkResponse: y ? (E) => y({
+                shuffleSeed: y,
+                initialResponse: t[ve(v)],
+                initialChecked: !!r[ve(v)],
+                initialResult: s[ve(v)],
+                onMarkResponse: g ? (E) => g({
                   activityId: e.id,
-                  activityVersion: h || "",
+                  activityVersion: m || "",
                   block: v,
                   responses: E
                 }) : void 0,
-                onResult: u
+                onResult: h
               },
               v.id
             );
@@ -2156,7 +2168,7 @@ function Or({
             me(v.type) || "unknown",
             " block is not part of the React activity catalogue yet."
           ] }, v.id);
-        }) }, m),
+        }) }, u),
         /* @__PURE__ */ d("div", { className: "lp-activity-actions", children: [
           /* @__PURE__ */ n(
             "button",
@@ -2174,10 +2186,10 @@ function Or({
     }
   );
 }
-function dr(e, t) {
+function ur(e, t) {
   return typeof t == "number" && Number.isFinite(t) ? Math.min(1, Math.max(0, t)) : e && e.total > 0 ? Math.min(1, Math.max(0, e.correct / e.total)) : 0;
 }
-function Qe({
+function et({
   title: e,
   badge: t,
   subtitle: r,
@@ -2187,53 +2199,53 @@ function Qe({
   attempts: c,
   message: o,
   showStatus: i = !0,
-  showDisclaimer: u = !0,
-  collapsed: m = !1
+  showDisclaimer: h = !0,
+  collapsed: u = !1
 }) {
-  const f = t || r, h = dr(s, a), y = Math.round(h * 100), C = l ? "Completed" : "In progress", I = s ? `${s.correct} / ${s.total}` : null, v = s ? `${s.correct} of ${s.total} correct` : null, g = typeof c == "number" ? `${c} ${c === 1 ? "attempt" : "attempts"}` : null;
+  const f = t || r, m = ur(s, a), g = Math.round(m * 100), N = l ? "Completed" : "In progress", A = s ? `${s.correct} / ${s.total}` : null, v = s ? `${s.correct} of ${s.total} correct` : null, y = typeof c == "number" ? `${c} ${c === 1 ? "attempt" : "attempts"}` : null;
   return /* @__PURE__ */ d(
     "div",
     {
       className: "lp-progress-summary",
       "data-lp-progress-summary": "",
-      "data-lp-progress-collapsed": m ? "true" : "false",
+      "data-lp-progress-collapsed": u ? "true" : "false",
       children: [
         e ? /* @__PURE__ */ n("p", { className: "lp-progress-summary__title", children: /* @__PURE__ */ n("strong", { children: e }) }) : null,
-        i ? /* @__PURE__ */ n(we, { status: l ? "completed" : "progress", label: C }) : null,
-        I ? /* @__PURE__ */ n(
+        i ? /* @__PURE__ */ n(Ae, { status: l ? "completed" : "progress", label: N }) : null,
+        A ? /* @__PURE__ */ n(
           "p",
           {
             className: "lp-progress-summary__score",
             "data-lp-progress-score": "",
             "aria-label": v || void 0,
-            children: I
+            children: A
           }
         ) : null,
         v ? /* @__PURE__ */ n("p", { className: "lp-card__meta", children: v }) : null,
-        !m && f ? /* @__PURE__ */ n("p", { className: "lp-progress-summary__badge", "data-lp-progress-badge": "", children: /* @__PURE__ */ n("strong", { children: f }) }) : null,
-        m ? null : /* @__PURE__ */ d(tt, { children: [
+        !u && f ? /* @__PURE__ */ n("p", { className: "lp-progress-summary__badge", "data-lp-progress-badge": "", children: /* @__PURE__ */ n("strong", { children: f }) }) : null,
+        u ? null : /* @__PURE__ */ d(nt, { children: [
           /* @__PURE__ */ n(
             "progress",
             {
               className: "lp-progress",
               max: 100,
-              value: y,
-              "aria-label": `${y}% complete`
+              value: g,
+              "aria-label": `${g}% complete`
             }
           ),
           /* @__PURE__ */ d("p", { className: "lp-card__meta", children: [
-            y,
+            g,
             "% complete"
           ] }),
-          g ? /* @__PURE__ */ n("p", { children: g }) : null,
+          y ? /* @__PURE__ */ n("p", { children: y }) : null,
           o ? /* @__PURE__ */ n("p", { children: o }) : null,
-          u ? /* @__PURE__ */ n("p", { className: "lp-card__meta", children: "This summary is practice feedback, not an official mark." }) : null
+          h ? /* @__PURE__ */ n("p", { className: "lp-card__meta", children: "This summary is practice feedback, not an official mark." }) : null
         ] })
       ]
     }
   );
 }
-function ur(e, t) {
+function pr(e, t) {
   if (e)
     try {
       t && !e.open && (typeof e.showModal == "function" ? e.showModal() : e.setAttribute("open", "")), !t && e.open && (typeof e.close == "function" ? e.close() : e.removeAttribute("open"));
@@ -2241,7 +2253,7 @@ function ur(e, t) {
       t ? e.setAttribute("open", "") : e.removeAttribute("open");
     }
 }
-function Fr({
+function qr({
   open: e = !1,
   title: t = "Activity complete",
   completed: r = !0,
@@ -2251,41 +2263,41 @@ function Fr({
   progress: c,
   attempts: o,
   message: i,
-  onClose: u,
-  onReview: m,
+  onClose: h,
+  onReview: u,
   onNext: f,
-  nextLabel: h = "Continue",
-  reviewLabel: y = "Review"
+  nextLabel: m = "Continue",
+  reviewLabel: g = "Review"
 }) {
-  const C = Fe(null), I = $e();
+  const N = we(null), A = Le();
   return fe(() => {
-    ur(C.current, e);
+    pr(N.current, e);
   }, [e]), e ? /* @__PURE__ */ d(
     "dialog",
     {
-      ref: C,
+      ref: N,
       className: "lp-dialog",
-      "aria-labelledby": I,
+      "aria-labelledby": A,
       onCancel: (v) => {
-        v.preventDefault(), u == null || u();
+        v.preventDefault(), h == null || h();
       },
       children: [
         /* @__PURE__ */ d("header", { className: "lp-dialog__header", children: [
-          /* @__PURE__ */ n("h2", { id: I, children: t }),
+          /* @__PURE__ */ n("h2", { id: A, children: t }),
           /* @__PURE__ */ n(
             "button",
             {
               type: "button",
               className: "lp-dialog__close",
               "aria-label": `Close ${t}`,
-              onClick: u,
+              onClick: h,
               children: "Close"
             }
           )
         ] }),
         /* @__PURE__ */ d("div", { className: "lp-dialog__body", children: [
           /* @__PURE__ */ n(
-            Qe,
+            et,
             {
               completed: r,
               score: s,
@@ -2297,15 +2309,15 @@ function Fr({
             }
           ),
           /* @__PURE__ */ d("div", { className: "lp-form__actions", children: [
-            m ? /* @__PURE__ */ n("button", { type: "button", className: "lp-button lp-button--secondary", onClick: m, children: y }) : null,
-            f ? /* @__PURE__ */ n("button", { type: "button", className: "lp-button", onClick: f, children: h }) : null
+            u ? /* @__PURE__ */ n("button", { type: "button", className: "lp-button lp-button--secondary", onClick: u, children: g }) : null,
+            f ? /* @__PURE__ */ n("button", { type: "button", className: "lp-button", onClick: f, children: m }) : null
           ] })
         ] })
       ]
     }
   ) : null;
 }
-const pr = (e) => ({
+const mr = (e) => ({
   position: "fixed",
   zIndex: 40,
   left: "max(0.75rem, env(safe-area-inset-left, 0px))",
@@ -2322,7 +2334,7 @@ const pr = (e) => ({
   background: "var(--lp-surface)",
   color: "var(--lp-text)"
 });
-function Br({
+function Yr({
   collapsed: e,
   defaultCollapsed: t = !0,
   onCollapsedChange: r,
@@ -2330,28 +2342,28 @@ function Br({
   collapseLabel: a = "Hide progress details",
   ...l
 }) {
-  const [c, o] = T(t), i = typeof e == "boolean" ? e : c, u = $e(), m = l.title || "Practice progress";
-  function f(h) {
-    typeof e != "boolean" && o(h), r == null || r(h);
+  const [c, o] = T(t), i = typeof e == "boolean" ? e : c, h = Le(), u = l.title || "Practice progress";
+  function f(m) {
+    typeof e != "boolean" && o(m), r == null || r(m);
   }
   return /* @__PURE__ */ d(
     "aside",
     {
       className: "lp-card lp-practice-progress-panel",
-      style: pr(i),
-      "aria-label": m,
+      style: mr(i),
+      "aria-label": u,
       "data-lp-practice-progress-panel": "",
       "data-lp-docked": "left",
       "data-lp-collapsed": i ? "true" : "false",
       children: [
-        /* @__PURE__ */ n("div", { id: u, children: /* @__PURE__ */ n(Qe, { ...l, title: m, collapsed: i }) }),
+        /* @__PURE__ */ n("div", { id: h, children: /* @__PURE__ */ n(et, { ...l, title: u, collapsed: i }) }),
         /* @__PURE__ */ n("div", { className: "lp-card__actions", style: { marginTop: "0.5rem" }, children: /* @__PURE__ */ n(
           "button",
           {
             type: "button",
             className: "lp-button lp-button--secondary",
             "aria-expanded": !i,
-            "aria-controls": u,
+            "aria-controls": h,
             onClick: () => f(!i),
             children: i ? s : a
           }
@@ -2360,7 +2372,7 @@ function Br({
     }
   );
 }
-const mr = {
+const hr = {
   id: "demo-option-cards",
   metadata: {
     title: "Cloud service choice",
@@ -2388,7 +2400,7 @@ const mr = {
       }
     }
   ]
-}, hr = {
+}, fr = {
   id: "demo-true-false",
   metadata: { title: "NFC range check" },
   blocks: [
@@ -2408,7 +2420,7 @@ const mr = {
       }
     }
   ]
-}, fr = {
+}, gr = {
   id: "demo-drag-drop",
   metadata: { title: "IoT placement" },
   blocks: [
@@ -2441,7 +2453,7 @@ const mr = {
       }
     }
   ]
-}, gr = {
+}, yr = {
   id: "demo-phrase-completion",
   metadata: { title: "IoT sentence" },
   blocks: [
@@ -2465,7 +2477,7 @@ const mr = {
       }
     }
   ]
-}, yr = {
+}, vr = {
   id: "demo-sequence",
   metadata: { title: "RFID path" },
   blocks: [
@@ -2491,7 +2503,7 @@ const mr = {
       }
     }
   ]
-}, vr = {
+}, br = {
   id: "demo-classification",
   metadata: { title: "RFID and NFC uses" },
   blocks: [
@@ -2518,7 +2530,7 @@ const mr = {
       }
     }
   ]
-}, br = {
+}, Cr = {
   id: "demo-short-response",
   metadata: {
     title: "Cloud benefit",
@@ -2554,45 +2566,70 @@ const mr = {
       }
     }
   ]
-}, jr = [
-  mr,
+}, Hr = [
   hr,
   fr,
   gr,
   yr,
   vr,
   br,
+  Cr,
   Nr
 ];
-function Cr(e) {
+function kr(e) {
   const t = me(e.type);
   return t === "single-choice" || t === "option-cards" || t === "classification" || t === "drag-drop" || t === "fill-gap" || t === "phrase-completion" || t === "ordering" || t === "sequence";
 }
-function Dr(e) {
-  return Ze(e.type);
+function _r(e) {
+  return Je(e.type);
 }
-function qr(e) {
-  if (!Cr(e)) return 0;
+function Sr(e) {
+  return ((e == null ? void 0 : e.blocks) || []).filter((t) => _r(t)).map((t) => ve(t));
+}
+function tt(e, t) {
+  const r = Sr(e);
+  return !r.length || !t ? !1 : r.every((s) => !!t[s]);
+}
+function wr(e, t) {
+  return tt(e, t);
+}
+function Kr(e, t) {
+  let r = 0;
+  for (const s of e)
+    tt(s, t) && (r += 1);
+  return r;
+}
+function Ur(e, t) {
+  let r = 0;
+  for (const s of e)
+    s != null && s.id && wr(s, t[s.id]) && (r += 1);
+  return r;
+}
+function Vr(e, t) {
+  return `${e} / ${t} ${t === 1 ? "activity" : "activities"} completed`;
+}
+function Gr(e) {
+  if (!kr(e)) return 0;
   const t = me(e.type);
   return t === "classification" ? (e.content && e.content.items || []).length : t === "drag-drop" ? (e.content && e.content.items || []).length : t === "fill-gap" || t === "phrase-completion" ? (e.content && e.content.gaps || []).length || 1 : t === "ordering" || t === "sequence" ? (e.content && e.content.items || []).length : 1;
 }
-function Yr() {
+function zr() {
   return { completed: {}, scores: {} };
 }
-function Hr(e, t, r) {
+function Wr(e, t, r) {
   const s = { ...e.completed }, a = { ...e.scores };
-  return r.completed ? (s[t] = !0, r.score && r.score.total > 0 && !r.requiresReview ? a[t] = r.score : delete a[t], { completed: s, scores: a }) : e;
+  return r.completed ? (s[t] = !0, r.score && r.score.total > 0 && !r.requiresReview ? a[t] = r.score : delete a[t], { completed: s, scores: a }) : r.status === "error" ? e : (delete s[t], delete a[t], { completed: s, scores: a });
 }
-function Kr(e, t) {
+function Xr(e, t) {
   return t.length > 0 && t.every((r) => e.completed[r]);
 }
-function Ur(e, t) {
+function Zr(e, t) {
   var s;
   if (!e.completed) return !1;
   const r = ((s = e.score) == null ? void 0 : s.total) || 0;
   return t.complete || t.completedCount >= 2 || r >= 2;
 }
-function Vr(e, t) {
+function Jr(e, t) {
   const r = Object.values(e.completed).filter(Boolean).length, s = Object.values(e.scores).reduce(
     (l, c) => ({
       correct: l.correct + c.correct,
@@ -2611,123 +2648,129 @@ function Vr(e, t) {
     complete: a > 0 && r >= a
   };
 }
-const et = /* @__PURE__ */ new Set(["correct", "incorrect", "review", "recorded", "error"]);
-function kr(e) {
+const rt = /* @__PURE__ */ new Set(["correct", "incorrect", "review", "recorded", "error"]);
+function Ar(e) {
   if (!e || typeof e != "object" || Array.isArray(e)) return null;
   const t = e, r = {
     correct: t.correct === !0 ? !0 : t.correct === !1 ? !1 : null
   };
-  return typeof t.canRetry == "boolean" && (r.canRetry = t.canRetry), typeof t.status == "string" && et.has(t.status) && (r.status = t.status), r;
+  return typeof t.canRetry == "boolean" && (r.canRetry = t.canRetry), typeof t.status == "string" && rt.has(t.status) && (r.status = t.status), r;
 }
-function Gr(e) {
+function Qr(e) {
   if (!e || typeof e != "object" || Array.isArray(e)) return {};
   const t = {};
   for (const [r, s] of Object.entries(e)) {
-    const a = kr(s);
+    const a = Ar(s);
     a && (t[r] = a);
   }
   return t;
 }
-function zr(e) {
-  const t = typeof e.status == "string" && et.has(e.status) ? e.status : e.requiresReview ? "review" : e.correct === !0 ? "correct" : e.correct === !1 ? "incorrect" : "recorded", r = {
+function en(e) {
+  const t = typeof e.status == "string" && rt.has(e.status) ? e.status : e.requiresReview ? "review" : e.correct === !0 ? "correct" : e.correct === !1 ? "incorrect" : "recorded", r = {
     correct: e.correct === !0 ? !0 : e.correct === !1 ? !1 : null,
     status: t
   };
   return typeof e.canRetry == "boolean" && (r.canRetry = e.canRetry), r;
 }
 export {
-  or as ActivityBlock,
-  gt as ActivityCard,
-  Tt as AuthoredHtml,
-  vt as Breadcrumbs,
-  st as CONTEXT_TYPES,
-  Nt as Callout,
-  Ht as Classification,
-  Fr as CompletionModal,
-  Ct as ContextPanel,
-  Ut as DragDrop,
-  Ue as EmptyState,
-  Er as ErrorState,
-  Lt as FEEDBACK_STATES,
-  ve as FeedbackPanel,
-  Mr as HubShell,
-  Or as InteractiveActivity,
-  Ir as LEARNER_ACTIVITY_STATES,
-  xr as LearnerHeader,
-  _t as LearningOutcomeBadge,
-  nr as LearningTextField,
-  $r as LoadingState,
-  kt as Navigation,
-  Vt as OptionCards,
-  Wt as PhraseCompletion,
-  Br as PracticeProgressPanel,
-  St as ProgressCard,
-  Qe as ProgressSummary,
-  rr as REFLECTION_DEFAULT_MIN_CHARS,
-  cr as Reflection,
-  Re as SERVER_CHECK_FAILED_MESSAGE,
-  Rt as SERVER_REVIEW_MESSAGE,
-  ct as SESSION_KINDS,
-  Pe as SESSION_KIND_LABELS,
-  qe as SHORT_RESPONSE_DEFAULT_MIN_CHARS,
-  Tr as STATUS_TONES,
-  Xt as Sequence,
-  wt as SessionSection,
-  sr as ShortResponse,
-  we as StatusBadge,
-  Je as TextResponse,
+  ir as ActivityBlock,
+  vt as ActivityCard,
+  Mt as AuthoredHtml,
+  Ct as Breadcrumbs,
+  lt as CONTEXT_TYPES,
+  kt as Callout,
+  Ut as Classification,
+  qr as CompletionModal,
+  _t as ContextPanel,
+  Vt as DragDrop,
+  Ve as EmptyState,
+  Lr as ErrorState,
+  Rt as FEEDBACK_STATES,
+  be as FeedbackPanel,
+  Pr as HubShell,
+  Dr as InteractiveActivity,
+  $r as LEARNER_ACTIVITY_STATES,
+  Rr as LearnerHeader,
+  wt as LearningOutcomeBadge,
+  ar as LearningTextField,
+  Fr as LoadingState,
+  St as Navigation,
+  Gt as OptionCards,
+  Xt as PhraseCompletion,
+  Yr as PracticeProgressPanel,
+  At as ProgressCard,
+  et as ProgressSummary,
+  nr as REFLECTION_DEFAULT_MIN_CHARS,
+  lr as Reflection,
+  Oe as SERVER_CHECK_FAILED_MESSAGE,
+  Ot as SERVER_REVIEW_MESSAGE,
+  ot as SESSION_KINDS,
+  Fe as SESSION_KIND_LABELS,
+  Ye as SHORT_RESPONSE_DEFAULT_MIN_CHARS,
+  xr as STATUS_TONES,
+  Zt as Sequence,
+  It as SessionSection,
+  cr as ShortResponse,
+  Ae as StatusBadge,
+  Qe as TextResponse,
   ye as WEEK_ACCESS_COPY,
-  lt as WEEK_UI_FEATURES,
-  Rr as WeekAccessGuard,
-  Pr as WeekAccessLink,
-  At as WeekHeader,
-  It as WeekNavigation,
-  Lr as WeekView,
-  ft as activityActionLabel,
-  Vr as aggregatePracticeProgress,
-  Hr as applyPracticeResult,
-  qr as catalogueBlockScorableTotal,
-  Bt as createMarkResponseHandler,
-  Dt as createSeededRandom,
-  jr as demoCatalogueActivities,
-  vr as demoClassification,
-  fr as demoDragDrop,
-  mr as demoOptionCards,
-  gr as demoPhraseCompletion,
+  it as WEEK_UI_FEATURES,
+  jr as WeekAccessGuard,
+  Br as WeekAccessLink,
+  Tt as WeekHeader,
+  Et as WeekNavigation,
+  Or as WeekView,
+  yt as activityActionLabel,
+  Vr as activityProgressLabel,
+  Jr as aggregatePracticeProgress,
+  Wr as applyPracticeResult,
+  Gr as catalogueBlockScorableTotal,
+  Sr as completableBlockIds,
+  Ur as completedActivityCountFromCheckedDrafts,
+  Kr as completedActivityCountFromState,
+  Dt as createMarkResponseHandler,
+  Yt as createSeededRandom,
+  Hr as demoCatalogueActivities,
+  br as demoClassification,
+  gr as demoDragDrop,
+  hr as demoOptionCards,
+  yr as demoPhraseCompletion,
   Nr as demoReflection,
-  yr as demoSequence,
-  br as demoShortResponse,
-  hr as demoTrueFalse,
-  Yr as emptyPracticeProgress,
-  jt as hashSeed,
-  Ze as isCatalogueReactType,
-  Dr as isCompletableReactBlock,
-  dt as isIndependentKind,
-  Ur as isPracticeCompletionCue,
-  Cr as isScorableReactBlock,
-  ut as isSessionKind,
-  Ft as learnerSafeBlock,
-  kr as learnerSafeCheckedResult,
-  Gr as learnerSafeCheckedResults,
-  zr as learnerSafeResultFromActivityResult,
-  Qt as looksLikeTrueFalseOptions,
-  ot as mergeWeekUiFeatures,
+  vr as demoSequence,
+  Cr as demoShortResponse,
+  fr as demoTrueFalse,
+  zr as emptyPracticeProgress,
+  qt as hashSeed,
+  wr as isActivityCheckedComplete,
+  tt as isActivityPracticeComplete,
+  Je as isCatalogueReactType,
+  _r as isCompletableReactBlock,
+  pt as isIndependentKind,
+  Zr as isPracticeCompletionCue,
+  kr as isScorableReactBlock,
+  mt as isSessionKind,
+  jt as learnerSafeBlock,
+  Ar as learnerSafeCheckedResult,
+  Qr as learnerSafeCheckedResults,
+  en as learnerSafeResultFromActivityResult,
+  er as looksLikeTrueFalseOptions,
+  dt as mergeWeekUiFeatures,
   me as normaliseActivityType,
-  ze as presentationShuffleSeed,
-  _e as questionIdFor,
-  Xe as resolveMinChars,
-  dr as resolveProgressFraction,
-  Be as resolveWeekStatus,
+  We as presentationShuffleSeed,
+  ve as questionIdFor,
+  Ze as resolveMinChars,
+  ur as resolveProgressFraction,
+  je as resolveWeekStatus,
   xe as restoredCheckedDisplay,
-  Kr as scorableBlocksComplete,
-  it as shouldShowContext,
-  er as shouldShuffle,
-  Te as shuffled,
-  qt as stableShuffle,
-  Ke as statusLabel,
-  ht as statusTone,
-  Ee as useRestoredCheckedFeedback,
-  xt as weekAccessFallbackCopy,
-  Ve as weekIsAccessible
+  Xr as scorableBlocksComplete,
+  ut as shouldShowContext,
+  tr as shouldShuffle,
+  Ee as shuffled,
+  Ht as stableShuffle,
+  Ue as statusLabel,
+  gt as statusTone,
+  Me as useRestoredCheckedFeedback,
+  Lt as weekAccessFallbackCopy,
+  Ge as weekIsAccessible
 };
 //# sourceMappingURL=index.js.map

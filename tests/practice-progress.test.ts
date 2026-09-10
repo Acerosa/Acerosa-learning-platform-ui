@@ -1,10 +1,22 @@
 import { describe, expect, it } from "vitest";
 import {
+  activityProgressLabel,
   aggregatePracticeProgress,
   applyPracticeResult,
+  completedActivityCountFromCheckedDrafts,
+  completedActivityCountFromState,
   emptyPracticeProgress,
+  isActivityCheckedComplete,
   isPracticeCompletionCue
 } from "../src/activities/practice-progress";
+import type { ActivityDocument } from "../src/activities/types";
+
+function activity(id: string, blockIds: string[]): ActivityDocument {
+  return {
+    id,
+    blocks: blockIds.map((blockId) => ({ id: blockId, type: "single-choice" }))
+  };
+}
 
 describe("practice progress", () => {
   it("advances completion for a completed scored block and keeps score from the server result", () => {
@@ -105,5 +117,56 @@ describe("practice progress", () => {
     const aggregate = aggregatePracticeProgress(afterRetry, { requiredBlocks: 1, scorableTotal: 1 });
     expect(aggregate.completedCount).toBe(1);
     expect(aggregate.score).toEqual({ correct: 1, total: 1 });
+  });
+
+  it("clears block completion on Try again without removing other completed blocks", () => {
+    const first = applyPracticeResult(emptyPracticeProgress(), "q1", {
+      completed: true,
+      correct: false,
+      score: { correct: 0, total: 1 },
+      attempts: 1,
+      responses: { optionId: "a" }
+    });
+    const second = applyPracticeResult(first, "q2", {
+      completed: true,
+      correct: true,
+      score: { correct: 1, total: 1 },
+      attempts: 1,
+      responses: { optionId: "b" }
+    });
+    const afterRetry = applyPracticeResult(second, "q1", {
+      completed: false,
+      correct: null,
+      attempts: 2,
+      responses: {}
+    });
+    expect(afterRetry.completed.q1).toBeUndefined();
+    expect(afterRetry.completed.q2).toBe(true);
+    expect(afterRetry.scores.q1).toBeUndefined();
+    expect(aggregatePracticeProgress(afterRetry, { requiredBlocks: 2, scorableTotal: 2 }).completedCount).toBe(1);
+  });
+
+  it("counts activities from 0 and only once when all required blocks are checked", () => {
+    const one = activity("a1", ["a1:q1"]);
+    const multi = activity("a2", ["a2:q1", "a2:q2"]);
+    const activities = [one, multi];
+    expect(completedActivityCountFromState(activities, {})).toBe(0);
+    expect(activityProgressLabel(0, 2)).toBe("0 / 2 activities completed");
+    expect(completedActivityCountFromState(activities, { "a1:q1": true })).toBe(1);
+    expect(isActivityCheckedComplete(multi, { "a2:q1": true })).toBe(false);
+    expect(completedActivityCountFromCheckedDrafts(activities, {
+      a1: { "a1:q1": true },
+      a2: { "a2:q1": true }
+    })).toBe(1);
+    expect(completedActivityCountFromCheckedDrafts(activities, {
+      a1: { "a1:q1": true },
+      a2: { "a2:q1": true, "a2:q2": true }
+    })).toBe(2);
+    expect(activityProgressLabel(2, 2)).toBe("2 / 2 activities completed");
+  });
+
+  it("counts incorrect checked answers as practice-complete", () => {
+    const one = activity("choice", ["choice:q1"]);
+    expect(isActivityCheckedComplete(one, { "choice:q1": true })).toBe(true);
   });
 });
