@@ -25,6 +25,7 @@ export type ClassificationProps = {
   formative?: boolean;
   retry?: boolean;
   shuffle?: boolean;
+  shuffleSeed?: string;
   maxAttempts?: number;
   initialAssignments?: Record<string, string>;
   initialChecked?: boolean;
@@ -71,6 +72,7 @@ export function Classification({
   formative = true,
   retry = true,
   shuffle = false,
+  shuffleSeed,
   maxAttempts,
   initialAssignments = {},
   initialChecked = false,
@@ -79,7 +81,10 @@ export function Classification({
   onMarkResponse,
   onResult
 }: ClassificationProps): ReactNode {
-  const orderedItems = useMemo(() => shuffled(items, shuffle), [items, shuffle]);
+  const orderedItems = useMemo(
+    () => shuffled(items, shuffle, shuffleSeed || id),
+    [items, shuffle, shuffleSeed, id]
+  );
   const [assignments, setAssignments] = useRestoredState<Record<string, string>>(initialAssignments, {});
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);

@@ -129,12 +129,21 @@ export type {
 } from "./activities/types";
 export {
   isCatalogueReactType,
+  looksLikeTrueFalseOptions,
   normaliseActivityType,
   questionIdFor,
   resolveMinChars,
+  shouldShuffle,
   REFLECTION_DEFAULT_MIN_CHARS,
   SHORT_RESPONSE_DEFAULT_MIN_CHARS
 } from "./activities/types";
+export {
+  createSeededRandom,
+  hashSeed,
+  presentationShuffleSeed,
+  shuffled,
+  stableShuffle
+} from "./activities/shuffle";
 export {
   aggregatePracticeProgress,
   applyPracticeResult,

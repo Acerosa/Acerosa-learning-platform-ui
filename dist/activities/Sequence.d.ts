@@ -12,6 +12,7 @@ export type SequenceProps = {
     formative?: boolean;
     retry?: boolean;
     shuffle?: boolean;
+    shuffleSeed?: string;
     maxAttempts?: number;
     initialOrder?: string[];
     initialChecked?: boolean;
@@ -20,4 +21,4 @@ export type SequenceProps = {
     onMarkResponse?: OnMarkBlockResponse;
     onResult?: (result: ActivityResult) => void;
 };
-export declare function Sequence({ id, title, prompt, instructions, items, correctOrder, feedback, formative, retry, shuffle, maxAttempts, initialOrder, initialChecked, initialCorrect, initialCanRetry, onMarkResponse, onResult }: SequenceProps): ReactNode;
+export declare function Sequence({ id, title, prompt, instructions, items, correctOrder, feedback, formative, retry, shuffle, shuffleSeed, maxAttempts, initialOrder, initialChecked, initialCorrect, initialCanRetry, onMarkResponse, onResult }: SequenceProps): ReactNode;

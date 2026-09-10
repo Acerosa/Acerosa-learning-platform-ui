@@ -7,6 +7,7 @@ import { PhraseCompletion } from "./PhraseCompletion";
 import { Sequence } from "./Sequence";
 import { Reflection, ShortResponse } from "./TextResponse";
 import { createFailClosedMarkHandler, createMarkResponseHandler, type OnMarkResponse } from "./server-mark";
+import { presentationShuffleSeed } from "./shuffle";
 import {
   allowsRetry,
   isCatalogueReactType,
@@ -27,6 +28,7 @@ export type RestoredActivityResult = {
 
 export type ActivityBlockProps = {
   block: ActivityBlockDocument;
+  shuffleSeed?: string;
   initialResponse?: unknown;
   initialChecked?: boolean;
   initialResult?: RestoredActivityResult;
@@ -42,19 +44,23 @@ export type InteractiveActivityProps = {
   renderFallback?: (block: ActivityBlockDocument) => ReactNode;
   platform?: unknown;
   markingMode?: "server" | "local";
+  /** Optional non-secret salt (e.g. learner id) so different learners can get different orders. */
+  shuffleSalt?: string;
   onMarkResponse?: OnMarkResponse;
   onResult?: (result: ActivityResult, block: ActivityBlockDocument) => void;
 };
 
-function sharedMechanics(block: ActivityBlockDocument) {
+function sharedMechanics(block: ActivityBlockDocument, shuffleSeed: string) {
   const content = block.content || {};
+  const presentation = normaliseActivityType(content.presentation);
   return {
     id: block.id,
     instructions: content.instructions,
     feedback: content.feedback,
     formative: isFormativeContent(content),
     retry: allowsRetry(content),
-    shuffle: shouldShuffle(content),
+    shuffle: shouldShuffle(content, { presentation, options: content.options }),
+    shuffleSeed,
     maxAttempts: content.maxAttempts
   };
 }
@@ -63,11 +69,22 @@ function initialText(value: unknown): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
-export function ActivityBlock({ block, initialResponse, initialChecked, initialResult, onMarkResponse, onResult }: ActivityBlockProps): ReactNode {
+export function ActivityBlock({
+  block,
+  shuffleSeed,
+  initialResponse,
+  initialChecked,
+  initialResult,
+  onMarkResponse,
+  onResult
+}: ActivityBlockProps): ReactNode {
   const type = normaliseActivityType(block.type);
   const content = block.content || {};
   const presentation = normaliseActivityType(content.presentation);
-  const mechanics = sharedMechanics(block);
+  const mechanics = sharedMechanics(
+    block,
+    shuffleSeed || presentationShuffleSeed({ questionId: questionIdFor(block), blockId: block.id })
+  );
   const emit = (result: ActivityResult) => onResult?.(result, block);
 
   if (
@@ -243,6 +260,7 @@ export function InteractiveActivity({
   renderFallback,
   platform,
   markingMode,
+  shuffleSalt,
   onMarkResponse,
   onResult
 }: InteractiveActivityProps): ReactNode {
@@ -261,10 +279,18 @@ export function InteractiveActivity({
       <div className="lp-activity-list" key={resetKey}>
         {(activity.blocks || []).map((block) => {
           if (isCatalogueReactType(block.type)) {
+            const seed = presentationShuffleSeed({
+              activityId: activity.id,
+              activityVersion,
+              questionId: questionIdFor(block),
+              blockId: block.id,
+              shuffleSalt
+            });
             return (
               <ActivityBlock
                 key={block.id}
                 block={block}
+                shuffleSeed={seed}
                 initialResponse={initialResponses[questionIdFor(block)]}
                 initialChecked={Boolean(initialChecked[questionIdFor(block)])}
                 initialResult={initialResults[questionIdFor(block)]}

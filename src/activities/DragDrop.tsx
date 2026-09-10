@@ -26,6 +26,7 @@ export type DragDropProps = {
   formative?: boolean;
   retry?: boolean;
   shuffle?: boolean;
+  shuffleSeed?: string;
   maxAttempts?: number;
   initialPlacements?: Record<string, string>;
   initialChecked?: boolean;
@@ -47,6 +48,7 @@ export function DragDrop({
   formative = true,
   retry = true,
   shuffle = false,
+  shuffleSeed,
   maxAttempts,
   initialPlacements = {},
   initialChecked = false,
@@ -55,7 +57,10 @@ export function DragDrop({
   onMarkResponse,
   onResult
 }: DragDropProps): ReactNode {
-  const orderedItems = useMemo(() => shuffled(items, shuffle), [items, shuffle]);
+  const orderedItems = useMemo(
+    () => shuffled(items, shuffle, shuffleSeed || id),
+    [items, shuffle, shuffleSeed, id]
+  );
   const { placements, selectedItemId, selectItem, selectTarget, occupantOf, reset: resetPlacement } = usePlacement(initialPlacements);
   const [attempts, setAttempts] = useState(0);
   const restoredComplete = items.length > 0 && items.every((item) => initialPlacements[item.id]);

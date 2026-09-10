@@ -28,6 +28,7 @@ export type PhraseCompletionProps = {
   formative?: boolean;
   retry?: boolean;
   shuffle?: boolean;
+  shuffleSeed?: string;
   maxAttempts?: number;
   initialPlacements?: Record<string, string>;
   initialChecked?: boolean;
@@ -94,6 +95,7 @@ export function PhraseCompletion({
   formative = true,
   retry = true,
   shuffle = false,
+  shuffleSeed,
   maxAttempts,
   initialPlacements = {},
   initialChecked = false,
@@ -106,7 +108,10 @@ export function PhraseCompletion({
     if (gaps && gaps.length) return gaps;
     return [{ id: "gap", label: "missing term", correctOptionId: correctOptionId || undefined }];
   }, [correctOptionId, gaps]);
-  const orderedOptions = useMemo(() => shuffled(options, shuffle), [options, shuffle]);
+  const orderedOptions = useMemo(
+    () => shuffled(options, shuffle, shuffleSeed || id),
+    [options, shuffle, shuffleSeed, id]
+  );
   const promptParts = useMemo(() => parsePrompt(prompt, resolvedGaps), [prompt, resolvedGaps]);
   const normalizedInitial = useMemo(
     () => placementsFromInitial(initialPlacements, resolvedGaps, options),

@@ -12,6 +12,7 @@ export type OptionCardsProps = {
     formative?: boolean;
     retry?: boolean;
     shuffle?: boolean;
+    shuffleSeed?: string;
     maxAttempts?: number;
     initialSelectedId?: string;
     initialChecked?: boolean;
@@ -20,4 +21,4 @@ export type OptionCardsProps = {
     onMarkResponse?: OnMarkBlockResponse;
     onResult?: (result: ActivityResult) => void;
 };
-export declare function OptionCards({ id, title, prompt, instructions, options, correctOptionId, feedback, formative, retry, shuffle, maxAttempts, initialSelectedId, initialChecked, initialCorrect, initialCanRetry, onMarkResponse, onResult }: OptionCardsProps): ReactNode;
+export declare function OptionCards({ id, title, prompt, instructions, options, correctOptionId, feedback, formative, retry, shuffle, shuffleSeed, maxAttempts, initialSelectedId, initialChecked, initialCorrect, initialCanRetry, onMarkResponse, onResult }: OptionCardsProps): ReactNode;

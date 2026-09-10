@@ -8,6 +8,7 @@ export type RestoredActivityResult = {
 };
 export type ActivityBlockProps = {
     block: ActivityBlockDocument;
+    shuffleSeed?: string;
     initialResponse?: unknown;
     initialChecked?: boolean;
     initialResult?: RestoredActivityResult;
@@ -22,8 +23,10 @@ export type InteractiveActivityProps = {
     renderFallback?: (block: ActivityBlockDocument) => ReactNode;
     platform?: unknown;
     markingMode?: "server" | "local";
+    /** Optional non-secret salt (e.g. learner id) so different learners can get different orders. */
+    shuffleSalt?: string;
     onMarkResponse?: OnMarkResponse;
     onResult?: (result: ActivityResult, block: ActivityBlockDocument) => void;
 };
-export declare function ActivityBlock({ block, initialResponse, initialChecked, initialResult, onMarkResponse, onResult }: ActivityBlockProps): ReactNode;
-export declare function InteractiveActivity({ activity, initialResponses, initialChecked, initialResults, renderFallback, platform, markingMode, onMarkResponse, onResult }: InteractiveActivityProps): ReactNode;
+export declare function ActivityBlock({ block, shuffleSeed, initialResponse, initialChecked, initialResult, onMarkResponse, onResult }: ActivityBlockProps): ReactNode;
+export declare function InteractiveActivity({ activity, initialResponses, initialChecked, initialResults, renderFallback, platform, markingMode, shuffleSalt, onMarkResponse, onResult }: InteractiveActivityProps): ReactNode;
