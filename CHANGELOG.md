@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.13 - 2026-09-12
+## 0.1.14 - 2026-09-12
 
 - Learner interaction marks the interned activity store dirty immediately
   (before Check / Save). Incoming restore cannot replace newer unsaved local
@@ -12,8 +12,11 @@
 - `WeekView` keys activity children by stable `id` / `activityId` (plus optional
   `activityVersion`) instead of array index, so reordering or inserting an
   activity does not reuse another activity's React state.
+
+## 0.1.13
+
 - Try Again clears restored draft state. Shared practice-completion helpers
-  count checked drafts.
+  count checked drafts. Package version 0.1.13.
 
 ## 0.1.12
 
