@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import {
   isIndependentKind,
   mergeWeekUiFeatures,
@@ -16,10 +16,16 @@ import { AuthoredHtml } from "./AuthoredHtml";
 import { WeekHeader } from "./WeekHeader";
 import { WeekNavigation, type WeekNavLink } from "./WeekNavigation";
 
+export type WeekActivityIdentity = {
+  id?: string;
+  activityId?: string;
+  activityVersion?: string;
+};
+
 export type WeekActivity =
-  | ({ html: string } & { title?: never })
-  | (ActivityCardProps & { html?: never })
-  | { element?: never; html?: never; children: ReactNode };
+  | ({ html: string } & { title?: never } & WeekActivityIdentity)
+  | (ActivityCardProps & { html?: never } & WeekActivityIdentity)
+  | ({ element?: never; html?: never; children: ReactNode } & WeekActivityIdentity);
 
 export type WeekSession = {
   id?: string;
@@ -60,20 +66,25 @@ function sessionMeta(session: WeekSession): string {
   return session.kind && session.kind !== "session" ? `${kindLabel} · ${countLabel}` : countLabel;
 }
 
+function activityRenderKey(activity: WeekActivity, index: number): string {
+  const id = activity.id || activity.activityId;
+  if (!id) return `index:${index}`;
+  return activity.activityVersion ? `${id}@${activity.activityVersion}` : id;
+}
+
 function defaultActivity(activity: WeekActivity, index: number): ReactNode {
   if ("html" in activity && activity.html) {
     return (
       <AuthoredHtml
-        key={index}
         className="lp-activity-html"
         html={activity.html}
       />
     );
   }
   if ("children" in activity && activity.children) {
-    return <div key={index}>{activity.children}</div>;
+    return <div>{activity.children}</div>;
   }
-  return <ActivityCard key={index} {...(activity as ActivityCardProps)} />;
+  return <ActivityCard {...(activity as ActivityCardProps)} />;
 }
 
 export function WeekView({
@@ -132,7 +143,11 @@ export function WeekView({
             defaultOpen={session.defaultOpen}
             meta={sessionMeta(session)}
           >
-            {(session.activities || []).map((activity, index) => render(activity, index))}
+            {(session.activities || []).map((activity, index) => (
+              <Fragment key={activityRenderKey(activity, index)}>
+                {render(activity, index)}
+              </Fragment>
+            ))}
           </SessionSection>
         ))
       )}

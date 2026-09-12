@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useActivityDraftProtection } from "./activity-draft-protection";
 import type { FeedbackState } from "./FeedbackPanel";
 import {
   RESTORED_CHECKED_MESSAGE,
@@ -30,6 +31,7 @@ export function useRestoredCheckedFeedback(options: RestoredVerdictProps): {
   markLive: () => void;
   markRetry: () => void;
 } {
+  const protection = useActivityDraftProtection();
   const checked = Boolean(options.initialChecked && options.hasResponse);
   const opening = restoredCheckedDisplay({
     checked,
@@ -45,8 +47,16 @@ export function useRestoredCheckedFeedback(options: RestoredVerdictProps): {
   const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>(options.initialCanRetry);
 
   useEffect(() => {
-    if (restoreLockRef.current === "live" || restoreLockRef.current === "retry") return;
-    if (!options.initialChecked || !options.hasResponse) return;
+    if (protection.isDirty()) return;
+    if (restoreLockRef.current === "live") return;
+    if (!options.initialChecked || !options.hasResponse) {
+      restoreLockRef.current = "idle";
+      setStatus("neutral");
+      setMessage("");
+      setServerCorrect(null);
+      return;
+    }
+    if (restoreLockRef.current === "retry") return;
     const restored = restoredCheckedDisplay({
       checked: true,
       hasResponse: true,
@@ -67,7 +77,8 @@ export function useRestoredCheckedFeedback(options: RestoredVerdictProps): {
     options.hasResponse,
     options.initialCanRetry,
     options.initialChecked,
-    options.initialCorrect
+    options.initialCorrect,
+    protection
   ]);
 
   return {

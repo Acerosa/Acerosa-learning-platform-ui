@@ -13,6 +13,7 @@ import {
 } from "./server-mark";
 import { shuffled } from "./shuffle";
 import type { ActivityFeedbackCopy, ActivityOption, ActivityResult } from "./types";
+import { useActivityDraftProtection } from "./activity-draft-protection";
 import { useRestoredChecked, useRestoredState } from "./useRestoredState";
 
 export type OptionCardsProps = {
@@ -60,6 +61,7 @@ export function OptionCards({
     () => shuffled(options, shuffle, shuffleSeed || id),
     [options, shuffle, shuffleSeed, id]
   );
+  const protection = useActivityDraftProtection();
   const [selectedId, setSelectedId] = useRestoredState<string | null>(initialSelectedId || null, null);
   const [attempts, setAttempts] = useState(0);
   const [checked, setChecked] = useRestoredChecked(initialChecked, Boolean(initialSelectedId));
@@ -78,8 +80,16 @@ export function OptionCards({
   const [serverCanRetry, setServerCanRetry] = useState<boolean | undefined>(initialCanRetry);
 
   useEffect(() => {
-    if (restoreLockRef.current === "live" || restoreLockRef.current === "retry") return;
-    if (!initialChecked || !selectedId) return;
+    if (protection.isDirty()) return;
+    if (restoreLockRef.current === "live") return;
+    if (!initialChecked || !selectedId) {
+      restoreLockRef.current = "idle";
+      setStatus("neutral");
+      setMessage("");
+      setServerCorrect(null);
+      return;
+    }
+    if (restoreLockRef.current === "retry") return;
     const restored = restoredCheckedDisplay({
       checked: true,
       hasResponse: true,
@@ -95,7 +105,7 @@ export function OptionCards({
     if (restored.status === "correct" || restored.status === "incorrect") {
       restoreLockRef.current = "restored";
     }
-  }, [feedback, initialCanRetry, initialChecked, initialCorrect, selectedId]);
+  }, [feedback, initialCanRetry, initialChecked, initialCorrect, protection, selectedId]);
   const serverMode = usesServerMark(onMarkResponse);
   const scored = localScoreEnabled(formative, Boolean(correctOptionId), onMarkResponse);
   const name = `lp-option-cards-${id}`;
@@ -123,6 +133,7 @@ export function OptionCards({
     const responses = { optionId: selectedId };
 
     if (serverMode && onMarkResponse) {
+      restoreLockRef.current = "live";
       setChecking(true);
       setStatus("informative");
       setMessage("Checking your answer…");
@@ -137,6 +148,7 @@ export function OptionCards({
         setMessage(marked.message);
         emit(activityResultFromMark(marked, nextAttempts, responses));
       } catch (error) {
+        restoreLockRef.current = "idle";
         setChecked(false);
         setServerCorrect(null);
         setServerCanRetry(false);

@@ -1,20 +1,25 @@
-import type { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { type SessionKind, type WeekUiFeatures } from "../contracts";
 import { type ActivityCardProps } from "./ActivityCard";
 import { type ContextPanelProps } from "./ContextPanel";
 import { type ProgressCardProps } from "./ProgressCard";
 import { type WeekNavLink } from "./WeekNavigation";
+export type WeekActivityIdentity = {
+    id?: string;
+    activityId?: string;
+    activityVersion?: string;
+};
 export type WeekActivity = ({
     html: string;
 } & {
     title?: never;
-}) | (ActivityCardProps & {
+} & WeekActivityIdentity) | (ActivityCardProps & {
     html?: never;
-}) | {
+} & WeekActivityIdentity) | ({
     element?: never;
     html?: never;
     children: ReactNode;
-};
+} & WeekActivityIdentity);
 export type WeekSession = {
     id?: string;
     title?: string;

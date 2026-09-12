@@ -1,5 +1,11 @@
 import { resolveActivityVersion } from "@learning-platform/core";
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
+import {
+  ActivityStateStoreProvider,
+  BlockDraftProtectionProvider,
+  protectedActivityDraft,
+  resolveActivityStateStore
+} from "./activity-draft-protection";
 import { Classification } from "./Classification";
 import { DragDrop } from "./DragDrop";
 import { OptionCards } from "./OptionCards";
@@ -86,6 +92,8 @@ export function ActivityBlock({
     shuffleSeed || presentationShuffleSeed({ questionId: questionIdFor(block), blockId: block.id })
   );
   const emit = (result: ActivityResult) => onResult?.(result, block);
+  const questionId = questionIdFor(block);
+  const inner = (() => {
 
   if (
     type === "single-choice" ||
@@ -238,6 +246,13 @@ export function ActivityBlock({
       This {type || "unknown"} block is not part of the React activity catalogue yet.
     </p>
   );
+  })();
+
+  return (
+    <BlockDraftProtectionProvider questionId={questionId}>
+      {inner}
+    </BlockDraftProtectionProvider>
+  );
 }
 
 function resolveActivityMarkHandler(
@@ -267,8 +282,14 @@ export function InteractiveActivity({
   const [resetKey, setResetKey] = useState(0);
   const activityVersion = resolveActivityVersion(activity) || undefined;
   const markActivity = resolveActivityMarkHandler(platform, activity, onMarkResponse, markingMode);
+  const store = useMemo(
+    () => resolveActivityStateStore(platform, activity.id, activityVersion),
+    [activity.id, activityVersion, platform]
+  );
+  const draft = protectedActivityDraft(store, initialResponses, initialChecked, initialResults);
 
   return (
+    <ActivityStateStoreProvider store={store}>
     <article
       className="lp-activity panel"
       data-lp-activity={activity.id}
@@ -291,9 +312,9 @@ export function InteractiveActivity({
                 key={block.id}
                 block={block}
                 shuffleSeed={seed}
-                initialResponse={initialResponses[questionIdFor(block)]}
-                initialChecked={Boolean(initialChecked[questionIdFor(block)])}
-                initialResult={initialResults[questionIdFor(block)]}
+                initialResponse={draft.responses[questionIdFor(block)]}
+                initialChecked={Boolean(draft.checked[questionIdFor(block)])}
+                initialResult={(draft.results[questionIdFor(block)] || initialResults[questionIdFor(block)]) as RestoredActivityResult | undefined}
                 onMarkResponse={markActivity
                   ? (responses) => markActivity({
                     activityId: activity.id,
@@ -328,5 +349,6 @@ export function InteractiveActivity({
         <p className="lp-activity-status" data-lp-activity-status role="status" aria-live="polite"></p>
       </div>
     </article>
+    </ActivityStateStoreProvider>
   );
 }

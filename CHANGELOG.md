@@ -1,6 +1,19 @@
 # Changelog
 
-## Unreleased
+## 0.1.13 - 2026-09-12
+
+- Learner interaction marks the interned activity store dirty immediately
+  (before Check / Save). Incoming restore cannot replace newer unsaved local
+  answers. Dirty marking is in-memory / local-cache only and does not add
+  `get_activity_state`, `save_activity_state`, or `mark_formative_response`
+  traffic.
+- Checked-feedback restore clears Correct / Incorrect when a later clean remote
+  Try Again reset arrives.
+- `WeekView` keys activity children by stable `id` / `activityId` (plus optional
+  `activityVersion`) instead of array index, so reordering or inserting an
+  activity does not reuse another activity's React state.
+- Try Again clears restored draft state. Shared practice-completion helpers
+  count checked drafts.
 
 ## 0.1.12
 

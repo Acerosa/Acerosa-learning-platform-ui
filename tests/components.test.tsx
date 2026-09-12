@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { useEffect } from "react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import {
@@ -207,6 +208,53 @@ describe("WeekView", () => {
     );
     expect(screen.queryByRole("heading", { name: "Independent study" })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Planned teaching week" })).toBeInTheDocument();
+  });
+
+  it("keeps activity identity when siblings are reordered or a new activity is inserted", () => {
+    const mounts: Record<string, number> = {};
+    function Probe({ id }: { id: string }) {
+      useEffect(() => {
+        mounts[id] = (mounts[id] || 0) + 1;
+      }, [id]);
+      return <article data-testid={`activity-${id}`}>{id}</article>;
+    }
+    function sessionsFor(ids: string[]) {
+      return [{
+        id: "session-1",
+        title: "Session 1",
+        defaultOpen: true,
+        activities: ids.map((id) => ({
+          id,
+          children: <Probe id={id} />
+        }))
+      }];
+    }
+    const { rerender } = render(
+      <WeekView
+        week={{ id: "week-1", teachingWeek: 1, title: "Identity" }}
+        sessions={sessionsFor(["A", "B", "C"])}
+        features={{ showTitle: false, showProgress: false }}
+      />
+    );
+    expect(mounts).toEqual({ A: 1, B: 1, C: 1 });
+    rerender(
+      <WeekView
+        week={{ id: "week-1", teachingWeek: 1, title: "Identity" }}
+        sessions={sessionsFor(["A", "C", "B"])}
+        features={{ showTitle: false, showProgress: false }}
+      />
+    );
+    expect(mounts).toEqual({ A: 1, B: 1, C: 1 });
+    rerender(
+      <WeekView
+        week={{ id: "week-1", teachingWeek: 1, title: "Identity" }}
+        sessions={sessionsFor(["A", "X", "C", "B"])}
+        features={{ showTitle: false, showProgress: false }}
+      />
+    );
+    expect(mounts).toEqual({ A: 1, B: 1, C: 1, X: 1 });
+    expect(screen.getByTestId("activity-B")).toHaveTextContent("B");
+    expect(screen.getByTestId("activity-X")).toHaveTextContent("X");
   });
 });
 

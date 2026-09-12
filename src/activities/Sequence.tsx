@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useActivityDraftProtection } from "./activity-draft-protection";
 import { FeedbackPanel } from "./FeedbackPanel";
 import {
   activityResultFromMark,
@@ -65,10 +66,12 @@ export function Sequence({
     return ordered.length === items.length ? ordered : initial;
   }, [initial, initialOrder, items]);
   const [order, setOrder] = useState<ActivityItem[]>(restoredItems);
+  const protection = useActivityDraftProtection();
   useEffect(() => {
+    if (protection.isDirty()) return;
     if (!Array.isArray(initialOrder) || !initialOrder.length) return;
     setOrder(restoredItems);
-  }, [initialOrder, restoredItems]);
+  }, [initialOrder, protection, restoredItems]);
   const [attempts, setAttempts] = useState(0);
   const [checked, setChecked] = useRestoredChecked(initialChecked, Boolean(initialOrder?.length));
   const [checking, setChecking] = useState(false);
@@ -112,6 +115,7 @@ export function Sequence({
     const [removed] = next.splice(index, 1);
     next.splice(nextIndex, 0, removed as ActivityItem);
     setOrder(next);
+    protection.recordResponse(next.map((item) => item.id));
   }
 
   function onItemKeyDown(event: KeyboardEvent<HTMLLIElement>, index: number) {
@@ -191,6 +195,7 @@ export function Sequence({
     setServerCanRetry(undefined);
     setStatus("neutral");
     setMessage("");
+    protection.recordResponse(initial.map((item) => item.id));
     emit({
       completed: false,
       correct: null,
